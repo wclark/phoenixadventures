@@ -2,11 +2,11 @@ const STORAGE_KEY = "phoenix-adventures-save";
 
 const scenes = {
   camp: {
-    kicker: "Valley Approach",
-    title: "Falconrise Keep rises from the schoolyard ruins.",
-    image: "assets/scene-gatehouse.svg",
+    kicker: "Phoenix Tavern",
+    title: "The old charter hall is now a tavern at the edge of the keep.",
+    image: "assets/scene-phoenix-tavern.svg",
     text:
-      "The old campus has become a fortress of cracked stone, dry grass, and falcon banners. Somewhere beyond the gatehouse, a bell rings from a tower that should have fallen years ago.",
+      "The low white hall has been reborn in timber, lantern light, and phoenix-red paint. Beyond its separate wagon yard, Falconrise Keep gathers around a central courtyard and a bell that should have fallen years ago.",
     choices: [
       { label: "Study the ruin map", next: "mapRoom", item: "Ruin Map", log: "Studied the map of Falconrise Keep." },
       { label: "Enter the broken courtyard", next: "courtyard", log: "Passed beneath the falcon gate." },
@@ -16,19 +16,19 @@ const scenes = {
   },
   mapRoom: {
     kicker: "Fictional Map",
-    title: "The keep is a memory, not a blueprint.",
+    title: "The keep follows the old campus bones.",
     image: "assets/campus-ruins-map.svg",
     text:
-      "The parchment rearranges the ruins into a playable legend: Falcon Hall, Ash Court, the Charter Spire, Twin Training Yards, and a tournament oval where the grass still glows after sunset.",
+      "The parchment simplifies the old grounds into adventure landmarks: main hall wings around a central courtyard, the detached Phoenix Tavern and wagon yard, training courts, ball fields, and a tournament track.",
     choices: [
-      { label: "Mark Falcon Hall", next: "ruins", log: "Marked Falcon Hall on the ruin map." },
-      { label: "Mark Ash Court", next: "courtyard", log: "Marked Ash Court on the ruin map." },
+      { label: "Mark the north hall", next: "ruins", log: "Marked the north hall on the ruin map." },
+      { label: "Mark the central courtyard", next: "courtyard", log: "Marked the central courtyard on the ruin map." },
       { label: "Mark the tournament oval", next: "tournament", log: "Marked the tournament oval on the ruin map." },
-      { label: "Return to the gatehouse", next: "camp" },
+      { label: "Return to Phoenix Tavern", next: "camp" },
     ],
   },
   ruins: {
-    kicker: "Falcon Hall",
+    kicker: "North Hall",
     title: "A bronze bell swings without wind.",
     image: "assets/scene-courtyard.svg",
     text:
@@ -40,22 +40,22 @@ const scenes = {
     ],
   },
   courtyard: {
-    kicker: "Ash Court",
+    kicker: "Central Courtyard",
     title: "Vines lace the courtyard stones like old spellwork.",
     image: "assets/scene-courtyard.svg",
     text:
-      "Long arcades lean toward a bell tower, and the paving stones are split by amber weeds. A carved falcon sigil glints from a fallen lintel.",
+      "Long hall wings lean inward around a grass-grown court. The paving stones are split by amber weeds, and a carved falcon sigil glints from a fallen lintel.",
     choices: [
       { label: "Recover the falcon sigil", next: "courtyard", item: "Falcon Sigil", log: "Recovered a falcon sigil from Ash Court." },
       { label: "Listen at the broken arcade", next: "ruins", stat: "wits", target: 11 },
       { label: "Cross to the training yards", next: "tournament" },
-      { label: "Return to the gatehouse", next: "camp" },
+      { label: "Return to Phoenix Tavern", next: "camp" },
     ],
   },
   shrine: {
     kicker: "Roadside Shrine",
     title: "An offering bowl glows under old ash.",
-    image: "assets/scene-gatehouse.svg",
+    image: "assets/scene-phoenix-tavern.svg",
     text:
       "The shrine is cracked but warm to the touch. A phoenix sigil flashes once when you brush away the dust.",
     choices: [
@@ -64,11 +64,11 @@ const scenes = {
     ],
   },
   merchant: {
-    kicker: "Outer Gate",
+    kicker: "Tavern Yard",
     title: "The merchant knows the ruin by another name.",
-    image: "assets/scene-gatehouse.svg",
+    image: "assets/scene-phoenix-tavern.svg",
     text:
-      "He calls it Falconrise Keep and will trade a charcoal-rubbed map for five gold. His pack smells faintly of rain, iron, and cedar smoke.",
+      "He waits beside the wagon yard and calls the ruin Falconrise Keep. He will trade a charcoal-rubbed map for five gold, and his pack smells faintly of rain, iron, and cedar smoke.",
     choices: [
       { label: "Buy the map", next: "mapRoom", gold: -5, item: "Ruin Map", log: "Bought a map to Falconrise Keep." },
       { label: "Decline and return to watch", next: "camp" },

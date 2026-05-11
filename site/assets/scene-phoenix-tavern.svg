@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Phoenix Tavern, adapted from the SRACS exterior as fantasy scenery</title>
+  <desc id="desc">A low, single-story tavern with pale vertical siding, timber beams, porch railing, trees, lanterns, and a separate wagon yard at sunset.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#29455c" />
+      <stop offset="0.58" stop-color="#d99c55" />
+      <stop offset="1" stop-color="#4a2b27" />
+    </linearGradient>
+    <radialGradient id="sun" cx="82%" cy="31%" r="34%">
+      <stop offset="0" stop-color="#fff4bd" stop-opacity="0.95" />
+      <stop offset="1" stop-color="#fff4bd" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="wall" x1="0" x2="1">
+      <stop offset="0" stop-color="#e7dcc4" />
+      <stop offset="1" stop-color="#bfae91" />
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#sky)" />
+  <rect width="1280" height="720" fill="url(#sun)" />
+  <path d="M0 430 C190 344 390 358 548 318 C778 260 1016 288 1280 220 L1280 720 L0 720 Z" fill="#7d663e" />
+  <path d="M0 546 C206 488 430 488 620 520 C826 556 1040 542 1280 486 L1280 720 L0 720 Z" fill="#2c271f" />
+
+  <g transform="translate(106 164)">
+    <path d="M12 238 H736 L690 318 H28 Z" fill="#67513d" opacity="0.72" />
+    <path d="M0 86 H758 L710 146 H42 Z" fill="#2e2c2a" stroke="#16100e" stroke-width="6" />
+    <path d="M64 142 H704 V386 H64 Z" fill="url(#wall)" stroke="#2b201b" stroke-width="5" />
+    <path d="M64 142 L124 96 H742 L704 142 Z" fill="#d4c2a1" stroke="#2b201b" stroke-width="5" />
+    <path d="M54 386 H724 V420 H54 Z" fill="#5b3c28" />
+    <g stroke="#8b7c6a" stroke-width="4" opacity="0.72">
+      <path d="M102 150 V382 M150 150 V382 M198 150 V382 M246 150 V382 M294 150 V382 M342 150 V382 M390 150 V382 M438 150 V382 M486 150 V382 M534 150 V382 M582 150 V382 M630 150 V382 M678 150 V382" />
+    </g>
+    <g fill="#2f211b" stroke="#15100d" stroke-width="4">
+      <rect x="212" y="218" width="76" height="104" rx="4" />
+      <rect x="338" y="202" width="102" height="72" rx="4" />
+      <rect x="500" y="202" width="104" height="72" rx="4" />
+    </g>
+    <g fill="#314052">
+      <rect x="350" y="214" width="78" height="48" />
+      <rect x="512" y="214" width="80" height="48" />
+    </g>
+    <path d="M104 326 H704" stroke="#f0eee7" stroke-width="12" />
+    <g stroke="#f0eee7" stroke-width="7">
+      <path d="M112 302 V370 M150 302 V370 M188 302 V370 M226 302 V370 M264 302 V370 M302 302 V370 M340 302 V370 M378 302 V370 M416 302 V370 M454 302 V370 M492 302 V370 M530 302 V370 M568 302 V370 M606 302 V370 M644 302 V370 M682 302 V370" />
+    </g>
+    <path d="M88 304 H720" stroke="#cbd8d2" stroke-width="5" />
+    <g>
+      <path d="M404 112 L506 112 L488 164 L422 164 Z" fill="#7d2e25" stroke="#211713" stroke-width="4" />
+      <text x="423" y="145" fill="#f7d477" font-family="Georgia, serif" font-size="25">Phoenix</text>
+      <path d="M382 112 H404 M506 112 H528" stroke="#211713" stroke-width="5" />
+    </g>
+    <g fill="#f0c469">
+      <circle cx="180" cy="196" r="12" />
+      <circle cx="642" cy="196" r="12" />
+    </g>
+  </g>
+
+  <g fill="#201713" opacity="0.88">
+    <path d="M892 470 C956 438 1114 438 1190 486 L1280 720 H842 Z" />
+    <path d="M930 520 C1014 482 1124 500 1196 548" fill="none" stroke="#6f5032" stroke-width="9" />
+  </g>
+  <g fill="#3a2a22" stroke="#16100e" stroke-width="4">
+    <rect x="958" y="474" width="94" height="58" rx="6" transform="rotate(4 1005 503)" />
+    <rect x="1080" y="484" width="88" height="54" rx="6" transform="rotate(-6 1124 511)" />
+    <circle cx="988" cy="544" r="14" />
+    <circle cx="1036" cy="546" r="14" />
+    <circle cx="1104" cy="550" r="14" />
+    <circle cx="1150" cy="544" r="14" />
+  </g>
+
+  <g>
+    <rect x="98" y="112" width="30" height="410" fill="#3f2a1d" />
+    <circle cx="112" cy="94" r="78" fill="#1d3327" />
+    <circle cx="178" cy="126" r="46" fill="#253b2c" />
+    <circle cx="62" cy="150" r="52" fill="#24382a" />
+    <rect x="792" y="164" width="24" height="248" fill="#4a3220" />
+    <circle cx="808" cy="150" r="58" fill="#263c2c" />
+    <circle cx="870" cy="166" r="42" fill="#304831" />
+  </g>
+
+  <path d="M314 610 C430 558 620 560 760 600" fill="none" stroke="#8b633d" stroke-width="10" opacity="0.72" />
+  <path d="M334 632 C454 594 608 596 748 626" fill="none" stroke="#c49b58" stroke-width="5" opacity="0.55" />
+</svg>

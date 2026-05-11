@@ -5,3 +5,4 @@ Thumbs.db
 .aws-sam/
 dist/
 node_modules/
+tmp/
