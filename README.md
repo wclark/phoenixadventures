@@ -38,3 +38,5 @@ ns-58.awsdns-07.com
 ns-1372.awsdns-43.org
 ns-522.awsdns-01.net
 ```
+
+The AWS hosted zone has working `A` alias records for `phoenixadventures.org` and `www.phoenixadventures.org`. Public DNS will use those records only after the domain registrar delegates the domain to the Route 53 nameservers above.
