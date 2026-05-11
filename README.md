@@ -30,6 +30,9 @@ The deploy script syncs only the `site/` folder to `s3://phoenixadventures.org`.
 - Hosted zone: `Z06866673H2QKV8JHQJ8W`
 - Site bucket: `s3://phoenixadventures.org`
 - Redirect bucket: `s3://www.phoenixadventures.org`
+- CloudFront distribution: `E3M9M426SCMIS4`
+- Temporary CloudFront URL: `https://db3tx7bz72qe9.cloudfront.net`
+- ACM certificate: `arn:aws:acm:us-east-1:645377689567:certificate/15653f44-fe31-46e5-9528-bacf55664f5a`
 
 Route 53 assigned these nameservers:
 
@@ -41,3 +44,14 @@ ns-522.awsdns-01.net
 ```
 
 The AWS hosted zone has working `A` alias records for `phoenixadventures.org` and `www.phoenixadventures.org`. Public DNS will use those records only after the domain registrar delegates the domain to the Route 53 nameservers above.
+
+As of May 11, 2026, the `.org` registry delegates `phoenixadventures.org` to these incorrect/lame Route 53 nameservers, which refuse queries for this domain:
+
+```text
+ns-1441.awsdns-52.org
+ns-1965.awsdns-53.co.uk
+ns-432.awsdns-54.com
+ns-645.awsdns-16.net
+```
+
+Update the domain at GoDaddy to the Route 53 nameservers above. After that public DNS will resolve, ACM DNS validation can complete, and the CloudFront distribution can be updated to serve `https://phoenixadventures.org/`.

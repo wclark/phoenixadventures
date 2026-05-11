@@ -1,0 +1,31 @@
+{
+  "Comment": "ACM DNS validation records for phoenixadventures.org certificate.",
+  "Changes": [
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "_cdf8cc24b1cba698aace80cd778493db.phoenixadventures.org.",
+        "Type": "CNAME",
+        "TTL": 300,
+        "ResourceRecords": [
+          {
+            "Value": "_ed0592ded224a5658a7589c776a65ec5.jkddzztszm.acm-validations.aws."
+          }
+        ]
+      }
+    },
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "_0ee752d732fcedcc6b1ffa43dfb7f6ef.www.phoenixadventures.org.",
+        "Type": "CNAME",
+        "TTL": 300,
+        "ResourceRecords": [
+          {
+            "Value": "_f377b23de551a0c6933763e5fae1b69f.jkddzztszm.acm-validations.aws."
+          }
+        ]
+      }
+    }
+  ]
+}
