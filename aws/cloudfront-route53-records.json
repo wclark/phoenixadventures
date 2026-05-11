@@ -1,5 +1,5 @@
 {
-  "Comment": "Point phoenixadventures.org and www.phoenixadventures.org to the CloudFront HTTPS distribution. Fill DNSName after distribution creation.",
+  "Comment": "Point phoenixadventures.org and www.phoenixadventures.org to the CloudFront HTTPS distribution.",
   "Changes": [
     {
       "Action": "UPSERT",
@@ -16,8 +16,32 @@
     {
       "Action": "UPSERT",
       "ResourceRecordSet": {
+        "Name": "phoenixadventures.org.",
+        "Type": "AAAA",
+        "AliasTarget": {
+          "HostedZoneId": "Z2FDTNDATAQYW2",
+          "DNSName": "db3tx7bz72qe9.cloudfront.net.",
+          "EvaluateTargetHealth": false
+        }
+      }
+    },
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
         "Name": "www.phoenixadventures.org.",
         "Type": "A",
+        "AliasTarget": {
+          "HostedZoneId": "Z2FDTNDATAQYW2",
+          "DNSName": "db3tx7bz72qe9.cloudfront.net.",
+          "EvaluateTargetHealth": false
+        }
+      }
+    },
+    {
+      "Action": "UPSERT",
+      "ResourceRecordSet": {
+        "Name": "www.phoenixadventures.org.",
+        "Type": "AAAA",
         "AliasTarget": {
           "HostedZoneId": "Z2FDTNDATAQYW2",
           "DNSName": "db3tx7bz72qe9.cloudfront.net.",
