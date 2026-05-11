@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Fictional map of Falconrise Keep</title>
+  <desc id="desc">A not-to-scale fantasy ruin map inspired by broad public campus features, with walls, halls, courtyards, training yards, and a tournament oval.</desc>
+  <defs>
+    <radialGradient id="paperGlow" cx="50%" cy="42%" r="72%">
+      <stop offset="0" stop-color="#e9d19b" />
+      <stop offset="1" stop-color="#9e6d3e" />
+    </radialGradient>
+    <filter id="rough">
+      <feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="3" seed="18" />
+      <feColorMatrix type="saturate" values="0.25" />
+      <feBlend in="SourceGraphic" mode="multiply" />
+    </filter>
+    <pattern id="hatch" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(35)">
+      <path d="M0 0 L0 12" stroke="#6b432b" stroke-width="2" opacity="0.28" />
+    </pattern>
+  </defs>
+  <rect width="1280" height="720" fill="url(#paperGlow)" />
+  <rect width="1280" height="720" fill="#fff0c2" opacity="0.25" filter="url(#rough)" />
+  <path d="M158 118 C280 68 420 82 555 108 C692 134 812 72 965 104 C1088 130 1175 228 1150 358 C1120 514 1005 604 824 628 C656 650 544 598 426 604 C278 612 130 548 100 412 C72 288 62 174 158 118 Z" fill="#c59a61" stroke="#50311f" stroke-width="7" />
+  <path d="M190 154 C300 114 412 124 546 150 C688 178 798 114 942 142 C1046 162 1110 244 1088 354 C1060 486 958 562 808 582 C660 602 552 550 424 558 C294 564 170 512 146 402 C122 292 106 196 190 154 Z" fill="#b88450" opacity="0.46" stroke="#6b432b" stroke-width="3" stroke-dasharray="10 13" />
+  <g fill="#5b3928" stroke="#2d1d17" stroke-width="3">
+    <rect x="314" y="210" width="310" height="92" rx="7" transform="rotate(-8 469 256)" />
+    <rect x="658" y="196" width="218" height="84" rx="7" transform="rotate(7 767 238)" />
+    <rect x="452" y="335" width="336" height="88" rx="7" transform="rotate(3 620 379)" />
+    <rect x="786" y="362" width="148" height="132" rx="7" transform="rotate(-10 860 428)" />
+    <rect x="268" y="382" width="130" height="132" rx="7" transform="rotate(12 333 448)" />
+  </g>
+  <g fill="url(#hatch)" stroke="#2d1d17" stroke-width="3">
+    <path d="M726 306 L790 266 L854 306 L854 386 L726 386 Z" />
+    <path d="M388 318 L450 284 L510 318 L496 402 L398 408 Z" />
+  </g>
+  <ellipse cx="672" cy="520" rx="184" ry="64" fill="none" stroke="#684224" stroke-width="13" />
+  <ellipse cx="672" cy="520" rx="138" ry="40" fill="#7d7a48" opacity="0.75" stroke="#2d1d17" stroke-width="3" />
+  <g stroke="#2d1d17" stroke-width="3" fill="#7a5032">
+    <rect x="942" y="236" width="74" height="48" rx="4" transform="rotate(8 979 260)" />
+    <rect x="947" y="302" width="74" height="48" rx="4" transform="rotate(8 984 326)" />
+    <path d="M928 222 L1038 238" />
+    <path d="M923 288 L1033 304" />
+    <path d="M918 354 L1028 370" />
+  </g>
+  <g fill="#31442f" opacity="0.85">
+    <circle cx="230" cy="258" r="24" />
+    <circle cx="248" cy="312" r="19" />
+    <circle cx="216" cy="468" r="22" />
+    <circle cx="980" cy="166" r="25" />
+    <circle cx="1064" cy="430" r="28" />
+    <circle cx="884" cy="566" r="19" />
+    <circle cx="508" cy="166" r="18" />
+  </g>
+  <g fill="#2d1d17" opacity="0.92" font-family="Georgia, serif">
+    <text x="88" y="74" font-size="38">Falconrise Keep</text>
+    <text x="94" y="105" font-size="18">fictionalized, not to scale</text>
+    <text x="368" y="258" font-size="22" transform="rotate(-8 368 258)">Falcon Hall</text>
+    <text x="670" y="236" font-size="20" transform="rotate(7 670 236)">Broken Arcades</text>
+    <text x="470" y="388" font-size="21" transform="rotate(3 470 388)">Ash Court</text>
+    <text x="742" y="354" font-size="18">Charter Spire</text>
+    <text x="590" y="529" font-size="20">Tournament Oval</text>
+    <text x="936" y="408" font-size="18" transform="rotate(8 936 408)">Twin Training Yards</text>
+    <text x="270" y="550" font-size="18" transform="rotate(11 270 550)">Bell Ruin</text>
+  </g>
+  <g transform="translate(1094 86)" fill="none" stroke="#2d1d17" stroke-width="4">
+    <circle cx="0" cy="0" r="44" />
+    <path d="M0 -32 L10 0 L0 32 L-10 0 Z" fill="#6b432b" />
+    <text x="-12" y="-52" fill="#2d1d17" stroke="none" font-family="Georgia, serif" font-size="18">N</text>
+  </g>
+</svg>

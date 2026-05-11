@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Ruined school gatehouse reimagined as a castle approach</title>
+  <desc id="desc">A fantasy castle gatehouse in dry Santa Rosa hills, with oak trees, cracked stone, and falcon banners.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#314f68" />
+      <stop offset="0.52" stop-color="#d2a35b" />
+      <stop offset="1" stop-color="#4b2e28" />
+    </linearGradient>
+    <radialGradient id="sun" cx="22%" cy="22%" r="38%">
+      <stop offset="0" stop-color="#fff2b7" stop-opacity="0.9" />
+      <stop offset="1" stop-color="#fff2b7" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#sky)" />
+  <rect width="1280" height="720" fill="url(#sun)" />
+  <path d="M0 430 C180 350 330 372 492 344 C714 305 860 232 1280 310 L1280 720 L0 720 Z" fill="#80643c" />
+  <path d="M0 510 C210 448 390 488 538 446 C706 398 910 420 1280 374 L1280 720 L0 720 Z" fill="#4d5835" />
+  <path d="M156 590 C336 510 510 496 676 534 C850 574 1032 560 1280 512 L1280 720 L0 720 L0 654 C54 632 102 612 156 590 Z" fill="#2a241d" />
+  <g fill="#46372e" stroke="#211713" stroke-width="5">
+    <rect x="254" y="270" width="150" height="280" />
+    <rect x="862" y="250" width="160" height="300" />
+    <path d="M216 272 L330 186 L438 272 Z" />
+    <path d="M828 250 L946 164 L1064 250 Z" />
+    <rect x="386" y="338" width="510" height="212" />
+    <path d="M438 338 L508 288 L580 338 Z" />
+    <path d="M704 338 L778 284 L852 338 Z" />
+  </g>
+  <path d="M524 550 C526 470 568 426 642 426 C718 426 760 474 760 550 Z" fill="#120e0c" />
+  <path d="M274 306 H394 M274 352 H394 M274 398 H394 M274 444 H394 M882 290 H1006 M882 340 H1006 M882 390 H1006 M882 440 H1006 M424 378 H858 M424 426 H858 M424 476 H858" stroke="#6b5a4c" stroke-width="8" opacity="0.7" />
+  <g fill="#a33f2c">
+    <path d="M334 286 L334 386 L294 356 L254 386 L254 286 Z" />
+    <path d="M966 268 L966 368 L926 338 L886 368 L886 268 Z" />
+  </g>
+  <g fill="#d8b15c" opacity="0.9">
+    <path d="M288 326 C314 296 338 322 314 350 C304 338 294 334 288 326 Z" />
+    <path d="M920 308 C946 278 970 304 946 332 C936 320 926 316 920 308 Z" />
+  </g>
+  <g fill="#1d3327">
+    <circle cx="128" cy="510" r="54" />
+    <circle cx="188" cy="486" r="38" />
+    <rect x="148" y="510" width="24" height="96" fill="#513921" />
+    <circle cx="1108" cy="472" r="58" />
+    <circle cx="1176" cy="450" r="42" />
+    <rect x="1138" y="474" width="26" height="116" fill="#513921" />
+  </g>
+  <path d="M530 604 C578 568 704 568 754 604 L716 720 L566 720 Z" fill="#6f5032" />
+  <path d="M584 620 L616 600 L646 618 L682 596 L720 620" fill="none" stroke="#c59a61" stroke-width="5" opacity="0.7" />
+</svg>

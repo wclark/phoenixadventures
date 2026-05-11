@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Overgrown castle courtyard with broken school arcades</title>
+  <desc id="desc">A ruined courtyard with long arcades, a bell tower, cracked paving, vines, and warm late-day light.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#26394a" />
+      <stop offset="0.62" stop-color="#9c6a45" />
+      <stop offset="1" stop-color="#30211e" />
+    </linearGradient>
+    <linearGradient id="stone" x1="0" x2="1">
+      <stop offset="0" stop-color="#60534b" />
+      <stop offset="1" stop-color="#342a27" />
+    </linearGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#sky)" />
+  <path d="M0 186 C212 150 424 168 614 152 C850 132 1030 158 1280 126 L1280 720 L0 720 Z" fill="#40302b" />
+  <g fill="url(#stone)" stroke="#1f1715" stroke-width="5">
+    <path d="M78 232 L548 188 L548 474 L78 510 Z" />
+    <path d="M706 190 L1212 224 L1212 510 L706 474 Z" />
+    <rect x="548" y="126" width="158" height="348" />
+    <path d="M528 126 L628 62 L730 126 Z" />
+  </g>
+  <g fill="#17110f">
+    <path d="M138 324 C138 274 202 274 202 324 L202 480 L138 486 Z" />
+    <path d="M244 306 C244 254 310 254 310 306 L310 472 L244 478 Z" />
+    <path d="M354 296 C354 246 420 246 420 296 L420 462 L354 468 Z" />
+    <path d="M772 296 C772 246 838 246 838 296 L838 464 L772 460 Z" />
+    <path d="M890 306 C890 254 956 254 956 306 L956 474 L890 470 Z" />
+    <path d="M1010 324 C1010 274 1076 274 1076 324 L1076 488 L1010 482 Z" />
+    <path d="M604 258 C604 210 650 210 650 258 L650 348 L604 348 Z" />
+  </g>
+  <path d="M0 584 C230 522 452 506 640 512 C850 520 1038 542 1280 500 L1280 720 L0 720 Z" fill="#625a42" />
+  <path d="M120 650 C280 594 438 578 644 588 C812 596 1010 618 1180 572" fill="none" stroke="#211713" stroke-width="6" opacity="0.55" />
+  <g stroke="#9f875d" stroke-width="4" opacity="0.72">
+    <path d="M256 602 L298 554 L352 590 L402 540 L458 592" />
+    <path d="M764 588 L824 544 L884 588 L928 532 L1002 584" />
+    <path d="M558 516 L618 468 L682 520" />
+  </g>
+  <g fill="#30422e">
+    <path d="M96 232 C146 308 198 344 276 350 C210 378 138 358 92 312 Z" />
+    <path d="M1174 226 C1130 300 1074 340 994 346 C1062 376 1134 352 1182 306 Z" />
+    <path d="M514 146 C534 226 552 296 548 382 C520 302 486 230 446 172 Z" />
+    <path d="M718 154 C700 234 688 304 706 386 C728 304 760 230 804 178 Z" />
+  </g>
+  <g fill="#c99f55">
+    <circle cx="627" cy="394" r="30" />
+    <path d="M628 364 L640 392 L670 392 L646 410 L656 438 L628 420 L600 438 L610 410 L586 392 L616 392 Z" fill="#7d2e25" />
+  </g>
+</svg>

@@ -2,34 +2,60 @@ const STORAGE_KEY = "phoenix-adventures-save";
 
 const scenes = {
   camp: {
-    kicker: "Camp at Ashfall Road",
-    title: "The road waits for a decision.",
-    image: "assets/scene-camp.svg",
+    kicker: "Valley Approach",
+    title: "Falconrise Keep rises from the schoolyard ruins.",
+    image: "assets/scene-gatehouse.svg",
     text:
-      "Your fire burns low beside the old trade road. Somewhere past the black pines, a bell rings from a ruin that should have no living keeper.",
+      "The old campus has become a fortress of cracked stone, dry grass, and falcon banners. Somewhere beyond the gatehouse, a bell rings from a tower that should have fallen years ago.",
     choices: [
-      { label: "Follow the bell toward the ruins", next: "ruins", log: "Followed the bell into the old forest." },
+      { label: "Study the ruin map", next: "mapRoom", item: "Ruin Map", log: "Studied the map of Falconrise Keep." },
+      { label: "Enter the broken courtyard", next: "courtyard", log: "Passed beneath the falcon gate." },
       { label: "Search the roadside shrine", next: "shrine", log: "Stopped at the roadside shrine." },
       { label: "Question the hooded merchant", next: "merchant", log: "Shared a fire with the hooded merchant." },
-      { label: "Scout the treeline", next: "treeline", stat: "wits", target: 11 },
+    ],
+  },
+  mapRoom: {
+    kicker: "Fictional Map",
+    title: "The keep is a memory, not a blueprint.",
+    image: "assets/campus-ruins-map.svg",
+    text:
+      "The parchment rearranges the ruins into a playable legend: Falcon Hall, Ash Court, the Charter Spire, Twin Training Yards, and a tournament oval where the grass still glows after sunset.",
+    choices: [
+      { label: "Mark Falcon Hall", next: "ruins", log: "Marked Falcon Hall on the ruin map." },
+      { label: "Mark Ash Court", next: "courtyard", log: "Marked Ash Court on the ruin map." },
+      { label: "Mark the tournament oval", next: "tournament", log: "Marked the tournament oval on the ruin map." },
+      { label: "Return to the gatehouse", next: "camp" },
     ],
   },
   ruins: {
-    kicker: "Moonlit Ruins",
+    kicker: "Falcon Hall",
     title: "A bronze bell swings without wind.",
-    image: "assets/scene-camp.svg",
+    image: "assets/scene-courtyard.svg",
     text:
-      "Stone birds watch from a broken arch. The bell rope is braided with red thread, and the dust beneath it has been disturbed by fresh tracks.",
+      "Stone birds watch from a broken arcade. The bell rope is braided with red thread, and the dust beneath it has been disturbed by fresh tracks.",
     choices: [
       { label: "Pull the bell rope", next: "emberGate", stat: "spirit", target: 12 },
-      { label: "Track the fresh footprints", next: "treeline", stat: "wits", target: 10 },
-      { label: "Return to camp", next: "camp" },
+      { label: "Track the fresh footprints", next: "tournament", stat: "wits", target: 10 },
+      { label: "Return to the map", next: "mapRoom" },
+    ],
+  },
+  courtyard: {
+    kicker: "Ash Court",
+    title: "Vines lace the courtyard stones like old spellwork.",
+    image: "assets/scene-courtyard.svg",
+    text:
+      "Long arcades lean toward a bell tower, and the paving stones are split by amber weeds. A carved falcon sigil glints from a fallen lintel.",
+    choices: [
+      { label: "Recover the falcon sigil", next: "courtyard", item: "Falcon Sigil", log: "Recovered a falcon sigil from Ash Court." },
+      { label: "Listen at the broken arcade", next: "ruins", stat: "wits", target: 11 },
+      { label: "Cross to the training yards", next: "tournament" },
+      { label: "Return to the gatehouse", next: "camp" },
     ],
   },
   shrine: {
     kicker: "Roadside Shrine",
     title: "An offering bowl glows under old ash.",
-    image: "assets/scene-camp.svg",
+    image: "assets/scene-gatehouse.svg",
     text:
       "The shrine is cracked but warm to the touch. A phoenix sigil flashes once when you brush away the dust.",
     choices: [
@@ -38,37 +64,38 @@ const scenes = {
     ],
   },
   merchant: {
-    kicker: "Ashfall Road",
+    kicker: "Outer Gate",
     title: "The merchant knows the ruin by another name.",
-    image: "assets/scene-camp.svg",
+    image: "assets/scene-gatehouse.svg",
     text:
-      "He calls it Cinderwake Keep and will trade a map for five gold. His pack smells faintly of rain, iron, and cedar smoke.",
+      "He calls it Falconrise Keep and will trade a charcoal-rubbed map for five gold. His pack smells faintly of rain, iron, and cedar smoke.",
     choices: [
-      { label: "Buy the map", next: "camp", gold: -5, item: "Cinderwake Map", log: "Bought a map to Cinderwake Keep." },
+      { label: "Buy the map", next: "mapRoom", gold: -5, item: "Ruin Map", log: "Bought a map to Falconrise Keep." },
       { label: "Decline and return to watch", next: "camp" },
     ],
   },
-  treeline: {
-    kicker: "Black Pine Verge",
-    title: "Something huge moved here before dusk.",
-    image: "assets/scene-camp.svg",
+  tournament: {
+    kicker: "Tournament Oval",
+    title: "The old athletic grounds have become a knight's arena.",
+    image: "assets/scene-tournament-grounds.svg",
     text:
-      "Branches hang snapped above your head. In the mud, claw marks curve around a feather made of cooling ash.",
+      "The oval field is ringed by broken terraces and cracked training yards. Dry grass whispers underfoot, and ash feathers drift over the goal lines like black snow.",
     choices: [
-      { label: "Pocket the ash feather", next: "camp", item: "Ash Feather", log: "Found an ash feather near the pines." },
-      { label: "Press deeper into the pines", next: "emberGate", stat: "might", target: 13 },
-      { label: "Return to camp", next: "camp" },
+      { label: "Pocket an ash feather", next: "tournament", item: "Ash Feather", log: "Found an ash feather in the tournament oval." },
+      { label: "Cross the cracked training yard", next: "emberGate", stat: "might", target: 13 },
+      { label: "Circle back to Ash Court", next: "courtyard" },
+      { label: "Return to the map", next: "mapRoom" },
     ],
   },
   emberGate: {
     kicker: "Cinderwake Threshold",
     title: "The hidden gate opens like an eye.",
-    image: "assets/scene-camp.svg",
+    image: "assets/scene-tournament-grounds.svg",
     text:
       "Beyond the gate, red light pulses through a buried hall. This is where the first real encounter will live as the game grows.",
     choices: [
-      { label: "Mark this place in the quest log", next: "camp", log: "Discovered the gate beneath Cinderwake Keep." },
-      { label: "Rest and prepare", next: "camp" },
+      { label: "Mark this place in the quest log", next: "camp", log: "Discovered the gate beneath Falconrise Keep." },
+      { label: "Rest beneath the falcon banners", next: "camp" },
     ],
   },
 };

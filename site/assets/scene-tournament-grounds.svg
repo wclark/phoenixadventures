@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Ruined tournament grounds and training yards</title>
+  <desc id="desc">A fantasy athletic field transformed into a castle tournament oval with cracked training yards and broken terraces.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#273c4d" />
+      <stop offset="0.6" stop-color="#95573c" />
+      <stop offset="1" stop-color="#181513" />
+    </linearGradient>
+    <radialGradient id="field" cx="50%" cy="58%" r="54%">
+      <stop offset="0" stop-color="#70864d" />
+      <stop offset="1" stop-color="#354327" />
+    </radialGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#sky)" />
+  <path d="M0 300 C224 250 382 286 560 246 C774 198 984 226 1280 178 L1280 720 L0 720 Z" fill="#46302a" />
+  <path d="M92 538 C180 380 372 306 642 306 C916 306 1118 384 1192 538 C1062 650 866 698 642 698 C414 698 220 650 92 538 Z" fill="#2a211d" />
+  <ellipse cx="642" cy="524" rx="472" ry="162" fill="#7d5734" stroke="#1c1513" stroke-width="8" />
+  <ellipse cx="642" cy="524" rx="372" ry="108" fill="url(#field)" stroke="#c69a52" stroke-width="8" />
+  <ellipse cx="642" cy="524" rx="220" ry="54" fill="none" stroke="#d6bd79" stroke-width="4" stroke-dasharray="18 14" opacity="0.75" />
+  <g fill="#51443c" stroke="#1c1513" stroke-width="4">
+    <path d="M160 342 L364 288 L404 356 L178 414 Z" />
+    <path d="M908 284 L1138 328 L1104 404 L874 352 Z" />
+    <rect x="128" y="430" width="180" height="72" rx="4" transform="rotate(-13 218 466)" />
+    <rect x="972" y="424" width="190" height="72" rx="4" transform="rotate(11 1067 460)" />
+  </g>
+  <g fill="none" stroke="#876a45" stroke-width="5">
+    <path d="M170 356 L386 306 M186 386 L402 336 M926 302 L1130 340 M910 332 L1114 372" />
+    <path d="M142 454 L306 418 M154 488 L318 452 M986 418 L1156 452 M978 452 L1148 488" />
+  </g>
+  <g fill="#7d5132" stroke="#211713" stroke-width="4">
+    <rect x="90" y="184" width="126" height="76" rx="4" />
+    <rect x="238" y="174" width="126" height="76" rx="4" />
+    <path d="M78 184 L228 126 L380 174 L364 174 L238 144 L104 184 Z" fill="#3f3029" />
+    <rect x="918" y="162" width="128" height="80" rx="4" />
+    <rect x="1068" y="176" width="128" height="80" rx="4" />
+    <path d="M904 162 L1042 106 L1210 176 L1196 176 L1068 144 L930 162 Z" fill="#3f3029" />
+  </g>
+  <g fill="#b33f2b">
+    <path d="M614 262 L614 364 L574 334 L534 364 L534 262 Z" />
+    <path d="M746 262 L746 364 L706 334 L666 364 L666 262 Z" />
+  </g>
+  <g fill="#1f3024">
+    <circle cx="438" cy="248" r="34" />
+    <circle cx="486" cy="236" r="24" />
+    <circle cx="826" cy="232" r="32" />
+    <circle cx="868" cy="246" r="25" />
+    <rect x="454" y="260" width="16" height="64" fill="#563921" />
+    <rect x="838" y="258" width="16" height="66" fill="#563921" />
+  </g>
+  <path d="M528 526 L594 498 L650 532 L720 500 L780 528" fill="none" stroke="#172417" stroke-width="5" opacity="0.55" />
+</svg>

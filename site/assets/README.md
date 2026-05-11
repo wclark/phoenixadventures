@@ -1,3 +1,5 @@
 # Assets
 
-Replace `scene-camp.svg` with your own adventure images as the game expands. Keep scene art in this folder and point each scene in `site/game.js` at the right file path.
+Scene art lives here and is referenced from `site/game.js`.
+
+The Falconrise Keep assets are original, fictionalized game art inspired by broad public references. They are deliberately not accurate campus maps or real-world navigation aids.
