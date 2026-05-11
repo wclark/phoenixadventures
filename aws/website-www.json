@@ -1,0 +1,6 @@
+{
+  "RedirectAllRequestsTo": {
+    "HostName": "phoenixadventures.org",
+    "Protocol": "http"
+  }
+}

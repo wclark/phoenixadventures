@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Phoenix Adventures</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Static alpha</p>
+          <h1>Phoenix Adventures</h1>
+        </div>
+        <div class="topbar-actions">
+          <button id="newGameButton" type="button">New Quest</button>
+          <button id="saveButton" type="button">Save</button>
+        </div>
+      </header>
+
+      <main class="game-layout">
+        <section class="scene-panel" aria-labelledby="sceneTitle">
+          <img id="sceneImage" class="scene-image" src="assets/scene-camp.svg" alt="" />
+          <div class="scene-copy">
+            <p id="sceneKicker" class="eyebrow">Camp at Ashfall Road</p>
+            <h2 id="sceneTitle">The road waits for a decision.</h2>
+            <p id="sceneText"></p>
+          </div>
+          <div id="choiceList" class="choice-list" aria-label="Available choices"></div>
+        </section>
+
+        <aside class="side-panel" aria-label="Adventurer sheet">
+          <section class="sheet-block">
+            <div class="sheet-heading">
+              <h2>Adventurer</h2>
+              <span id="heroLevel">Level 1</span>
+            </div>
+            <label class="name-field" for="heroName">
+              <span>Name</span>
+              <input id="heroName" maxlength="28" value="Ash" />
+            </label>
+            <div class="stat-grid" aria-label="Character stats">
+              <div>
+                <span>Might</span>
+                <strong id="statMight">2</strong>
+              </div>
+              <div>
+                <span>Wits</span>
+                <strong id="statWits">2</strong>
+              </div>
+              <div>
+                <span>Spirit</span>
+                <strong id="statSpirit">3</strong>
+              </div>
+              <div>
+                <span>Gold</span>
+                <strong id="statGold">8</strong>
+              </div>
+            </div>
+          </section>
+
+          <section class="sheet-block">
+            <div class="sheet-heading">
+              <h2>Roll</h2>
+              <span id="lastRoll">d20 ready</span>
+            </div>
+            <div class="dice-row">
+              <div id="dieFace" class="die-face">20</div>
+              <button id="rollButton" type="button">Roll d20</button>
+            </div>
+          </section>
+
+          <section class="sheet-block">
+            <h2>Inventory</h2>
+            <ul id="inventoryList" class="token-list"></ul>
+          </section>
+
+          <section class="sheet-block">
+            <h2>Quest Log</h2>
+            <ol id="questLog" class="quest-log" aria-live="polite"></ol>
+          </section>
+        </aside>
+      </main>
+    </div>
+
+    <script src="game.js"></script>
+  </body>
+</html>

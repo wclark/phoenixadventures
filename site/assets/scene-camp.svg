@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">Ashfall Road camp placeholder</title>
+  <desc id="desc">A moonlit campfire on a road through dark pines.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#14201c" />
+      <stop offset="0.58" stop-color="#33201c" />
+      <stop offset="1" stop-color="#0f0d0c" />
+    </linearGradient>
+    <radialGradient id="fireGlow" cx="50%" cy="70%" r="34%">
+      <stop offset="0" stop-color="#f0c469" stop-opacity="0.85" />
+      <stop offset="0.24" stop-color="#b34d2f" stop-opacity="0.42" />
+      <stop offset="1" stop-color="#b34d2f" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <rect width="1280" height="720" fill="url(#sky)" />
+  <circle cx="998" cy="116" r="58" fill="#ead8b8" opacity="0.82" />
+  <circle cx="978" cy="100" r="58" fill="#14201c" opacity="0.72" />
+  <rect width="1280" height="720" fill="url(#fireGlow)" />
+  <path d="M0 542 C250 470 402 528 586 492 C820 446 980 500 1280 430 L1280 720 L0 720 Z" fill="#17110f" />
+  <path d="M608 720 C622 648 635 592 648 552 C665 602 680 658 698 720 Z" fill="#5f3d28" />
+  <path d="M639 555 C593 618 540 664 455 720 L814 720 C738 672 685 620 650 555 Z" fill="#211b1b" />
+  <path d="M150 514 L220 220 L290 514 Z M262 522 L336 160 L410 522 Z M900 480 L976 164 L1050 480 Z M1040 498 L1116 210 L1196 498 Z" fill="#101713" />
+  <path d="M160 560 C306 610 440 612 575 584 C688 560 760 585 864 622 C984 665 1110 660 1280 610 L1280 720 L0 720 L0 624 C46 596 92 575 160 560 Z" fill="#211b1b" />
+  <g transform="translate(616 512)">
+    <ellipse cx="24" cy="120" rx="150" ry="24" fill="#0b0808" opacity="0.55" />
+    <path d="M-42 120 L118 66 L132 86 L-24 140 Z" fill="#563420" />
+    <path d="M-34 78 L104 130 L88 148 L-50 96 Z" fill="#3e281c" />
+    <path d="M32 100 C-4 78 4 42 36 14 C37 52 66 60 66 92 C66 116 48 128 32 100 Z" fill="#f0c469" />
+    <path d="M26 112 C14 84 32 62 44 44 C44 73 62 82 58 106 C54 126 38 130 26 112 Z" fill="#b34d2f" />
+  </g>
+  <text x="48" y="646" fill="#ead8b8" font-family="Georgia, serif" font-size="36" opacity="0.72">Replace this image in site/assets</text>
+</svg>
