@@ -14,7 +14,7 @@
     "Items": [
       {
         "Id": "phoenixadventures-s3-website-origin",
-        "DomainName": "phoenixadventures.org.s3-website-us-east-1.amazonaws.com",
+        "DomainName": "phoenixadventures-org.s3-website-us-west-1.amazonaws.com",
         "OriginPath": "",
         "CustomHeaders": {
           "Quantity": 0

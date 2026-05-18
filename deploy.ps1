@@ -1,6 +1,7 @@
 param(
   [string]$Profile = "georgist-login",
-  [string]$Bucket = "phoenixadventures.org"
+  [string]$Bucket = "phoenixadventures-org",
+  [string]$Region = "us-west-1"
 )
 
 $ErrorActionPreference = "Stop"
@@ -14,4 +15,5 @@ if (-not (Test-Path $Aws)) {
 & $Aws s3 sync $SitePath "s3://$Bucket" `
   --delete `
   --profile $Profile `
+  --region $Region `
   --cache-control "public, max-age=300"
