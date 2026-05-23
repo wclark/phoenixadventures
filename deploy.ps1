@@ -24,7 +24,8 @@ $NoCacheFiles = @(
   @{ Local = "index.html"; ContentType = "text/html" },
   @{ Local = "adventure-data.js"; ContentType = "application/javascript" },
   @{ Local = "game.js"; ContentType = "application/javascript" },
-  @{ Local = "styles.css"; ContentType = "text/css" }
+  @{ Local = "styles.css"; ContentType = "text/css" },
+  @{ Local = "assets/scene-sracs-tavern.svg"; ContentType = "image/svg+xml" }
 )
 
 foreach ($File in $NoCacheFiles) {
