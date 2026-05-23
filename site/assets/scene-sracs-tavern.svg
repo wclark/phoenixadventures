@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
-  <title id="title">Phoenix Tavern, adapted from the SRACS exterior as fantasy scenery</title>
+  <title id="title">SRAC'S, adapted from the SRACS exterior as fantasy scenery</title>
   <desc id="desc">A low, single-story tavern with pale vertical siding, timber beams, porch railing, trees, lanterns, and a separate wagon yard at sunset.</desc>
   <defs>
     <linearGradient id="sky" x1="0" x2="1" y1="0" y2="1">
@@ -46,7 +46,7 @@
     <path d="M88 304 H720" stroke="#cbd8d2" stroke-width="5" />
     <g>
       <path d="M404 112 L506 112 L488 164 L422 164 Z" fill="#7d2e25" stroke="#211713" stroke-width="4" />
-      <text x="423" y="145" fill="#f7d477" font-family="Georgia, serif" font-size="25">Phoenix</text>
+      <text x="430" y="145" fill="#f7d477" font-family="Georgia, serif" font-size="25">SRAC'S</text>
       <path d="M382 112 H404 M506 112 H528" stroke="#211713" stroke-width="5" />
     </g>
     <g fill="#f0c469">

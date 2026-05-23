@@ -6,7 +6,8 @@ A dependency-free static adventure game skeleton for `phoenixadventures.org`.
 
 - `site/index.html` - game shell
 - `site/styles.css` - responsive interface styling
-- `site/game.js` - scene, dice, inventory, and save-state logic
+- `site/adventure-data.js` - editable scene, map, choice, and storyline data
+- `site/game.js` - reusable scene engine, internal dice checks, inventory, and save-state logic
 - `site/assets/` - replaceable art assets
 - `docs/art-direction.md` - source notes and fictionalization rules for the school-to-castle treatment
 - `deploy.ps1` - syncs the static site folder to S3

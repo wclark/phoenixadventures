@@ -18,7 +18,7 @@ This setting is inspired by public references for Rincon Valley Middle School an
 - Translate real-world cues into genre equivalents:
   - Shared campus becomes a walled ruin called Falconrise Keep.
   - Main school building masses become hall wings surrounding a central courtyard.
-  - The smaller SRACS building becomes Phoenix Tavern with a separate wagon yard.
+  - The smaller SRACS building becomes SRAC'S with a separate wagon yard.
   - Athletic grounds become a tournament track and overgrown commons.
   - Courts become cracked training yards.
   - Falcon identity becomes heraldry and carved stone motifs.
@@ -28,7 +28,7 @@ This setting is inspired by public references for Rincon Valley Middle School an
 ## Current Assets
 
 - `site/assets/campus-ruins-map.svg`
-- `site/assets/scene-phoenix-tavern.svg`
+- `site/assets/scene-sracs-tavern.svg`
 - `site/assets/scene-gatehouse.svg`
 - `site/assets/scene-courtyard.svg`
 - `site/assets/scene-tournament-grounds.svg`

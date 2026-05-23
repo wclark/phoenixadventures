@@ -55,6 +55,16 @@ button:hover {
   background: #f0c469;
 }
 
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.46;
+  transform: none;
+}
+
+button:disabled:hover {
+  transform: none;
+}
+
 button:focus-visible,
 input:focus-visible {
   outline: 3px solid rgba(215, 168, 73, 0.42);
@@ -205,7 +215,6 @@ input:focus-visible {
 .sheet-heading span,
 .name-field span,
 .stat-grid span,
-.quest-log,
 .token-list {
   color: var(--muted);
   font-size: 13px;
@@ -248,28 +257,7 @@ input:focus-visible {
   font-size: 24px;
 }
 
-.dice-row {
-  display: grid;
-  grid-template-columns: 82px 1fr;
-  gap: 12px;
-  align-items: stretch;
-}
-
-.die-face {
-  display: grid;
-  min-height: 74px;
-  place-items: center;
-  border: 1px solid rgba(215, 168, 73, 0.5);
-  border-radius: 8px;
-  color: var(--gold);
-  background: rgba(20, 16, 15, 0.64);
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 34px;
-  font-weight: 700;
-}
-
-.token-list,
-.quest-log {
+.token-list {
   margin: 12px 0 0;
   padding-left: 18px;
   line-height: 1.5;
@@ -289,10 +277,6 @@ input:focus-visible {
   padding: 6px 10px;
   color: var(--parchment);
   background: rgba(179, 77, 47, 0.16);
-}
-
-.quest-log li + li {
-  margin-top: 8px;
 }
 
 @media (max-width: 900px) {

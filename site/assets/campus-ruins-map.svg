@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
   <title id="title">Simplified fantasy campus map of Falconrise Keep</title>
-  <desc id="desc">A fictionalized, simplified map inspired by broad public campus geometry: a central courtyard, main hall wings, detached SRACS tavern and yard, athletic grounds, courts, and fields.</desc>
+  <desc id="desc">A fictionalized, simplified map inspired by broad public campus geometry: a central courtyard, main hall wings, detached SRAC'S tavern and yard, athletic grounds, courts, and fields.</desc>
   <defs>
     <radialGradient id="paperGlow" cx="50%" cy="42%" r="72%">
       <stop offset="0" stop-color="#efdca9" />
@@ -41,7 +41,7 @@
   <rect x="842" y="286" width="214" height="84" rx="10" fill="url(#cobbles)" stroke="#2d1d17" stroke-width="4" />
   <path d="M866 326 H1032" stroke="#50311f" stroke-width="5" stroke-dasharray="16 12" opacity="0.54" />
   <g fill="#2d1d17" font-family="Georgia, serif" font-size="18" opacity="0.88">
-    <text x="862" y="228">Phoenix Tavern</text>
+    <text x="884" y="228">SRAC'S</text>
     <text x="872" y="342">Wagon Yard</text>
   </g>
 

@@ -1,121 +1,341 @@
 const STORAGE_KEY = "phoenix-adventures-save";
-
-const scenes = {
-  camp: {
-    kicker: "Phoenix Tavern",
-    title: "The old charter hall is now a tavern at the edge of the keep.",
-    image: "assets/scene-phoenix-tavern.svg",
-    text:
-      "The low white hall has been reborn in timber, lantern light, and phoenix-red paint. Beyond its separate wagon yard, Falconrise Keep gathers around a central courtyard and a bell that should have fallen years ago.",
-    choices: [
-      { label: "Study the ruin map", next: "mapRoom", item: "Ruin Map", log: "Studied the map of Falconrise Keep." },
-      { label: "Enter the broken courtyard", next: "courtyard", log: "Passed beneath the falcon gate." },
-      { label: "Search the roadside shrine", next: "shrine", log: "Stopped at the roadside shrine." },
-      { label: "Question the hooded merchant", next: "merchant", log: "Shared a fire with the hooded merchant." },
-    ],
-  },
-  mapRoom: {
-    kicker: "Fictional Map",
-    title: "The keep follows the old campus bones.",
-    image: "assets/campus-ruins-map.svg",
-    text:
-      "The parchment simplifies the old grounds into adventure landmarks: main hall wings around a central courtyard, the detached Phoenix Tavern and wagon yard, training courts, ball fields, and a tournament track.",
-    choices: [
-      { label: "Mark the north hall", next: "ruins", log: "Marked the north hall on the ruin map." },
-      { label: "Mark the central courtyard", next: "courtyard", log: "Marked the central courtyard on the ruin map." },
-      { label: "Mark the tournament oval", next: "tournament", log: "Marked the tournament oval on the ruin map." },
-      { label: "Return to Phoenix Tavern", next: "camp" },
-    ],
-  },
-  ruins: {
-    kicker: "North Hall",
-    title: "A bronze bell swings without wind.",
-    image: "assets/scene-courtyard.svg",
-    text:
-      "Stone birds watch from a broken arcade. The bell rope is braided with red thread, and the dust beneath it has been disturbed by fresh tracks.",
-    choices: [
-      { label: "Pull the bell rope", next: "emberGate", stat: "spirit", target: 12 },
-      { label: "Track the fresh footprints", next: "tournament", stat: "wits", target: 10 },
-      { label: "Return to the map", next: "mapRoom" },
-    ],
-  },
-  courtyard: {
-    kicker: "Central Courtyard",
-    title: "Vines lace the courtyard stones like old spellwork.",
-    image: "assets/scene-courtyard.svg",
-    text:
-      "Long hall wings lean inward around a grass-grown court. The paving stones are split by amber weeds, and a carved falcon sigil glints from a fallen lintel.",
-    choices: [
-      { label: "Recover the falcon sigil", next: "courtyard", item: "Falcon Sigil", log: "Recovered a falcon sigil from Ash Court." },
-      { label: "Listen at the broken arcade", next: "ruins", stat: "wits", target: 11 },
-      { label: "Cross to the training yards", next: "tournament" },
-      { label: "Return to Phoenix Tavern", next: "camp" },
-    ],
-  },
-  shrine: {
-    kicker: "Roadside Shrine",
-    title: "An offering bowl glows under old ash.",
-    image: "assets/scene-phoenix-tavern.svg",
-    text:
-      "The shrine is cracked but warm to the touch. A phoenix sigil flashes once when you brush away the dust.",
-    choices: [
-      { label: "Take the ember charm", next: "camp", item: "Ember Charm", log: "Recovered an ember charm." },
-      { label: "Leave a gold coin", next: "camp", gold: -1, spirit: 1, log: "Left an offering at the shrine." },
-    ],
-  },
-  merchant: {
-    kicker: "Tavern Yard",
-    title: "The merchant knows the ruin by another name.",
-    image: "assets/scene-phoenix-tavern.svg",
-    text:
-      "He waits beside the wagon yard and calls the ruin Falconrise Keep. He will trade a charcoal-rubbed map for five gold, and his pack smells faintly of rain, iron, and cedar smoke.",
-    choices: [
-      { label: "Buy the map", next: "mapRoom", gold: -5, item: "Ruin Map", log: "Bought a map to Falconrise Keep." },
-      { label: "Decline and return to watch", next: "camp" },
-    ],
-  },
-  tournament: {
-    kicker: "Tournament Oval",
-    title: "The old athletic grounds have become a knight's arena.",
-    image: "assets/scene-tournament-grounds.svg",
-    text:
-      "The oval field is ringed by broken terraces and cracked training yards. Dry grass whispers underfoot, and ash feathers drift over the goal lines like black snow.",
-    choices: [
-      { label: "Pocket an ash feather", next: "tournament", item: "Ash Feather", log: "Found an ash feather in the tournament oval." },
-      { label: "Cross the cracked training yard", next: "emberGate", stat: "might", target: 13 },
-      { label: "Circle back to Ash Court", next: "courtyard" },
-      { label: "Return to the map", next: "mapRoom" },
-    ],
-  },
-  emberGate: {
-    kicker: "Cinderwake Threshold",
-    title: "The hidden gate opens like an eye.",
-    image: "assets/scene-tournament-grounds.svg",
-    text:
-      "Beyond the gate, red light pulses through a buried hall. This is where the first real encounter will live as the game grows.",
-    choices: [
-      { label: "Mark this place in the quest log", next: "camp", log: "Discovered the gate beneath Falconrise Keep." },
-      { label: "Rest beneath the falcon banners", next: "camp" },
-    ],
-  },
+const SCENE_ALIASES = {
+  camp: "sracs-tavern",
+  mapRoom: "ruin-map",
+  ruins: "north-hall",
+  courtyard: "central-courtyard",
+  shrine: "roadside-shrine",
+  merchant: "tavern-yard",
+  tournament: "tournament-grounds",
+  emberGate: "cinderwake-threshold",
 };
 
-const defaultState = {
-  heroName: "Ash",
-  level: 1,
-  scene: "camp",
-  lastRoll: null,
-  stats: {
-    might: 2,
-    wits: 2,
-    spirit: 3,
-    gold: 8,
-  },
-  inventory: ["Torch", "Travel Rations"],
-  log: ["Reached Ashfall Road."],
-};
+class Scene {
+  constructor(definition) {
+    this.id = definition.id;
+    this.mapNodeId = definition.mapNodeId;
+    this.kicker = definition.kicker;
+    this.title = definition.title;
+    this.image = definition.image;
+    this.imageAlt = definition.imageAlt || "";
+    this.text = definition.text;
+    this.choices = definition.choices || [];
+  }
+}
 
-let state = loadState();
+class Adventurer {
+  constructor(profile = {}) {
+    this.name = profile.name || "Ash";
+    this.level = Number(profile.level) || 1;
+    this.stats = {
+      might: 0,
+      wits: 0,
+      spirit: 0,
+      gold: 0,
+      ...(profile.stats || {}),
+    };
+    this.inventory = Array.isArray(profile.inventory) ? [...profile.inventory] : [];
+  }
+
+  applyEffects(effects = {}) {
+    this.applyStatDeltas(effects.statDeltas);
+    this.addItems(effects.addItems);
+    this.removeItems(effects.removeItems);
+  }
+
+  applyStatDeltas(statDeltas = {}) {
+    Object.entries(statDeltas).forEach(([stat, delta]) => {
+      const current = Number(this.stats[stat]) || 0;
+      const nextValue = current + Number(delta);
+      this.stats[stat] = stat === "gold" ? Math.max(0, nextValue) : nextValue;
+    });
+  }
+
+  addItems(items = []) {
+    items.forEach((item) => {
+      if (!this.inventory.includes(item)) {
+        this.inventory.push(item);
+      }
+    });
+  }
+
+  removeItems(items = []) {
+    if (items.length === 0) {
+      return;
+    }
+
+    this.inventory = this.inventory.filter((item) => !items.includes(item));
+  }
+
+  rollCheck(check) {
+    const sides = check.sides || 20;
+    const roll = Math.floor(Math.random() * sides) + 1;
+    const modifier = Number(this.stats[check.stat]) || 0;
+    const total = roll + modifier;
+
+    return {
+      stat: check.stat,
+      target: check.target,
+      roll,
+      modifier,
+      total,
+      success: total >= check.target,
+    };
+  }
+
+  requirementProblems(requirements = {}) {
+    const problems = [];
+    const missingItems = (requirements.items || []).filter((item) => !this.inventory.includes(item));
+
+    if (missingItems.length > 0) {
+      problems.push(`Needs ${missingItems.join(", ")}`);
+    }
+
+    Object.entries(requirements.stats || {}).forEach(([stat, minimum]) => {
+      if ((Number(this.stats[stat]) || 0) < Number(minimum)) {
+        problems.push(`Needs ${minimum} ${capitalize(stat)}`);
+      }
+    });
+
+    return problems;
+  }
+
+  toJSON() {
+    return {
+      name: this.name,
+      level: this.level,
+      stats: { ...this.stats },
+      inventory: [...this.inventory],
+    };
+  }
+}
+
+class Adventure {
+  constructor(definition) {
+    this.definition = definition;
+    this.title = definition.title;
+    this.startSceneId = definition.startSceneId;
+    this.openingHistory = definition.openingHistory || [];
+    this.playerTemplate = definition.player;
+    this.scenes = new Map((definition.scenes || []).map((scene) => [scene.id, new Scene(scene)]));
+  }
+
+  getScene(sceneId) {
+    return this.scenes.get(sceneId) || this.scenes.get(this.startSceneId);
+  }
+
+  createDefaultState() {
+    return {
+      sceneId: this.startSceneId,
+      player: new Adventurer(this.playerTemplate).toJSON(),
+      history: [...this.openingHistory],
+      internalRolls: [],
+    };
+  }
+
+  normalizeState(saved) {
+    if (!saved || typeof saved !== "object") {
+      return this.createDefaultState();
+    }
+
+    if (saved.scene || saved.stats) {
+      return this.normalizeLegacyState(saved);
+    }
+
+    const defaultState = this.createDefaultState();
+    const playerData = saved.player || {};
+
+    return {
+      ...defaultState,
+      sceneId: this.resolveSceneId(saved.sceneId),
+      player: new Adventurer({
+        name: playerData.name || defaultState.player.name,
+        level: playerData.level || defaultState.player.level,
+        stats: {
+          ...defaultState.player.stats,
+          ...(playerData.stats || {}),
+        },
+        inventory: Array.isArray(playerData.inventory) ? playerData.inventory : defaultState.player.inventory,
+      }).toJSON(),
+      history: Array.isArray(saved.history) ? saved.history : defaultState.history,
+      internalRolls: Array.isArray(saved.internalRolls) ? saved.internalRolls.slice(-30) : [],
+    };
+  }
+
+  normalizeLegacyState(saved) {
+    return {
+      sceneId: this.resolveSceneId(saved.scene),
+      player: new Adventurer({
+        name: saved.heroName || this.playerTemplate.name,
+        level: saved.level || this.playerTemplate.level,
+        stats: {
+          ...this.playerTemplate.stats,
+          ...(saved.stats || {}),
+        },
+        inventory: Array.isArray(saved.inventory) ? saved.inventory : this.playerTemplate.inventory,
+      }).toJSON(),
+      history: Array.isArray(saved.log) ? saved.log : [...this.openingHistory],
+      internalRolls: [],
+    };
+  }
+
+  resolveSceneId(sceneId) {
+    const resolvedSceneId = SCENE_ALIASES[sceneId] || sceneId;
+    return this.scenes.has(resolvedSceneId) ? resolvedSceneId : this.startSceneId;
+  }
+}
+
+class AdventureGame {
+  constructor(adventure, elements) {
+    this.adventure = adventure;
+    this.elements = elements;
+    this.state = this.loadState();
+  }
+
+  start() {
+    this.bindEvents();
+    this.render();
+  }
+
+  bindEvents() {
+    this.elements.heroName.addEventListener("input", () => {
+      const hero = new Adventurer(this.state.player);
+      hero.name = this.elements.heroName.value.trim() || this.adventure.playerTemplate.name;
+      this.state.player = hero.toJSON();
+      this.saveState();
+    });
+
+    this.elements.saveButton.addEventListener("click", () => {
+      this.saveState();
+      flashButton(this.elements.saveButton, "Saved");
+    });
+
+    this.elements.newGameButton.addEventListener("click", () => {
+      this.state = this.adventure.createDefaultState();
+      this.saveState();
+      this.render();
+    });
+  }
+
+  render() {
+    const scene = this.adventure.getScene(this.state.sceneId);
+    const hero = new Adventurer(this.state.player);
+
+    this.elements.sceneImage.src = scene.image;
+    this.elements.sceneImage.alt = scene.imageAlt;
+    this.elements.sceneKicker.textContent = scene.kicker;
+    this.elements.sceneTitle.textContent = scene.title;
+    this.elements.sceneText.textContent = scene.text;
+    this.elements.heroName.value = hero.name;
+    this.elements.heroLevel.textContent = `Level ${hero.level}`;
+    this.elements.statMight.textContent = hero.stats.might;
+    this.elements.statWits.textContent = hero.stats.wits;
+    this.elements.statSpirit.textContent = hero.stats.spirit;
+    this.elements.statGold.textContent = hero.stats.gold;
+
+    this.renderChoices(scene.choices, hero);
+    renderList(this.elements.inventoryList, hero.inventory);
+  }
+
+  renderChoices(choices, hero) {
+    this.elements.choiceList.replaceChildren(
+      ...choices.map((choice) => {
+        const button = document.createElement("button");
+        const problems = hero.requirementProblems(choice.requires);
+
+        button.type = "button";
+        button.textContent = choice.label;
+        button.disabled = problems.length > 0;
+        button.title = problems.join("; ");
+        button.addEventListener("click", () => this.choose(choice));
+
+        return button;
+      }),
+    );
+  }
+
+  choose(choice) {
+    const hero = new Adventurer(this.state.player);
+
+    if (hero.requirementProblems(choice.requires).length > 0) {
+      return;
+    }
+
+    let nextSceneId = choice.nextSceneId || this.state.sceneId;
+
+    if (choice.check) {
+      const result = hero.rollCheck(choice.check);
+      const outcome = result.success ? choice.check.success : choice.check.failure;
+
+      this.recordInternalRoll(choice, result);
+      hero.applyEffects(outcome?.effects);
+      this.recordHistory(outcome?.effects?.history);
+      nextSceneId = outcome?.nextSceneId || nextSceneId;
+    } else {
+      hero.applyEffects(choice.effects);
+      this.recordHistory(choice.effects?.history);
+    }
+
+    this.state.player = hero.toJSON();
+    this.state.sceneId = this.adventure.resolveSceneId(nextSceneId);
+    this.saveState();
+    this.render();
+  }
+
+  recordInternalRoll(choice, result) {
+    this.state.internalRolls = [
+      ...(this.state.internalRolls || []),
+      {
+        sceneId: this.state.sceneId,
+        choiceId: choice.id,
+        at: new Date().toISOString(),
+        ...result,
+      },
+    ].slice(-30);
+  }
+
+  recordHistory(entry) {
+    if (!entry) {
+      return;
+    }
+
+    this.state.history = [...(this.state.history || []), entry].slice(-50);
+  }
+
+  loadState() {
+    try {
+      return this.adventure.normalizeState(JSON.parse(localStorage.getItem(STORAGE_KEY)));
+    } catch {
+      return this.adventure.createDefaultState();
+    }
+  }
+
+  saveState() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
+  }
+}
+
+function renderList(list, values) {
+  list.replaceChildren(
+    ...values.map((value) => {
+      const item = document.createElement("li");
+      item.textContent = value;
+      return item;
+    }),
+  );
+}
+
+function flashButton(button, label) {
+  const original = button.textContent;
+  button.textContent = label;
+  window.setTimeout(() => {
+    button.textContent = original;
+  }, 900);
+}
+
+function capitalize(value) {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
 
 const elements = {
   sceneImage: document.querySelector("#sceneImage"),
@@ -129,171 +349,17 @@ const elements = {
   statWits: document.querySelector("#statWits"),
   statSpirit: document.querySelector("#statSpirit"),
   statGold: document.querySelector("#statGold"),
-  dieFace: document.querySelector("#dieFace"),
-  lastRoll: document.querySelector("#lastRoll"),
-  rollButton: document.querySelector("#rollButton"),
   saveButton: document.querySelector("#saveButton"),
   newGameButton: document.querySelector("#newGameButton"),
   inventoryList: document.querySelector("#inventoryList"),
-  questLog: document.querySelector("#questLog"),
 };
 
-elements.heroName.addEventListener("input", () => {
-  state.heroName = elements.heroName.value.trim() || "Ash";
-  saveState();
-});
+window.PhoenixAdventure = {
+  Adventure,
+  Adventurer,
+  AdventureGame,
+  Scene,
+};
 
-elements.rollButton.addEventListener("click", () => {
-  rollDie();
-  saveState();
-  render();
-});
-
-elements.saveButton.addEventListener("click", () => {
-  saveState();
-  flashButton(elements.saveButton, "Saved");
-});
-
-elements.newGameButton.addEventListener("click", () => {
-  state = clone(defaultState);
-  saveState();
-  render();
-});
-
-render();
-
-function render() {
-  const scene = scenes[state.scene] || scenes.camp;
-
-  elements.sceneImage.src = scene.image;
-  elements.sceneKicker.textContent = scene.kicker;
-  elements.sceneTitle.textContent = scene.title;
-  elements.sceneText.textContent = scene.text;
-  elements.heroName.value = state.heroName;
-  elements.heroLevel.textContent = `Level ${state.level}`;
-  elements.statMight.textContent = state.stats.might;
-  elements.statWits.textContent = state.stats.wits;
-  elements.statSpirit.textContent = state.stats.spirit;
-  elements.statGold.textContent = state.stats.gold;
-  elements.dieFace.textContent = state.lastRoll ?? "20";
-  elements.lastRoll.textContent = state.lastRoll ? `Last roll ${state.lastRoll}` : "d20 ready";
-
-  renderChoices(scene.choices);
-  renderList(elements.inventoryList, state.inventory);
-  renderLog();
-}
-
-function renderChoices(choices) {
-  elements.choiceList.replaceChildren(
-    ...choices.map((choice) => {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.textContent = choice.label;
-      button.addEventListener("click", () => choose(choice));
-      return button;
-    }),
-  );
-}
-
-function renderList(list, values) {
-  list.replaceChildren(
-    ...values.map((value) => {
-      const item = document.createElement("li");
-      item.textContent = value;
-      return item;
-    }),
-  );
-}
-
-function renderLog() {
-  elements.questLog.replaceChildren(
-    ...state.log.slice(-5).map((entry) => {
-      const item = document.createElement("li");
-      item.textContent = entry;
-      return item;
-    }),
-  );
-}
-
-function choose(choice) {
-  const result = choice.stat ? resolveCheck(choice.stat, choice.target) : null;
-
-  if (result) {
-    state.log.push(
-      `${capitalize(choice.stat)} check ${result.total} vs ${choice.target}: ${result.success ? "success" : "setback"}.`,
-    );
-  }
-
-  if (!result || result.success) {
-    applyChoiceRewards(choice);
-    state.scene = choice.next;
-  } else {
-    state.stats.gold = Math.max(0, state.stats.gold - 1);
-    state.log.push("The attempt costs time and a little coin.");
-  }
-
-  saveState();
-  render();
-}
-
-function resolveCheck(stat, target) {
-  const roll = rollDie();
-  const total = roll + state.stats[stat];
-  return {
-    roll,
-    total,
-    success: total >= target,
-  };
-}
-
-function rollDie() {
-  state.lastRoll = Math.floor(Math.random() * 20) + 1;
-  return state.lastRoll;
-}
-
-function applyChoiceRewards(choice) {
-  if (choice.item && !state.inventory.includes(choice.item)) {
-    state.inventory.push(choice.item);
-  }
-
-  if (choice.gold) {
-    state.stats.gold = Math.max(0, state.stats.gold + choice.gold);
-  }
-
-  if (choice.spirit) {
-    state.stats.spirit += choice.spirit;
-  }
-
-  if (choice.log) {
-    state.log.push(choice.log);
-  }
-}
-
-function loadState() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    return saved ? { ...clone(defaultState), ...saved, stats: { ...defaultState.stats, ...saved.stats } } : clone(defaultState);
-  } catch {
-    return clone(defaultState);
-  }
-}
-
-function saveState() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-}
-
-function flashButton(button, label) {
-  const original = button.textContent;
-  button.textContent = label;
-  window.setTimeout(() => {
-    button.textContent = original;
-  }, 900);
-}
-
-function clone(value) {
-  return JSON.parse(JSON.stringify(value));
-}
-
-function capitalize(value) {
-  return value.charAt(0).toUpperCase() + value.slice(1);
-}
+const game = new AdventureGame(new Adventure(window.PHOENIX_ADVENTURE), elements);
+game.start();
