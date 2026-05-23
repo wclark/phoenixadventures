@@ -96,8 +96,8 @@ window.PHOENIX_ADVENTURE = {
       mapNodeId: "sracs-tavern",
       kicker: "SRAC'S",
       title: "The charter hall is now a tavern at the edge of the keep.",
-      image: "assets/scene-sracs-tavern.svg",
-      imageAlt: "A low fantasy tavern with pale siding, timber beams, lanterns, trees, and a separate wagon yard at sunset.",
+      image: "assets/scene-sracs-tavern.png",
+      imageAlt: "SRAC'S tavern, a long fantasy tavern with lantern-lit windows, purple doors, trees, a white fence, and storm clouds overhead.",
       text:
         "The low white hall has been reborn in timber, lantern light, and phoenix-red paint. Beyond its separate wagon yard, Falconrise Keep gathers around a central courtyard and a bell that should have fallen years ago.",
       choices: [
@@ -321,8 +321,8 @@ window.PHOENIX_ADVENTURE = {
       mapNodeId: "sracs-tavern",
       kicker: "Tavern Yard",
       title: "The merchant knows the ruin by another name.",
-      image: "assets/scene-sracs-tavern.svg",
-      imageAlt: "The SRAC'S tavern yard with wagons, lanterns, trees, and warm sunset light.",
+      image: "assets/scene-sracs-tavern.png",
+      imageAlt: "The SRAC'S tavern exterior with glowing windows, trees, cobblestones, and a sign over the right entrance.",
       text:
         "He waits beside the wagon yard and calls the ruin Falconrise Keep. He will trade a charcoal-rubbed map for five gold, and his pack smells faintly of rain, iron, and cedar smoke.",
       choices: [

@@ -28,6 +28,7 @@ This setting is inspired by public references for Rincon Valley Middle School an
 ## Current Assets
 
 - `site/assets/campus-ruins-map.svg`
+- `site/assets/scene-sracs-tavern.png`
 - `site/assets/scene-sracs-tavern.svg`
 - `site/assets/scene-gatehouse.svg`
 - `site/assets/scene-courtyard.svg`
