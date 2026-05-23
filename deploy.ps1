@@ -1,5 +1,5 @@
 param(
-  [string]$Profile = "georgist-login",
+  [string]$Profile = "personal-sites",
   [string]$Bucket = "phoenixadventures-org",
   [string]$Region = "us-west-1"
 )

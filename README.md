@@ -19,14 +19,15 @@ Open `site/index.html` in a browser. No build step is required.
 ## Deploy
 
 ```powershell
-.\deploy.ps1 -Profile georgist-login
+aws login --profile personal-sites
+.\deploy.ps1
 ```
 
 The deploy script syncs only the `site/` folder to `s3://phoenixadventures-org`.
 
 ## AWS resources
 
-- AWS profile: `georgist-login`
+- AWS profile: `personal-sites`
 - Region: `us-west-1`
 - Hosted zone: `Z06866673H2QKV8JHQJ8W`
 - Site bucket: `s3://phoenixadventures-org`

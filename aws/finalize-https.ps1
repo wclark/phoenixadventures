@@ -1,5 +1,5 @@
 param(
-  [string]$Profile = "georgist-login",
+  [string]$Profile = "personal-sites",
   [string]$HostedZoneId = "Z06866673H2QKV8JHQJ8W",
   [string]$DistributionId = "E3M9M426SCMIS4",
   [string]$CertificateArn = "arn:aws:acm:us-east-1:645377689567:certificate/45f1f007-3ff8-4bf9-a6d8-33dd15c294e2",
