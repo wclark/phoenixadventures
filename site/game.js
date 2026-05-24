@@ -276,6 +276,12 @@ class AdventureGame {
     this.elements.statDexterity.textContent = hero.stats.dexterity;
     this.elements.statConstitution.textContent = hero.stats.constitution;
     this.elements.statCharisma.textContent = hero.stats.charisma;
+    this.elements.modStrength.textContent = formatModifier(abilityModifier(hero.stats.strength));
+    this.elements.modIntelligence.textContent = formatModifier(abilityModifier(hero.stats.intelligence));
+    this.elements.modWisdom.textContent = formatModifier(abilityModifier(hero.stats.wisdom));
+    this.elements.modDexterity.textContent = formatModifier(abilityModifier(hero.stats.dexterity));
+    this.elements.modConstitution.textContent = formatModifier(abilityModifier(hero.stats.constitution));
+    this.elements.modCharisma.textContent = formatModifier(abilityModifier(hero.stats.charisma));
     this.elements.armorClass.textContent = hero.armorClass;
     this.elements.hitPoints.textContent = `${hero.hitPoints.current}/${hero.hitPoints.max}`;
     this.elements.statGold.textContent = hero.stats.gold;
@@ -409,6 +415,10 @@ function abilityModifier(score) {
   return Math.floor((Number(score) - 10) / 2);
 }
 
+function formatModifier(modifier) {
+  return `${modifier >= 0 ? "+" : ""}${modifier}`;
+}
+
 function calculateArmorClass(dexterity) {
   return 10 + abilityModifier(dexterity);
 }
@@ -451,6 +461,12 @@ const elements = {
   statDexterity: document.querySelector("#statDexterity"),
   statConstitution: document.querySelector("#statConstitution"),
   statCharisma: document.querySelector("#statCharisma"),
+  modStrength: document.querySelector("#modStrength"),
+  modIntelligence: document.querySelector("#modIntelligence"),
+  modWisdom: document.querySelector("#modWisdom"),
+  modDexterity: document.querySelector("#modDexterity"),
+  modConstitution: document.querySelector("#modConstitution"),
+  modCharisma: document.querySelector("#modCharisma"),
   armorClass: document.querySelector("#armorClass"),
   hitPoints: document.querySelector("#hitPoints"),
   statGold: document.querySelector("#statGold"),

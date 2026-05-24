@@ -236,18 +236,55 @@ input:focus-visible {
   background: rgba(20, 16, 15, 0.7);
 }
 
+.sheet-stat-area {
+  display: grid;
+  grid-template-columns: 122px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  margin-top: 14px;
+}
+
 .attribute-list,
 .vital-list {
   display: grid;
   gap: 8px;
-  margin-top: 14px;
 }
 
-.vital-list {
-  margin-top: 10px;
+.attribute-list {
+  width: 122px;
 }
 
-.attribute-list div,
+.attribute-list div {
+  display: grid;
+  min-height: 82px;
+  justify-items: center;
+  gap: 3px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 8px 6px;
+  text-align: center;
+  background: rgba(20, 16, 15, 0.58);
+}
+
+.attribute-list span {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  line-height: 1.12;
+}
+
+.attribute-list strong {
+  color: var(--gold);
+  font-size: 27px;
+  line-height: 1;
+}
+
+.attribute-list small {
+  color: #d8c7a7;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+
 .vital-list div {
   display: flex;
   min-height: 48px;
@@ -260,7 +297,6 @@ input:focus-visible {
   background: rgba(20, 16, 15, 0.58);
 }
 
-.attribute-list strong,
 .vital-list strong {
   color: var(--gold);
   font-size: 22px;
@@ -327,8 +363,15 @@ input:focus-visible {
     padding: 14px 16px 18px;
   }
 
-  .attribute-list div,
-  .vital-list div {
-    min-height: 46px;
+  .sheet-stat-area {
+    grid-template-columns: 112px minmax(0, 1fr);
+  }
+
+  .attribute-list {
+    width: 112px;
+  }
+
+  .attribute-list div {
+    min-height: 76px;
   }
 }
