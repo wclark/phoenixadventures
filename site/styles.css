@@ -214,7 +214,8 @@ input:focus-visible {
 
 .sheet-heading span,
 .name-field span,
-.stat-grid span,
+.attribute-list span,
+.vital-list span,
 .token-list {
   color: var(--muted);
   font-size: 13px;
@@ -235,26 +236,35 @@ input:focus-visible {
   background: rgba(20, 16, 15, 0.7);
 }
 
-.stat-grid {
+.attribute-list,
+.vital-list {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
   margin-top: 14px;
 }
 
-.stat-grid div {
-  min-height: 70px;
+.vital-list {
+  margin-top: 10px;
+}
+
+.attribute-list div,
+.vital-list div {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
   border: 1px solid var(--line);
   border-radius: 6px;
-  padding: 10px;
+  padding: 9px 11px;
   background: rgba(20, 16, 15, 0.58);
 }
 
-.stat-grid strong {
-  display: block;
-  margin-top: 6px;
+.attribute-list strong,
+.vital-list strong {
   color: var(--gold);
-  font-size: 24px;
+  font-size: 22px;
+  line-height: 1;
 }
 
 .token-list {
@@ -317,7 +327,8 @@ input:focus-visible {
     padding: 14px 16px 18px;
   }
 
-  .stat-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .attribute-list div,
+  .vital-list div {
+    min-height: 46px;
   }
 }

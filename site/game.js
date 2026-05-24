@@ -1,4 +1,10 @@
 const STORAGE_KEY = "phoenix-adventures-save";
+const ATTRIBUTE_KEYS = ["strength", "intelligence", "wisdom", "dexterity", "constitution", "charisma"];
+const LEGACY_STAT_MAP = {
+  might: "strength",
+  wits: "wisdom",
+  spirit: "wisdom",
+};
 const SCENE_ALIASES = {
   camp: "sracs-tavern",
   mapRoom: "ruin-map",
@@ -25,30 +31,52 @@ class Scene {
 
 class Adventurer {
   constructor(profile = {}) {
+    const incomingStats = profile.stats || {};
+    const rolledStats = rollAbilityScores();
+
     this.name = profile.name || "Ash";
-    this.level = Number(profile.level) || 1;
-    this.stats = {
-      might: 0,
-      wits: 0,
-      spirit: 0,
-      gold: 0,
-      ...(profile.stats || {}),
-    };
+    this.level = readNumber(profile.level, 1);
+    this.stats = ATTRIBUTE_KEYS.reduce((stats, attribute) => {
+      stats[attribute] = readNumber(incomingStats[attribute], rolledStats[attribute]);
+      return stats;
+    }, {});
+    this.stats.gold = readNumber(incomingStats.gold ?? profile.gold, 0);
+    this.armorClass = readNumber(profile.armorClass, calculateArmorClass(this.stats.dexterity));
+    this.hitPoints = normalizeHitPoints(profile.hitPoints, this.stats.constitution);
     this.inventory = Array.isArray(profile.inventory) ? [...profile.inventory] : [];
   }
 
   applyEffects(effects = {}) {
     this.applyStatDeltas(effects.statDeltas);
+    this.applyHitPointDelta(effects.hitPointDelta);
+    this.applyArmorClassDelta(effects.armorClassDelta);
     this.addItems(effects.addItems);
     this.removeItems(effects.removeItems);
   }
 
   applyStatDeltas(statDeltas = {}) {
     Object.entries(statDeltas).forEach(([stat, delta]) => {
-      const current = Number(this.stats[stat]) || 0;
+      const normalizedStat = LEGACY_STAT_MAP[stat] || stat;
+      const current = Number(this.stats[normalizedStat]) || 0;
       const nextValue = current + Number(delta);
-      this.stats[stat] = stat === "gold" ? Math.max(0, nextValue) : nextValue;
+      this.stats[normalizedStat] = normalizedStat === "gold" ? Math.max(0, nextValue) : nextValue;
     });
+  }
+
+  applyHitPointDelta(delta) {
+    if (!Number.isFinite(Number(delta))) {
+      return;
+    }
+
+    this.hitPoints.current = clamp(this.hitPoints.current + Number(delta), 0, this.hitPoints.max);
+  }
+
+  applyArmorClassDelta(delta) {
+    if (!Number.isFinite(Number(delta))) {
+      return;
+    }
+
+    this.armorClass += Number(delta);
   }
 
   addItems(items = []) {
@@ -68,13 +96,14 @@ class Adventurer {
   }
 
   rollCheck(check) {
+    const stat = LEGACY_STAT_MAP[check.stat] || check.stat;
     const sides = check.sides || 20;
     const roll = Math.floor(Math.random() * sides) + 1;
-    const modifier = Number(this.stats[check.stat]) || 0;
+    const modifier = this.checkModifier(stat);
     const total = roll + modifier;
 
     return {
-      stat: check.stat,
+      stat,
       target: check.target,
       roll,
       modifier,
@@ -92,12 +121,17 @@ class Adventurer {
     }
 
     Object.entries(requirements.stats || {}).forEach(([stat, minimum]) => {
-      if ((Number(this.stats[stat]) || 0) < Number(minimum)) {
-        problems.push(`Needs ${minimum} ${capitalize(stat)}`);
+      const normalizedStat = LEGACY_STAT_MAP[stat] || stat;
+      if ((Number(this.stats[normalizedStat]) || 0) < Number(minimum)) {
+        problems.push(`Needs ${minimum} ${formatStatLabel(normalizedStat)}`);
       }
     });
 
     return problems;
+  }
+
+  checkModifier(stat) {
+    return ATTRIBUTE_KEYS.includes(stat) ? abilityModifier(this.stats[stat]) : Number(this.stats[stat]) || 0;
   }
 
   toJSON() {
@@ -105,6 +139,8 @@ class Adventurer {
       name: this.name,
       level: this.level,
       stats: { ...this.stats },
+      armorClass: this.armorClass,
+      hitPoints: { ...this.hitPoints },
       inventory: [...this.inventory],
     };
   }
@@ -155,6 +191,8 @@ class Adventure {
           ...defaultState.player.stats,
           ...(playerData.stats || {}),
         },
+        armorClass: playerData.armorClass,
+        hitPoints: playerData.hitPoints,
         inventory: Array.isArray(playerData.inventory) ? playerData.inventory : defaultState.player.inventory,
       }).toJSON(),
       history: Array.isArray(saved.history) ? saved.history : defaultState.history,
@@ -169,9 +207,12 @@ class Adventure {
         name: saved.heroName || this.playerTemplate.name,
         level: saved.level || this.playerTemplate.level,
         stats: {
-          ...this.playerTemplate.stats,
+          ...(this.playerTemplate.stats || {}),
+          ...migrateLegacyStats(saved.stats || {}),
           ...(saved.stats || {}),
         },
+        armorClass: saved.armorClass,
+        hitPoints: saved.hitPoints,
         inventory: Array.isArray(saved.inventory) ? saved.inventory : this.playerTemplate.inventory,
       }).toJSON(),
       history: Array.isArray(saved.log) ? saved.log : [...this.openingHistory],
@@ -194,6 +235,7 @@ class AdventureGame {
 
   start() {
     this.bindEvents();
+    this.saveState();
     this.render();
   }
 
@@ -228,9 +270,14 @@ class AdventureGame {
     this.elements.sceneText.textContent = scene.text;
     this.elements.heroName.value = hero.name;
     this.elements.heroLevel.textContent = `Level ${hero.level}`;
-    this.elements.statMight.textContent = hero.stats.might;
-    this.elements.statWits.textContent = hero.stats.wits;
-    this.elements.statSpirit.textContent = hero.stats.spirit;
+    this.elements.statStrength.textContent = hero.stats.strength;
+    this.elements.statIntelligence.textContent = hero.stats.intelligence;
+    this.elements.statWisdom.textContent = hero.stats.wisdom;
+    this.elements.statDexterity.textContent = hero.stats.dexterity;
+    this.elements.statConstitution.textContent = hero.stats.constitution;
+    this.elements.statCharisma.textContent = hero.stats.charisma;
+    this.elements.armorClass.textContent = hero.armorClass;
+    this.elements.hitPoints.textContent = `${hero.hitPoints.current}/${hero.hitPoints.max}`;
     this.elements.statGold.textContent = hero.stats.gold;
 
     this.renderChoices(scene.choices, hero);
@@ -337,6 +384,59 @@ function capitalize(value) {
   return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
+function formatStatLabel(value) {
+  return value
+    .split(/(?=[A-Z])|-/)
+    .map((part) => capitalize(part))
+    .join(" ");
+}
+
+function rollAbilityScores() {
+  return ATTRIBUTE_KEYS.reduce((stats, attribute) => {
+    stats[attribute] = rollAbilityScore();
+    return stats;
+  }, {});
+}
+
+function rollAbilityScore() {
+  return Array.from({ length: 4 }, () => Math.floor(Math.random() * 6) + 1)
+    .sort((a, b) => b - a)
+    .slice(0, 3)
+    .reduce((total, roll) => total + roll, 0);
+}
+
+function abilityModifier(score) {
+  return Math.floor((Number(score) - 10) / 2);
+}
+
+function calculateArmorClass(dexterity) {
+  return 10 + abilityModifier(dexterity);
+}
+
+function normalizeHitPoints(hitPoints, constitution) {
+  const max = readNumber(hitPoints?.max, Math.max(1, 8 + abilityModifier(constitution)));
+  const current = clamp(readNumber(hitPoints?.current, max), 0, max);
+
+  return { current, max };
+}
+
+function migrateLegacyStats(stats = {}) {
+  return Object.entries(LEGACY_STAT_MAP).reduce((migrated, [legacyStat, nextStat]) => {
+    if (Number.isFinite(Number(stats[legacyStat])) && !Number.isFinite(Number(stats[nextStat]))) {
+      migrated[nextStat] = 10 + Number(stats[legacyStat]);
+    }
+    return migrated;
+  }, {});
+}
+
+function readNumber(value, fallback) {
+  return Number.isFinite(Number(value)) ? Number(value) : fallback;
+}
+
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
 const elements = {
   sceneImage: document.querySelector("#sceneImage"),
   sceneKicker: document.querySelector("#sceneKicker"),
@@ -345,9 +445,14 @@ const elements = {
   choiceList: document.querySelector("#choiceList"),
   heroName: document.querySelector("#heroName"),
   heroLevel: document.querySelector("#heroLevel"),
-  statMight: document.querySelector("#statMight"),
-  statWits: document.querySelector("#statWits"),
-  statSpirit: document.querySelector("#statSpirit"),
+  statStrength: document.querySelector("#statStrength"),
+  statIntelligence: document.querySelector("#statIntelligence"),
+  statWisdom: document.querySelector("#statWisdom"),
+  statDexterity: document.querySelector("#statDexterity"),
+  statConstitution: document.querySelector("#statConstitution"),
+  statCharisma: document.querySelector("#statCharisma"),
+  armorClass: document.querySelector("#armorClass"),
+  hitPoints: document.querySelector("#hitPoints"),
   statGold: document.querySelector("#statGold"),
   saveButton: document.querySelector("#saveButton"),
   newGameButton: document.querySelector("#newGameButton"),

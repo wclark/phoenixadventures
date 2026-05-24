@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Phoenix Adventures</title>
-    <link rel="stylesheet" href="styles.css?v=20260523-2" />
+    <link rel="stylesheet" href="styles.css?v=20260524-1" />
   </head>
   <body>
     <div class="app-shell">
@@ -40,18 +40,40 @@
               <span>Name</span>
               <input id="heroName" maxlength="28" value="Ash" />
             </label>
-            <div class="stat-grid" aria-label="Character stats">
+            <div class="attribute-list" aria-label="Character attributes">
               <div>
-                <span>Might</span>
-                <strong id="statMight">2</strong>
+                <span>Strength</span>
+                <strong id="statStrength">10</strong>
               </div>
               <div>
-                <span>Wits</span>
-                <strong id="statWits">2</strong>
+                <span>Intelligence</span>
+                <strong id="statIntelligence">10</strong>
               </div>
               <div>
-                <span>Spirit</span>
-                <strong id="statSpirit">3</strong>
+                <span>Wisdom</span>
+                <strong id="statWisdom">10</strong>
+              </div>
+              <div>
+                <span>Dexterity</span>
+                <strong id="statDexterity">10</strong>
+              </div>
+              <div>
+                <span>Constitution</span>
+                <strong id="statConstitution">10</strong>
+              </div>
+              <div>
+                <span>Charisma</span>
+                <strong id="statCharisma">10</strong>
+              </div>
+            </div>
+            <div class="vital-list" aria-label="Combat stats">
+              <div>
+                <span>Armor Class</span>
+                <strong id="armorClass">10</strong>
+              </div>
+              <div>
+                <span>Hit Points</span>
+                <strong id="hitPoints">8/8</strong>
               </div>
               <div>
                 <span>Gold</span>
@@ -68,7 +90,7 @@
       </main>
     </div>
 
-    <script src="adventure-data.js?v=20260523-2"></script>
-    <script src="game.js?v=20260523-2"></script>
+    <script src="adventure-data.js?v=20260524-1"></script>
+    <script src="game.js?v=20260524-1"></script>
   </body>
 </html>

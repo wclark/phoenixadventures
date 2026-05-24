@@ -8,9 +8,12 @@
 
 /**
  * @typedef {Object} StatBlock
- * @property {number} might
- * @property {number} wits
- * @property {number} spirit
+ * @property {number} strength
+ * @property {number} intelligence
+ * @property {number} wisdom
+ * @property {number} dexterity
+ * @property {number} constitution
+ * @property {number} charisma
  * @property {number} gold
  */
 
@@ -19,6 +22,8 @@
  * @property {string[]=} addItems
  * @property {string[]=} removeItems
  * @property {Partial<StatBlock>=} statDeltas
+ * @property {number=} hitPointDelta
+ * @property {number=} armorClassDelta
  * @property {string=} history
  */
 
@@ -30,7 +35,7 @@
 
 /**
  * @typedef {Object} ChoiceCheck
- * @property {"might"|"wits"|"spirit"} stat
+ * @property {"strength"|"intelligence"|"wisdom"|"dexterity"|"constitution"|"charisma"} stat
  * @property {number} target
  * @property {number=} sides
  * @property {ChoiceCheckOutcome=} success
@@ -73,9 +78,6 @@ window.PHOENIX_ADVENTURE = {
     name: "Ash",
     level: 1,
     stats: {
-      might: 2,
-      wits: 2,
-      spirit: 3,
       gold: 8,
     },
     inventory: ["Torch", "Travel Rations"],
@@ -191,7 +193,7 @@ window.PHOENIX_ADVENTURE = {
           id: "pull-bell-rope",
           label: "Pull the bell rope",
           check: {
-            stat: "spirit",
+            stat: "wisdom",
             target: 12,
             success: {
               nextSceneId: "cinderwake-threshold",
@@ -212,7 +214,7 @@ window.PHOENIX_ADVENTURE = {
           id: "track-footprints",
           label: "Track the fresh footprints",
           check: {
-            stat: "wits",
+            stat: "wisdom",
             target: 10,
             success: {
               nextSceneId: "tournament-grounds",
@@ -258,7 +260,7 @@ window.PHOENIX_ADVENTURE = {
           id: "listen-at-arcade",
           label: "Listen at the broken arcade",
           check: {
-            stat: "wits",
+            stat: "wisdom",
             target: 11,
             success: {
               nextSceneId: "north-hall",
@@ -310,7 +312,7 @@ window.PHOENIX_ADVENTURE = {
           label: "Leave a gold coin",
           nextSceneId: "sracs-tavern",
           effects: {
-            statDeltas: { gold: -1, spirit: 1 },
+            statDeltas: { gold: -1, wisdom: 1 },
             history: "Left an offering at the shrine.",
           },
         },
@@ -360,7 +362,7 @@ window.PHOENIX_ADVENTURE = {
           id: "inspect-spears",
           label: "Inspect the broken spear rack",
           check: {
-            stat: "might",
+            stat: "strength",
             target: 11,
             success: {
               nextSceneId: "training-courts",
@@ -412,7 +414,7 @@ window.PHOENIX_ADVENTURE = {
           id: "cross-training-yard",
           label: "Cross the cracked training yard",
           check: {
-            stat: "might",
+            stat: "strength",
             target: 13,
             success: {
               nextSceneId: "cinderwake-threshold",
