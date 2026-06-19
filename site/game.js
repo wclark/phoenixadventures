@@ -1,5 +1,6 @@
 const STORAGE_KEY = "phoenix-adventures-save";
-const TRACKING_VERSION = "20260619-1";
+const TRACKING_VERSION = "20260619-2";
+const STATE_VERSION = "builder-20260619-2";
 const ATTRIBUTE_KEYS = ["strength", "intelligence", "wisdom", "dexterity", "constitution", "charisma"];
 const LEGACY_STAT_MAP = {
   might: "strength",
@@ -16,6 +17,7 @@ class Scene {
     this.image = definition.image;
     this.imageAlt = definition.imageAlt || "";
     this.text = definition.text;
+    this.builder = definition.builder || "";
     this.choices = definition.choices || [];
   }
 }
@@ -26,38 +28,130 @@ class Adventurer {
 
     this.name = profile.name || "";
     this.level = readNumber(profile.level, 1);
+    this.raceKey = profile.raceKey || inferDefinitionKey("races", profile.race, profile.origin);
+    this.backgroundKey = profile.backgroundKey || inferDefinitionKey("backgrounds", profile.background);
+    this.classKey = profile.classKey || inferDefinitionKey("classes", profile.className);
+    this.race = profile.race || "";
+    this.origin = profile.origin || "";
+    this.background = profile.background || "";
+    this.className = profile.className || "";
+    this.abilityPool = normalizeAbilityPool(profile.abilityPool);
+    this.baseScores = ATTRIBUTE_KEYS.reduce((scores, attribute) => {
+      scores[attribute] = readNullableNumber(profile.baseScores?.[attribute]);
+      return scores;
+    }, {});
     this.stats = ATTRIBUTE_KEYS.reduce((stats, attribute) => {
       stats[attribute] = readNullableNumber(incomingStats[attribute]);
       return stats;
     }, {});
     this.stats.gold = readNumber(incomingStats.gold ?? profile.gold, 0);
-    this.race = profile.race || "";
-    this.origin = profile.origin || "";
-    this.background = profile.background || "";
-    this.className = profile.className || "";
     this.spells = Array.isArray(profile.spells) ? [...profile.spells] : [];
     this.provisions = Array.isArray(profile.provisions) ? [...profile.provisions] : [];
     this.instrument = profile.instrument || "";
     this.armor = profile.armor || "";
     this.weapon = profile.weapon || "";
     this.armorClass = readNullableNumber(profile.armorClass);
-    this.hitPoints = normalizeHitPoints(profile.hitPoints, this.stats.constitution);
+    this.hitPoints = {
+      current: readNullableNumber(profile.hitPoints?.current),
+      max: readNullableNumber(profile.hitPoints?.max),
+    };
     this.inventory = Array.isArray(profile.inventory) ? [...profile.inventory] : [];
 
-    this.refreshDerivedVitals();
+    this.syncDefinitionLabels();
+    this.refreshFinalScores();
+  }
+
+  get raceDefinition() {
+    return getDefinition("races", this.raceKey);
+  }
+
+  get backgroundDefinition() {
+    return getDefinition("backgrounds", this.backgroundKey);
+  }
+
+  get classDefinition() {
+    return getDefinition("classes", this.classKey);
+  }
+
+  syncDefinitionLabels() {
+    if (this.raceDefinition) {
+      this.race = this.raceDefinition.name;
+      this.origin = this.raceDefinition.origin;
+    }
+
+    if (this.backgroundDefinition) {
+      this.background = this.backgroundDefinition.name;
+    }
+
+    if (this.classDefinition) {
+      this.className = this.classDefinition.name;
+    }
+  }
+
+  hasAbilityPool() {
+    return this.abilityPool.length === ATTRIBUTE_KEYS.length;
+  }
+
+  hasAssignedBaseScores() {
+    return ATTRIBUTE_KEYS.every((attribute) => Number.isFinite(this.baseScores[attribute]));
   }
 
   hasAbilityScores() {
     return ATTRIBUTE_KEYS.every((attribute) => Number.isFinite(this.stats[attribute]));
   }
 
-  rollAbilities() {
-    this.stats = {
-      ...this.stats,
-      ...rollAbilityScores(),
-    };
-    this.armorClass = calculateArmorClass(this.stats.dexterity);
-    this.hitPoints = normalizeHitPoints(null, this.stats.constitution);
+  raceBonus(attribute) {
+    return readNumber(this.raceDefinition?.abilityBonuses?.[attribute], 0);
+  }
+
+  raceBonusEntries() {
+    return ATTRIBUTE_KEYS.map((attribute) => [attribute, this.raceBonus(attribute)]).filter(([, bonus]) => bonus !== 0);
+  }
+
+  rollAbilityPool() {
+    this.abilityPool = rollAbilityPool();
+    this.clearAbilityScores();
+  }
+
+  clearAbilityScores() {
+    ATTRIBUTE_KEYS.forEach((attribute) => {
+      this.baseScores[attribute] = null;
+      this.stats[attribute] = null;
+    });
+    this.armorClass = null;
+    this.hitPoints = { current: null, max: null };
+  }
+
+  assignBaseScores(assignments) {
+    const assignedValues = ATTRIBUTE_KEYS.map((attribute) => Number(assignments[attribute]));
+
+    if (!this.hasAbilityPool() || assignedValues.some((value) => !Number.isFinite(value))) {
+      return false;
+    }
+
+    if (!matchesScorePool(assignedValues, this.abilityPool)) {
+      return false;
+    }
+
+    ATTRIBUTE_KEYS.forEach((attribute) => {
+      this.baseScores[attribute] = Number(assignments[attribute]);
+    });
+    this.refreshFinalScores();
+    return true;
+  }
+
+  refreshFinalScores() {
+    ATTRIBUTE_KEYS.forEach((attribute) => {
+      const baseScore = this.baseScores[attribute];
+
+      if (Number.isFinite(baseScore)) {
+        this.stats[attribute] = baseScore + this.raceBonus(attribute);
+      } else {
+        this.stats[attribute] = readNullableNumber(this.stats[attribute]);
+      }
+    });
+
+    this.refreshDerivedVitals();
   }
 
   refreshDerivedVitals() {
@@ -68,7 +162,7 @@ class Adventurer {
     }
 
     this.armorClass = readNumber(this.armorClass, calculateArmorClass(this.stats.dexterity));
-    this.hitPoints = normalizeHitPoints(this.hitPoints, this.stats.constitution);
+    this.hitPoints = normalizeHitPoints(this.hitPoints, this.stats.constitution, this.classKey);
   }
 
   applyEffects(effects = {}) {
@@ -77,8 +171,12 @@ class Adventurer {
       Object.assign(this, replacement);
     }
 
-    if (effects.rollAbilities) {
-      this.rollAbilities();
+    if (effects.rollAbilityPool) {
+      this.rollAbilityPool();
+    }
+
+    if (effects.clearAbilityScores) {
+      this.clearAbilityScores();
     }
 
     this.applyCharacterFields(effects.setCharacter);
@@ -86,9 +184,13 @@ class Adventurer {
     this.applyHitPointDelta(effects.hitPointDelta);
     this.applyArmorClassDelta(effects.armorClassDelta);
     this.addItems(effects.addItems);
+    this.syncDefinitionLabels();
+    this.refreshFinalScores();
   }
 
   applyCharacterFields(fields = {}) {
+    const previousClassKey = this.classKey;
+
     Object.entries(fields).forEach(([key, value]) => {
       if (Array.isArray(value)) {
         this[key] = [...value];
@@ -96,14 +198,32 @@ class Adventurer {
         this[key] = value;
       }
     });
+
+    if ((fields.classKey || fields.className) && this.classKey !== previousClassKey) {
+      this.hitPoints = { current: null, max: null };
+    }
   }
 
   applyStatDeltas(statDeltas = {}) {
     Object.entries(statDeltas).forEach(([stat, delta]) => {
       const normalizedStat = LEGACY_STAT_MAP[stat] || stat;
-      const current = Number(this.stats[normalizedStat]) || 0;
-      const nextValue = current + Number(delta);
-      this.stats[normalizedStat] = normalizedStat === "gold" ? Math.max(0, nextValue) : nextValue;
+
+      if (normalizedStat === "gold") {
+        const current = Number(this.stats.gold) || 0;
+        this.stats.gold = Math.max(0, current + Number(delta));
+        return;
+      }
+
+      if (!ATTRIBUTE_KEYS.includes(normalizedStat)) {
+        return;
+      }
+
+      if (Number.isFinite(this.baseScores[normalizedStat])) {
+        this.baseScores[normalizedStat] += Number(delta);
+      } else {
+        const current = Number(this.stats[normalizedStat]) || 0;
+        this.stats[normalizedStat] = current + Number(delta);
+      }
     });
   }
 
@@ -116,7 +236,7 @@ class Adventurer {
   }
 
   applyArmorClassDelta(delta) {
-    if (!isNumericValue(delta)) {
+    if (!isNumericValue(delta) || Number(delta) === 0) {
       return;
     }
 
@@ -134,6 +254,14 @@ class Adventurer {
   requirementProblems(requirements = {}) {
     const problems = [];
     const missingItems = (requirements.items || []).filter((item) => !this.inventory.includes(item));
+
+    if (requirements.abilityPool && !this.hasAbilityPool()) {
+      problems.push("Roll ability scores first");
+    }
+
+    if (requirements.abilityScoresAssigned && !this.hasAssignedBaseScores()) {
+      problems.push("Assign all six ability scores first");
+    }
 
     if (missingItems.length > 0) {
       problems.push(`Needs ${missingItems.join(", ")}`);
@@ -162,11 +290,16 @@ class Adventurer {
     return {
       name: this.name,
       level: this.level,
-      stats: { ...this.stats },
+      raceKey: this.raceKey,
       race: this.race,
       origin: this.origin,
+      backgroundKey: this.backgroundKey,
       background: this.background,
+      classKey: this.classKey,
       className: this.className,
+      abilityPool: [...this.abilityPool],
+      baseScores: { ...this.baseScores },
+      stats: { ...this.stats },
       spells: [...this.spells],
       provisions: [...this.provisions],
       instrument: this.instrument,
@@ -196,6 +329,7 @@ class Adventure {
 
   createDefaultState() {
     return {
+      version: STATE_VERSION,
       sceneId: this.startSceneId,
       player: new Adventurer(this.playerTemplate).toJSON(),
       history: [...this.openingHistory],
@@ -203,7 +337,7 @@ class Adventure {
   }
 
   normalizeState(saved) {
-    if (!saved || typeof saved !== "object") {
+    if (!saved || typeof saved !== "object" || saved.version !== STATE_VERSION) {
       return this.createDefaultState();
     }
 
@@ -231,6 +365,7 @@ class Adventure {
 
   normalizeLegacyState(saved) {
     return {
+      version: STATE_VERSION,
       sceneId: this.resolveSceneId(saved.scene),
       player: new Adventurer({
         name: saved.heroName || this.playerTemplate.name,
@@ -272,6 +407,7 @@ class AdventureGame {
       this.saveState();
       this.updateTrackingPixel("name");
       this.renderIdentity(hero);
+      this.renderBuilder(this.adventure.getScene(this.state.sceneId), hero);
     });
 
     this.elements.saveButton.addEventListener("click", () => {
@@ -301,6 +437,7 @@ class AdventureGame {
 
     this.renderIdentity(hero);
     this.renderAbilityScores(hero);
+    this.renderBuilder(scene, hero);
     this.renderChoices(scene.choices, hero);
     renderList(this.elements.inventoryList, hero.inventory);
     this.updateTrackingPixel("render");
@@ -309,7 +446,11 @@ class AdventureGame {
   renderIdentity(hero) {
     const name = hero.name || "Unnamed";
     this.elements.identityRace.textContent = hero.race || "Unchosen";
-    this.elements.identityOrigin.textContent = hero.origin ? `${name} of the ${hero.origin}` : "Undeclared";
+    this.elements.identityOrigin.textContent = hero.origin
+      ? (hero.raceDefinition?.quote || "{name} of the {origin}.")
+          .replaceAll("{name}", name)
+          .replaceAll("{origin}", hero.origin)
+      : "Undeclared";
     this.elements.identityBackground.textContent = hero.background || "Unchosen";
     this.elements.identityClass.textContent = hero.className || "Unregistered";
   }
@@ -317,11 +458,17 @@ class AdventureGame {
   renderAbilityScores(hero) {
     ATTRIBUTE_KEYS.forEach((attribute) => {
       const score = hero.stats[attribute];
+      const baseScore = hero.baseScores[attribute];
+      const raceBonus = hero.raceBonus(attribute);
       const scoreElement = this.elements[`stat${capitalize(attribute)}`];
       const modifierElement = this.elements[`mod${capitalize(attribute)}`];
 
       scoreElement.textContent = formatScore(score);
+      scoreElement.title = Number.isFinite(baseScore)
+        ? `Base ${baseScore}${raceBonus ? ` ${formatSigned(raceBonus)} race` : ""}`
+        : "Assign a rolled score in the Gymnasium";
       modifierElement.textContent = formatModifier(abilityModifier(score));
+      modifierElement.title = `${formatStatLabel(attribute)} modifier`;
     });
 
     this.elements.armorClass.textContent = formatScore(hero.armorClass);
@@ -330,6 +477,149 @@ class AdventureGame {
         ? `${hero.hitPoints.current}/${hero.hitPoints.max}`
         : "--";
     this.elements.statGold.textContent = hero.stats.gold;
+  }
+
+  renderBuilder(scene, hero) {
+    if (!this.elements.builderPanel || scene.builder !== "ability-assignment") {
+      this.elements.builderPanel.hidden = true;
+      this.elements.builderPanel.replaceChildren();
+      return;
+    }
+
+    this.renderAbilityAssignmentBuilder(hero);
+  }
+
+  renderAbilityAssignmentBuilder(hero) {
+    const panel = this.elements.builderPanel;
+    panel.hidden = false;
+    panel.className = "builder-panel ability-builder";
+
+    const heading = document.createElement("div");
+    heading.className = "builder-heading";
+    heading.append(
+      createElement("h3", "Assign rolled scores"),
+      createElement(
+        "p",
+        hero.race
+          ? `${hero.race} bonuses: ${formatRaceBonuses(hero)}. Pick where each rolled base score belongs.`
+          : "Pick a race before assigning scores so the final totals include racial bonuses.",
+      ),
+    );
+
+    if (!hero.hasAbilityPool()) {
+      const empty = createElement("p", "Roll a score pool below to begin. You will get six numbers, then assign each one to a different ability.");
+      empty.className = "builder-note";
+      panel.replaceChildren(heading, empty);
+      return;
+    }
+
+    const pool = document.createElement("div");
+    pool.className = "score-pool";
+    pool.append(createElement("span", "Rolled scores"));
+    hero.abilityPool.forEach((score) => {
+      const chip = createElement("strong", String(score));
+      pool.append(chip);
+    });
+
+    const assignmentGrid = document.createElement("div");
+    assignmentGrid.className = "assignment-grid";
+    const assignedIndexes = assignedIndexMap(hero);
+    const controls = ATTRIBUTE_KEYS.map((attribute) => {
+      const row = document.createElement("div");
+      row.className = "assignment-row";
+      row.dataset.attribute = attribute;
+
+      const label = document.createElement("label");
+      label.htmlFor = `assign-${attribute}`;
+      label.append(createElement("strong", formatStatLabel(attribute)), createElement("span", getAbilityDefinition(attribute).description));
+
+      const select = document.createElement("select");
+      select.id = `assign-${attribute}`;
+      select.dataset.attribute = attribute;
+      select.append(new Option("Choose", ""));
+      hero.abilityPool.forEach((score, index) => {
+        select.append(new Option(String(score), String(index)));
+      });
+
+      const existingIndex = assignedIndexes[attribute];
+      if (Number.isInteger(existingIndex)) {
+        select.value = String(existingIndex);
+      }
+
+      const preview = document.createElement("div");
+      preview.className = "assignment-preview";
+      preview.append(
+        createElement("span", `Race ${formatSigned(hero.raceBonus(attribute))}`),
+        createElement("strong", "Final --"),
+        createElement("small", "Modifier --"),
+      );
+
+      row.append(label, select, preview);
+      assignmentGrid.append(row);
+      return { attribute, row, select, preview };
+    });
+
+    const applyButton = document.createElement("button");
+    applyButton.type = "button";
+    applyButton.className = "apply-scores-button";
+    applyButton.textContent = hero.hasAssignedBaseScores() ? "Update assigned scores" : "Apply these scores";
+
+    const updateAssignmentPreview = () => {
+      const selectedIndexes = new Set(
+        controls
+          .map(({ select }) => select.value)
+          .filter((value) => value !== ""),
+      );
+
+      controls.forEach(({ select }) => {
+        Array.from(select.options).forEach((option) => {
+          option.disabled = option.value !== "" && option.value !== select.value && selectedIndexes.has(option.value);
+        });
+      });
+
+      controls.forEach(({ attribute, select, preview }) => {
+        const baseScore = select.value === "" ? null : hero.abilityPool[Number(select.value)];
+        const raceBonus = hero.raceBonus(attribute);
+        const finalScore = Number.isFinite(baseScore) ? baseScore + raceBonus : null;
+        const [bonusNode, finalNode, modifierNode] = preview.children;
+
+        bonusNode.textContent = `Race ${formatSigned(raceBonus)}`;
+        finalNode.textContent = Number.isFinite(finalScore) ? `Final ${finalScore}` : "Final --";
+        modifierNode.textContent = `Modifier ${formatModifier(abilityModifier(finalScore))}`;
+      });
+
+      applyButton.disabled = selectedIndexes.size !== ATTRIBUTE_KEYS.length;
+    };
+
+    controls.forEach(({ select }) => {
+      select.addEventListener("change", updateAssignmentPreview);
+    });
+
+    applyButton.addEventListener("click", () => {
+      const selectedIndexes = controls.map(({ select }) => select.value);
+      if (selectedIndexes.some((value) => value === "") || new Set(selectedIndexes).size !== ATTRIBUTE_KEYS.length) {
+        return;
+      }
+
+      const assignments = controls.reduce((nextAssignments, { attribute, select }) => {
+        nextAssignments[attribute] = hero.abilityPool[Number(select.value)];
+        return nextAssignments;
+      }, {});
+      const nextHero = new Adventurer(this.state.player);
+
+      if (!nextHero.assignBaseScores(assignments)) {
+        return;
+      }
+
+      this.state.player = nextHero.toJSON();
+      this.recordHistory("Assigned rolled scores to abilities.");
+      this.saveState();
+      this.render();
+      this.updateTrackingPixel("assign-scores");
+    });
+
+    updateAssignmentPreview();
+    panel.replaceChildren(heading, pool, assignmentGrid, applyButton);
   }
 
   renderChoices(choices, hero) {
@@ -343,10 +633,42 @@ class AdventureGame {
 
         const button = document.createElement("button");
         button.type = "button";
-        button.textContent = this.interpolate(choice.label, hero);
+        button.className = "choice-card";
+        button.dataset.choiceId = choice.id;
         button.disabled = problems.length > 0;
         button.title = problems.join("; ");
         button.addEventListener("click", () => this.choose(choice));
+
+        button.append(createElement("strong", this.interpolate(choice.label, hero)));
+
+        if (choice.summary) {
+          button.append(createElement("span", this.interpolate(choice.summary, hero)));
+        }
+
+        if (choice.meta) {
+          const metaList = document.createElement("dl");
+          metaList.className = "choice-meta";
+          Object.entries(choice.meta).forEach(([term, value]) => {
+            metaList.append(createElement("dt", term), createElement("dd", this.interpolate(String(value), hero)));
+          });
+          button.append(metaList);
+        }
+
+        if (Array.isArray(choice.details) && choice.details.length > 0) {
+          const details = document.createElement("ul");
+          details.className = "choice-details";
+          choice.details.forEach((detail) => {
+            const item = createElement("li", this.interpolate(detail, hero));
+            details.append(item);
+          });
+          button.append(details);
+        }
+
+        if (problems.length > 0) {
+          const locked = createElement("small", problems.join("; "));
+          locked.className = "choice-lock";
+          button.append(locked);
+        }
 
         return button;
       })
@@ -408,10 +730,16 @@ class AdventureGame {
       event: eventName,
       scene: this.state.sceneId,
       name: hero.name,
+      raceKey: hero.raceKey,
       race: hero.race,
       origin: hero.origin,
+      backgroundKey: hero.backgroundKey,
       background: hero.background,
+      classKey: hero.classKey,
       class: hero.className,
+      abilityPool: hero.abilityPool.join("|"),
+      baseScores: formatScoreMap(hero.baseScores),
+      raceBonuses: formatScoreMap(raceBonusMap(hero)),
       ac: stringifyValue(hero.armorClass),
       hp: stringifyValue(hero.hitPoints.current),
       hpMax: stringifyValue(hero.hitPoints.max),
@@ -459,22 +787,68 @@ function flashButton(button, label) {
   }, 900);
 }
 
-function capitalize(value) {
-  return value.charAt(0).toUpperCase() + value.slice(1);
+function createElement(tagName, text) {
+  const element = document.createElement(tagName);
+  element.textContent = text;
+  return element;
 }
 
-function formatStatLabel(value) {
-  return value
-    .split(/(?=[A-Z])|-/)
-    .map((part) => capitalize(part))
-    .join(" ");
+function getDefinition(collection, key) {
+  return window.PHOENIX_ADVENTURE?.[collection]?.[key] || null;
 }
 
-function rollAbilityScores() {
-  return ATTRIBUTE_KEYS.reduce((stats, attribute) => {
-    stats[attribute] = rollAbilityScore();
-    return stats;
+function getAbilityDefinition(attribute) {
+  return getDefinition("abilities", attribute) || {
+    label: formatStatLabel(attribute),
+    shortLabel: formatStatLabel(attribute).slice(0, 3).toUpperCase(),
+    description: "",
+  };
+}
+
+function inferDefinitionKey(collection, ...values) {
+  const definitions = window.PHOENIX_ADVENTURE?.[collection] || {};
+  const normalizedValues = values.filter(Boolean).map((value) => String(value).toLowerCase());
+
+  return (
+    Object.entries(definitions).find(([, definition]) =>
+      [definition.name, definition.origin].filter(Boolean).some((candidate) => normalizedValues.includes(String(candidate).toLowerCase())),
+    )?.[0] || ""
+  );
+}
+
+function assignedIndexMap(hero) {
+  const usedIndexes = new Set();
+  return ATTRIBUTE_KEYS.reduce((map, attribute) => {
+    const baseScore = hero.baseScores[attribute];
+    if (!Number.isFinite(baseScore)) {
+      return map;
+    }
+
+    const index = hero.abilityPool.findIndex((score, candidateIndex) => score === baseScore && !usedIndexes.has(candidateIndex));
+    if (index >= 0) {
+      usedIndexes.add(index);
+      map[attribute] = index;
+    }
+
+    return map;
   }, {});
+}
+
+function matchesScorePool(values, pool) {
+  const remaining = [...pool].sort((a, b) => a - b);
+  const requested = [...values].sort((a, b) => a - b);
+
+  return remaining.length === requested.length && remaining.every((score, index) => score === requested[index]);
+}
+
+function normalizeAbilityPool(values) {
+  return Array.isArray(values)
+    ? values.map((value) => Number(value)).filter((value) => Number.isFinite(value)).slice(0, ATTRIBUTE_KEYS.length)
+    : [];
+}
+
+function rollAbilityPool() {
+  return Array.from({ length: ATTRIBUTE_KEYS.length }, rollAbilityScore).sort((a, b) => b - a);
 }
 
 function rollAbilityScore() {
@@ -488,31 +862,32 @@ function abilityModifier(score) {
   return isNumericValue(score) ? Math.floor((Number(score) - 10) / 2) : null;
 }
 
-function formatModifier(modifier) {
-  if (!Number.isFinite(Number(modifier))) {
-    return "--";
-  }
-
-  return `${modifier >= 0 ? "+" : ""}${modifier}`;
-}
-
-function formatScore(score) {
-  return isNumericValue(score) ? String(score) : "--";
-}
-
 function calculateArmorClass(dexterity) {
   const modifier = abilityModifier(dexterity);
   return Number.isFinite(modifier) ? 10 + modifier : null;
 }
 
-function normalizeHitPoints(hitPoints, constitution) {
+function calculateHitPointMax(constitution, classKey) {
   if (!isNumericValue(constitution)) {
+    return null;
+  }
+
+  const hitDie = readNumber(getDefinition("classes", classKey)?.hitDie, 8);
+  return Math.max(1, hitDie + abilityModifier(constitution));
+}
+
+function normalizeHitPoints(hitPoints, constitution, classKey) {
+  const max = calculateHitPointMax(constitution, classKey);
+  if (!Number.isFinite(max)) {
     return { current: null, max: null };
   }
 
-  const max = readNumber(hitPoints?.max, Math.max(1, 8 + abilityModifier(constitution)));
-  const current = clamp(readNumber(hitPoints?.current, max), 0, max);
+  const previousMax = readNullableNumber(hitPoints?.max);
+  if (previousMax !== max) {
+    return { current: max, max };
+  }
 
+  const current = clamp(readNumber(hitPoints?.current, max), 0, max);
   return { current, max };
 }
 
@@ -523,6 +898,53 @@ function migrateLegacyStats(stats = {}) {
     }
     return migrated;
   }, {});
+}
+
+function formatRaceBonuses(hero) {
+  const entries = hero.raceBonusEntries();
+  if (entries.length === 0) {
+    return "no ability-score bonuses";
+  }
+
+  return entries.map(([attribute, bonus]) => `${formatSigned(bonus)} ${getAbilityDefinition(attribute).shortLabel}`).join(", ");
+}
+
+function raceBonusMap(hero) {
+  return ATTRIBUTE_KEYS.reduce((bonuses, attribute) => {
+    bonuses[attribute] = hero.raceBonus(attribute);
+    return bonuses;
+  }, {});
+}
+
+function formatScoreMap(scores) {
+  return ATTRIBUTE_KEYS.map((attribute) => `${attribute}:${stringifyValue(scores[attribute])}`).join("|");
+}
+
+function capitalize(value) {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+function formatStatLabel(value) {
+  return value
+    .split(/(?=[A-Z])|-/)
+    .map((part) => capitalize(part))
+    .join(" ");
+}
+
+function formatModifier(modifier) {
+  if (!Number.isFinite(Number(modifier))) {
+    return "--";
+  }
+
+  return `${modifier >= 0 ? "+" : ""}${modifier}`;
+}
+
+function formatSigned(value) {
+  return `${Number(value) >= 0 ? "+" : ""}${Number(value)}`;
+}
+
+function formatScore(score) {
+  return isNumericValue(score) ? String(score) : "--";
 }
 
 function readNullableNumber(value) {
@@ -550,6 +972,7 @@ const elements = {
   sceneKicker: document.querySelector("#sceneKicker"),
   sceneTitle: document.querySelector("#sceneTitle"),
   sceneText: document.querySelector("#sceneText"),
+  builderPanel: document.querySelector("#builderPanel"),
   choiceList: document.querySelector("#choiceList"),
   heroName: document.querySelector("#heroName"),
   heroLevel: document.querySelector("#heroLevel"),

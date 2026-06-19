@@ -1,13 +1,13 @@
 # Phoenix Adventures
 
-A dependency-free static character-generator adventure for `phoenixadventures.org`.
+A dependency-free static character builder for `phoenixadventures.org`.
 
 ## Project layout
 
 - `site/index.html` - game shell
 - `site/styles.css` - responsive interface styling
-- `site/adventure-data.js` - editable character-generator scene, map, and choice data
-- `site/game.js` - reusable scene engine, character state, tracking pixel, inventory, and save-state logic
+- `site/adventure-data.js` - editable builder data for races, backgrounds, classes, scenes, and choices
+- `site/game.js` - reusable scene engine, score assignment, character state, tracking pixel, inventory, and save-state logic
 - `site/assets/` - replaceable art assets
 - `docs/art-direction.md` - source notes and fictionalization rules for the school-to-castle treatment
 - `deploy.ps1` - syncs the static site folder to S3
@@ -25,7 +25,7 @@ aws login --profile personal-sites
 
 The deploy script syncs only the `site/` folder to `s3://phoenixadventures-org`.
 
-The app emits a hidden request to `assets/character-pixel.svg` with character state encoded as query parameters. CloudFront standard logging v2 records those requests in the `cs-uri-query` field under `s3://cloudfront-logs-645377689567-us-west-1/cloudfront/phoenixadventures.org/{yyyy}/{MM}/{dd}/{HH}/`.
+The app emits a hidden request to `assets/character-pixel.svg` with character state encoded as query parameters, including race/class/background keys, the rolled score pool, assigned base scores, racial bonuses, final ability scores, gear, and inventory. CloudFront standard logging v2 records those requests in the `cs-uri-query` field under `s3://cloudfront-logs-645377689567-us-west-1/cloudfront/phoenixadventures.org/{yyyy}/{MM}/{dd}/{HH}/`.
 
 ## AWS resources
 
