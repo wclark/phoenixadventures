@@ -531,6 +531,7 @@ window.PHOENIX_ADVENTURE = {
       title: "Review the finished character.",
       image: "assets/scene-sracs-tavern.png",
       imageAlt: "SRAC'S tavern glowing under storm clouds as a new adventurer prepares to depart.",
+      builder: "character-review",
       text:
         "The sheet now has name, race, background, assigned ability scores, class, provisions, and starting gear. The final pixel request includes those values in the query string.",
       choices: [

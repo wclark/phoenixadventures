@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Phoenix Adventures</title>
-    <link rel="stylesheet" href="styles.css?v=20260619-2" />
+    <link rel="stylesheet" href="styles.css?v=20260619-3" />
   </head>
   <body>
     <div class="app-shell">
@@ -31,17 +31,17 @@
           <div id="choiceList" class="choice-list" aria-label="Available choices"></div>
         </section>
 
-        <aside class="side-panel" aria-label="Adventurer sheet">
-          <section class="sheet-block">
-            <div class="sheet-heading">
-              <h2>Adventurer</h2>
+        <aside class="progress-panel" aria-label="Character builder progress">
+          <section class="progress-block">
+            <div class="progress-heading">
+              <h2>Builder Progress</h2>
               <span id="heroLevel">Level 1</span>
             </div>
             <label class="name-field" for="heroName">
               <span>Character Name</span>
               <input id="heroName" maxlength="28" placeholder="Enter a name" />
             </label>
-            <dl class="identity-list">
+            <dl class="progress-list">
               <div>
                 <dt>Race</dt>
                 <dd id="identityRace">Unchosen</dd>
@@ -58,67 +58,18 @@
                 <dt>Class</dt>
                 <dd id="identityClass">Unregistered</dd>
               </div>
+              <div>
+                <dt>Gold</dt>
+                <dd id="statGold">12</dd>
+              </div>
             </dl>
-            <div class="sheet-stat-area">
-              <div class="attribute-list" aria-label="Character attributes">
-                <div>
-                  <span>Strength</span>
-                  <strong id="statStrength">--</strong>
-                  <small id="modStrength">--</small>
-                </div>
-                <div>
-                  <span>Intelligence</span>
-                  <strong id="statIntelligence">--</strong>
-                  <small id="modIntelligence">--</small>
-                </div>
-                <div>
-                  <span>Wisdom</span>
-                  <strong id="statWisdom">--</strong>
-                  <small id="modWisdom">--</small>
-                </div>
-                <div>
-                  <span>Dexterity</span>
-                  <strong id="statDexterity">--</strong>
-                  <small id="modDexterity">--</small>
-                </div>
-                <div>
-                  <span>Constitution</span>
-                  <strong id="statConstitution">--</strong>
-                  <small id="modConstitution">--</small>
-                </div>
-                <div>
-                  <span>Charisma</span>
-                  <strong id="statCharisma">--</strong>
-                  <small id="modCharisma">--</small>
-                </div>
-              </div>
-              <div class="vital-list" aria-label="Combat stats">
-                <div>
-                  <span>Armor Class</span>
-                  <strong id="armorClass">--</strong>
-                </div>
-                <div>
-                  <span>Hit Points</span>
-                  <strong id="hitPoints">--</strong>
-                </div>
-                <div>
-                  <span>Gold</span>
-                  <strong id="statGold">12</strong>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <section class="sheet-block">
-            <h2>Inventory</h2>
-            <ul id="inventoryList" class="token-list"></ul>
           </section>
         </aside>
       </main>
       <img id="logPixel" class="log-pixel" src="assets/character-pixel.svg" alt="" aria-hidden="true" />
     </div>
 
-    <script src="adventure-data.js?v=20260619-2"></script>
-    <script src="game.js?v=20260619-2"></script>
+    <script src="adventure-data.js?v=20260619-3"></script>
+    <script src="game.js?v=20260619-3"></script>
   </body>
 </html>

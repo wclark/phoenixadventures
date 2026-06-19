@@ -1,6 +1,6 @@
 const STORAGE_KEY = "phoenix-adventures-save";
-const TRACKING_VERSION = "20260619-2";
-const STATE_VERSION = "builder-20260619-2";
+const TRACKING_VERSION = "20260619-3";
+const STATE_VERSION = "builder-20260619-3";
 const ATTRIBUTE_KEYS = ["strength", "intelligence", "wisdom", "dexterity", "constitution", "charisma"];
 const LEGACY_STAT_MAP = {
   might: "strength",
@@ -407,6 +407,7 @@ class AdventureGame {
       this.saveState();
       this.updateTrackingPixel("name");
       this.renderIdentity(hero);
+      this.renderAbilityScores(hero);
       this.renderBuilder(this.adventure.getScene(this.state.sceneId), hero);
     });
 
@@ -439,7 +440,9 @@ class AdventureGame {
     this.renderAbilityScores(hero);
     this.renderBuilder(scene, hero);
     this.renderChoices(scene.choices, hero);
-    renderList(this.elements.inventoryList, hero.inventory);
+    if (this.elements.inventoryList) {
+      renderList(this.elements.inventoryList, hero.inventory);
+    }
     this.updateTrackingPixel("render");
   }
 
@@ -463,30 +466,54 @@ class AdventureGame {
       const scoreElement = this.elements[`stat${capitalize(attribute)}`];
       const modifierElement = this.elements[`mod${capitalize(attribute)}`];
 
-      scoreElement.textContent = formatScore(score);
-      scoreElement.title = Number.isFinite(baseScore)
-        ? `Base ${baseScore}${raceBonus ? ` ${formatSigned(raceBonus)} race` : ""}`
-        : "Assign a rolled score in the Gymnasium";
-      modifierElement.textContent = formatModifier(abilityModifier(score));
-      modifierElement.title = `${formatStatLabel(attribute)} modifier`;
+      if (scoreElement) {
+        scoreElement.textContent = formatScore(score);
+        scoreElement.title = Number.isFinite(baseScore)
+          ? `Base ${baseScore}${raceBonus ? ` ${formatSigned(raceBonus)} race` : ""}`
+          : "Assign a rolled score in the Gymnasium";
+      }
+
+      if (modifierElement) {
+        modifierElement.textContent = formatModifier(abilityModifier(score));
+        modifierElement.title = `${formatStatLabel(attribute)} modifier`;
+      }
     });
 
-    this.elements.armorClass.textContent = formatScore(hero.armorClass);
-    this.elements.hitPoints.textContent =
-      Number.isFinite(hero.hitPoints.current) && Number.isFinite(hero.hitPoints.max)
-        ? `${hero.hitPoints.current}/${hero.hitPoints.max}`
-        : "--";
-    this.elements.statGold.textContent = hero.stats.gold;
+    if (this.elements.armorClass) {
+      this.elements.armorClass.textContent = formatScore(hero.armorClass);
+    }
+
+    if (this.elements.hitPoints) {
+      this.elements.hitPoints.textContent =
+        Number.isFinite(hero.hitPoints.current) && Number.isFinite(hero.hitPoints.max)
+          ? `${hero.hitPoints.current}/${hero.hitPoints.max}`
+          : "--";
+    }
+
+    if (this.elements.statGold) {
+      this.elements.statGold.textContent = hero.stats.gold;
+    }
   }
 
   renderBuilder(scene, hero) {
-    if (!this.elements.builderPanel || scene.builder !== "ability-assignment") {
+    if (!this.elements.builderPanel || !scene.builder) {
       this.elements.builderPanel.hidden = true;
       this.elements.builderPanel.replaceChildren();
       return;
     }
 
-    this.renderAbilityAssignmentBuilder(hero);
+    if (scene.builder === "ability-assignment") {
+      this.renderAbilityAssignmentBuilder(hero);
+      return;
+    }
+
+    if (scene.builder === "character-review") {
+      this.renderCharacterReviewBuilder(hero);
+      return;
+    }
+
+    this.elements.builderPanel.hidden = true;
+    this.elements.builderPanel.replaceChildren();
   }
 
   renderAbilityAssignmentBuilder(hero) {
@@ -524,27 +551,21 @@ class AdventureGame {
     const assignmentGrid = document.createElement("div");
     assignmentGrid.className = "assignment-grid";
     const assignedIndexes = assignedIndexMap(hero);
-    const controls = ATTRIBUTE_KEYS.map((attribute) => {
+    const controls = [];
+
+    ATTRIBUTE_KEYS.forEach((attribute) => {
       const row = document.createElement("div");
       row.className = "assignment-row";
       row.dataset.attribute = attribute;
 
-      const label = document.createElement("label");
-      label.htmlFor = `assign-${attribute}`;
+      const label = document.createElement("div");
+      label.className = "assignment-label";
       label.append(createElement("strong", formatStatLabel(attribute)), createElement("span", getAbilityDefinition(attribute).description));
 
-      const select = document.createElement("select");
-      select.id = `assign-${attribute}`;
-      select.dataset.attribute = attribute;
-      select.append(new Option("Choose", ""));
-      hero.abilityPool.forEach((score, index) => {
-        select.append(new Option(String(score), String(index)));
-      });
-
-      const existingIndex = assignedIndexes[attribute];
-      if (Number.isInteger(existingIndex)) {
-        select.value = String(existingIndex);
-      }
+      const scoreOptions = document.createElement("div");
+      scoreOptions.className = "score-options";
+      scoreOptions.setAttribute("role", "group");
+      scoreOptions.setAttribute("aria-label", `${formatStatLabel(attribute)} score options`);
 
       const preview = document.createElement("div");
       preview.className = "assignment-preview";
@@ -554,9 +575,40 @@ class AdventureGame {
         createElement("small", "Modifier --"),
       );
 
-      row.append(label, select, preview);
+      const control = {
+        attribute,
+        row,
+        optionButtons: [],
+        assignmentIndex: Number.isInteger(assignedIndexes[attribute]) ? assignedIndexes[attribute] : null,
+        preview,
+      };
+
+      hero.abilityPool.forEach((score, index) => {
+        const option = document.createElement("button");
+        option.type = "button";
+        option.className = "score-choice";
+        option.textContent = String(score);
+        option.dataset.scoreIndex = String(index);
+        option.addEventListener("click", () => {
+          if (control.assignmentIndex === index) {
+            return;
+          }
+
+          controls.forEach((candidate) => {
+            if (candidate !== control && candidate.assignmentIndex === index) {
+              candidate.assignmentIndex = null;
+            }
+          });
+          control.assignmentIndex = index;
+          updateAssignmentPreview();
+        });
+        scoreOptions.append(option);
+        control.optionButtons.push(option);
+      });
+
+      row.append(label, scoreOptions, preview);
       assignmentGrid.append(row);
-      return { attribute, row, select, preview };
+      controls.push(control);
     });
 
     const applyButton = document.createElement("button");
@@ -567,18 +619,24 @@ class AdventureGame {
     const updateAssignmentPreview = () => {
       const selectedIndexes = new Set(
         controls
-          .map(({ select }) => select.value)
-          .filter((value) => value !== ""),
+          .map(({ assignmentIndex }) => assignmentIndex)
+          .filter(Number.isInteger),
       );
 
-      controls.forEach(({ select }) => {
-        Array.from(select.options).forEach((option) => {
-          option.disabled = option.value !== "" && option.value !== select.value && selectedIndexes.has(option.value);
+      controls.forEach((control) => {
+        control.optionButtons.forEach((option, index) => {
+          const selectedHere = control.assignmentIndex === index;
+          const usedElsewhere = !selectedHere && selectedIndexes.has(index);
+          option.classList.toggle("is-selected", selectedHere);
+          option.classList.toggle("is-used", usedElsewhere);
+          option.classList.toggle("is-available", !selectedHere && !usedElsewhere);
+          option.setAttribute("aria-pressed", String(selectedHere));
+          option.title = usedElsewhere ? "Assigned to another ability; click to move it here." : `Assign ${option.textContent} to ${formatStatLabel(control.attribute)}`;
         });
       });
 
-      controls.forEach(({ attribute, select, preview }) => {
-        const baseScore = select.value === "" ? null : hero.abilityPool[Number(select.value)];
+      controls.forEach(({ attribute, assignmentIndex, preview }) => {
+        const baseScore = Number.isInteger(assignmentIndex) ? hero.abilityPool[assignmentIndex] : null;
         const raceBonus = hero.raceBonus(attribute);
         const finalScore = Number.isFinite(baseScore) ? baseScore + raceBonus : null;
         const [bonusNode, finalNode, modifierNode] = preview.children;
@@ -591,18 +649,14 @@ class AdventureGame {
       applyButton.disabled = selectedIndexes.size !== ATTRIBUTE_KEYS.length;
     };
 
-    controls.forEach(({ select }) => {
-      select.addEventListener("change", updateAssignmentPreview);
-    });
-
     applyButton.addEventListener("click", () => {
-      const selectedIndexes = controls.map(({ select }) => select.value);
-      if (selectedIndexes.some((value) => value === "") || new Set(selectedIndexes).size !== ATTRIBUTE_KEYS.length) {
+      const selectedIndexes = controls.map(({ assignmentIndex }) => assignmentIndex);
+      if (selectedIndexes.some((value) => !Number.isInteger(value)) || new Set(selectedIndexes).size !== ATTRIBUTE_KEYS.length) {
         return;
       }
 
-      const assignments = controls.reduce((nextAssignments, { attribute, select }) => {
-        nextAssignments[attribute] = hero.abilityPool[Number(select.value)];
+      const assignments = controls.reduce((nextAssignments, { attribute, assignmentIndex }) => {
+        nextAssignments[attribute] = hero.abilityPool[assignmentIndex];
         return nextAssignments;
       }, {});
       const nextHero = new Adventurer(this.state.player);
@@ -620,6 +674,67 @@ class AdventureGame {
 
     updateAssignmentPreview();
     panel.replaceChildren(heading, pool, assignmentGrid, applyButton);
+  }
+
+  renderCharacterReviewBuilder(hero) {
+    const panel = this.elements.builderPanel;
+    panel.hidden = false;
+    panel.className = "builder-panel review-builder";
+
+    const heading = document.createElement("div");
+    heading.className = "builder-heading";
+    heading.append(
+      createElement("h3", hero.name ? `${hero.name}'s character sheet` : "Character sheet"),
+      createElement("p", "This is the completed sheet assembled from the builder choices. These are the values sent through the tracking pixel."),
+    );
+
+    const identity = document.createElement("div");
+    identity.className = "review-strip";
+    identity.append(
+      reviewDatum("Race", hero.race || "Unchosen"),
+      reviewDatum("Origin", hero.origin || "Undeclared"),
+      reviewDatum("Background", hero.background || "Unchosen"),
+      reviewDatum("Class", hero.className || "Unregistered"),
+    );
+
+    const stats = document.createElement("div");
+    stats.className = "review-stats";
+    ATTRIBUTE_KEYS.forEach((attribute) => {
+      const card = document.createElement("div");
+      card.className = "review-stat-card";
+      const baseScore = hero.baseScores[attribute];
+      const raceBonus = hero.raceBonus(attribute);
+      card.append(
+        createElement("span", getAbilityDefinition(attribute).shortLabel),
+        createElement("strong", formatScore(hero.stats[attribute])),
+        createElement("small", `${Number.isFinite(baseScore) ? `Base ${baseScore}` : "Base --"}${raceBonus ? ` ${formatSigned(raceBonus)} race` : ""}`),
+        createElement("em", formatModifier(abilityModifier(hero.stats[attribute]))),
+      );
+      stats.append(card);
+    });
+
+    const vitals = document.createElement("div");
+    vitals.className = "review-strip";
+    vitals.append(
+      reviewDatum("Armor Class", formatScore(hero.armorClass)),
+      reviewDatum(
+        "Hit Points",
+        Number.isFinite(hero.hitPoints.current) && Number.isFinite(hero.hitPoints.max) ? `${hero.hitPoints.current}/${hero.hitPoints.max}` : "--",
+      ),
+      reviewDatum("Gold", stringifyValue(hero.stats.gold)),
+      reviewDatum("Weapon", hero.weapon || "Unchosen"),
+      reviewDatum("Armor", hero.armor || "Unchosen"),
+    );
+
+    const inventory = document.createElement("div");
+    inventory.className = "review-inventory";
+    inventory.append(createElement("h3", "Inventory"));
+    const inventoryList = document.createElement("ul");
+    inventoryList.className = "token-list";
+    renderList(inventoryList, hero.inventory);
+    inventory.append(inventoryList);
+
+    panel.replaceChildren(heading, identity, stats, vitals, inventory);
   }
 
   renderChoices(choices, hero) {
@@ -777,6 +892,12 @@ function renderList(list, values) {
       return item;
     }),
   );
+}
+
+function reviewDatum(label, value) {
+  const item = document.createElement("div");
+  item.append(createElement("span", label), createElement("strong", value || "--"));
+  return item;
 }
 
 function flashButton(button, label) {
