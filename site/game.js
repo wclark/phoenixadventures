@@ -1,6 +1,6 @@
 const STORAGE_KEY = "phoenix-adventures-save";
-const TRACKING_VERSION = "20260619-4";
-const STATE_VERSION = "builder-20260619-4";
+const TRACKING_VERSION = "20260619-5";
+const STATE_VERSION = "builder-20260619-5";
 const ATTRIBUTE_KEYS = ["strength", "intelligence", "wisdom", "dexterity", "constitution", "charisma"];
 const LEGACY_STAT_MAP = {
   might: "strength",
@@ -483,7 +483,7 @@ class AdventureGame {
     }
 
     if (hero.hasAssignedBaseScores()) {
-      rows.push(sheetDatum("Ability Scores", formatCompactScores(hero)));
+      rows.push(sheetAbilityScores(hero));
     }
 
     if (hero.className) {
@@ -673,20 +673,24 @@ class AdventureGame {
       scoreOptions.setAttribute("role", "group");
       scoreOptions.setAttribute("aria-label", `${formatStatLabel(attribute)} score options`);
 
-      const preview = document.createElement("div");
-      preview.className = "assignment-preview";
-      preview.append(
-        createElement("span", `Race ${formatSigned(hero.raceBonus(attribute))}`),
-        createElement("strong", "Final --"),
-        createElement("small", "Modifier --"),
-      );
+      const modifiers = document.createElement("div");
+      modifiers.className = "assignment-modifiers";
+      modifiers.append(createElement("span", "Modifiers"));
+
+      const modifierList = document.createElement("div");
+      modifierList.className = "modifier-list";
+      modifiers.append(modifierList);
+
+      const finalCard = createFinalScoreCard(attribute, null, null, abilityAdjustmentTotal(hero, attribute));
+      finalCard.classList.add("assignment-final");
 
       const control = {
         attribute,
         row,
         optionButtons: [],
         assignmentIndex: Number.isInteger(assignedIndexes[attribute]) ? assignedIndexes[attribute] : null,
-        preview,
+        modifierList,
+        finalCard,
       };
 
       hero.abilityPool.forEach((score, index) => {
@@ -712,7 +716,7 @@ class AdventureGame {
         control.optionButtons.push(option);
       });
 
-      row.append(label, scoreOptions, preview);
+      row.append(label, scoreOptions, modifiers, finalCard);
       assignmentGrid.append(row);
       controls.push(control);
     });
@@ -741,15 +745,13 @@ class AdventureGame {
         });
       });
 
-      controls.forEach(({ attribute, assignmentIndex, preview }) => {
+      controls.forEach(({ attribute, assignmentIndex, modifierList, finalCard }) => {
         const baseScore = Number.isInteger(assignmentIndex) ? hero.abilityPool[assignmentIndex] : null;
-        const raceBonus = hero.raceBonus(attribute);
-        const finalScore = Number.isFinite(baseScore) ? baseScore + raceBonus : null;
-        const [bonusNode, finalNode, modifierNode] = preview.children;
+        const adjustment = abilityAdjustmentTotal(hero, attribute);
+        const finalScore = Number.isFinite(baseScore) ? baseScore + adjustment : null;
 
-        bonusNode.textContent = `Race ${formatSigned(raceBonus)}`;
-        finalNode.textContent = Number.isFinite(finalScore) ? `Final ${finalScore}` : "Final --";
-        modifierNode.textContent = `Modifier ${formatModifier(abilityModifier(finalScore))}`;
+        renderModifierList(modifierList, hero, attribute);
+        updateFinalScoreCard(finalCard, attribute, finalScore, baseScore, adjustment);
       });
 
       applyButton.disabled = selectedIndexes.size !== ATTRIBUTE_KEYS.length;
@@ -1003,8 +1005,56 @@ function sheetDatum(label, value) {
   return wrapper;
 }
 
-function formatCompactScores(hero) {
-  return ATTRIBUTE_KEYS.map((attribute) => `${getAbilityDefinition(attribute).shortLabel} ${formatScore(hero.stats[attribute])}`).join(", ");
+function sheetAbilityScores(hero) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "sheet-ability-block";
+
+  const details = document.createElement("dd");
+  const column = document.createElement("div");
+  column.className = "sheet-ability-column";
+
+  ATTRIBUTE_KEYS.forEach((attribute) => {
+    column.append(createFinalScoreCard(attribute, hero.stats[attribute], hero.baseScores[attribute], abilityAdjustmentTotal(hero, attribute)));
+  });
+
+  details.append(column);
+  wrapper.append(createElement("dt", "Ability Scores"), details);
+  return wrapper;
+}
+
+function renderModifierList(modifierList, hero, attribute) {
+  modifierList.replaceChildren(...abilityModifierEntries(hero, attribute).map(({ label, value }) => modifierChip(label, value)));
+}
+
+function abilityModifierEntries(hero, attribute) {
+  return [{ label: hero.race ? `${hero.race} race` : "Race", value: hero.raceBonus(attribute) }];
+}
+
+function abilityAdjustmentTotal(hero, attribute) {
+  return abilityModifierEntries(hero, attribute).reduce((total, { value }) => total + Number(value), 0);
+}
+
+function modifierChip(label, value) {
+  const chip = document.createElement("div");
+  chip.append(createElement("span", label), createElement("strong", formatSigned(value)));
+  return chip;
+}
+
+function createFinalScoreCard(attribute, finalScore, baseScore, adjustment) {
+  const card = document.createElement("div");
+  card.className = "final-score-card";
+  card.append(createElement("span", getAbilityDefinition(attribute).shortLabel), createElement("strong", "--"), createElement("small", ""), createElement("em", "--"));
+  updateFinalScoreCard(card, attribute, finalScore, baseScore, adjustment);
+  return card;
+}
+
+function updateFinalScoreCard(card, attribute, finalScore, baseScore, adjustment) {
+  const [labelNode, scoreNode, detailNode, modifierNode] = card.children;
+  labelNode.textContent = getAbilityDefinition(attribute).shortLabel;
+  scoreNode.textContent = Number.isFinite(finalScore) ? String(finalScore) : "--";
+  detailNode.textContent = Number.isFinite(baseScore) ? "Final score" : "Choose a score";
+  modifierNode.textContent = Number.isFinite(finalScore) ? `${formatModifier(abilityModifier(finalScore))} bonus` : "-- bonus";
+  modifierNode.title = `${formatStatLabel(attribute)} bonus from the final score`;
 }
 
 function renderList(list, values) {
