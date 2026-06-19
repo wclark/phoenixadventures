@@ -286,8 +286,9 @@ window.PHOENIX_ADVENTURE = {
       title: "Name your character, then choose a race.",
       image: "assets/scene-sracs-tavern.png",
       imageAlt: "The lantern-lit exterior of SRAC'S, where the barkeep begins the character ledger.",
+      builder: "identity-entry",
       text:
-        "Type your character name on the sheet. Each race adds ability-score bonuses after you assign your rolled scores, so a 14 Dexterity with a +2 racial bonus becomes 16.",
+        "The barkeep opens a ledger and asks who has come to SRAC'S. Type your character name below, then choose a race. Each race adds ability-score bonuses after you assign your rolled scores, so a 14 Dexterity with a +2 racial bonus becomes 16.",
       choices: [
         raceChoice("elf", "race-woodland-elf", "Woodland Elf"),
         raceChoice("dwarf", "race-hill-dwarf", "Hill Dwarf"),

@@ -126,9 +126,13 @@ input:focus-visible {
 
 .game-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 260px;
+  grid-template-columns: minmax(0, 1fr);
   gap: 18px;
   align-items: start;
+}
+
+.game-layout.has-progress {
+  grid-template-columns: minmax(0, 1fr) 260px;
 }
 
 .scene-panel,
@@ -239,6 +243,11 @@ input:focus-visible {
   margin: 6px 24px 0;
   border-top: 1px solid var(--line);
   padding-top: 18px;
+}
+
+.builder-panel[hidden],
+.progress-panel[hidden] {
+  display: none;
 }
 
 .builder-heading {
@@ -488,6 +497,11 @@ input:focus-visible {
   gap: 8px;
 }
 
+.identity-builder .name-field {
+  max-width: 420px;
+  margin-bottom: 8px;
+}
+
 .name-field input {
   width: 100%;
   min-height: 42px;
@@ -632,7 +646,8 @@ input:focus-visible {
   }
 
   .topbar,
-  .game-layout {
+  .game-layout,
+  .game-layout.has-progress {
     display: grid;
     grid-template-columns: 1fr;
   }

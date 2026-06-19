@@ -1,6 +1,6 @@
 const STORAGE_KEY = "phoenix-adventures-save";
-const TRACKING_VERSION = "20260619-3";
-const STATE_VERSION = "builder-20260619-3";
+const TRACKING_VERSION = "20260619-4";
+const STATE_VERSION = "builder-20260619-4";
 const ATTRIBUTE_KEYS = ["strength", "intelligence", "wisdom", "dexterity", "constitution", "charisma"];
 const LEGACY_STAT_MAP = {
   might: "strength",
@@ -400,17 +400,6 @@ class AdventureGame {
   }
 
   bindEvents() {
-    this.elements.heroName.addEventListener("input", () => {
-      const hero = new Adventurer(this.state.player);
-      hero.name = this.elements.heroName.value.trim();
-      this.state.player = hero.toJSON();
-      this.saveState();
-      this.updateTrackingPixel("name");
-      this.renderIdentity(hero);
-      this.renderAbilityScores(hero);
-      this.renderBuilder(this.adventure.getScene(this.state.sceneId), hero);
-    });
-
     this.elements.saveButton.addEventListener("click", () => {
       this.saveState();
       this.updateTrackingPixel("save");
@@ -433,10 +422,8 @@ class AdventureGame {
     this.elements.sceneKicker.textContent = scene.kicker;
     this.elements.sceneTitle.textContent = scene.title;
     this.elements.sceneText.textContent = this.interpolate(scene.text, hero);
-    this.elements.heroName.value = hero.name;
-    this.elements.heroLevel.textContent = `Level ${hero.level}`;
 
-    this.renderIdentity(hero);
+    this.renderCharacterSheet(hero);
     this.renderAbilityScores(hero);
     this.renderBuilder(scene, hero);
     this.renderChoices(scene.choices, hero);
@@ -446,16 +433,100 @@ class AdventureGame {
     this.updateTrackingPixel("render");
   }
 
-  renderIdentity(hero) {
-    const name = hero.name || "Unnamed";
-    this.elements.identityRace.textContent = hero.race || "Unchosen";
-    this.elements.identityOrigin.textContent = hero.origin
-      ? (hero.raceDefinition?.quote || "{name} of the {origin}.")
-          .replaceAll("{name}", name)
-          .replaceAll("{origin}", hero.origin)
-      : "Undeclared";
-    this.elements.identityBackground.textContent = hero.background || "Unchosen";
-    this.elements.identityClass.textContent = hero.className || "Unregistered";
+  updateHeroName(value) {
+    const hero = new Adventurer(this.state.player);
+    hero.name = value.trim();
+    this.state.player = hero.toJSON();
+    this.saveState();
+    this.updateTrackingPixel("name");
+    this.renderCharacterSheet(hero);
+  }
+
+  renderCharacterSheet(hero) {
+    const shouldShowSheet = shouldShowCharacterSheet(hero);
+
+    if (this.elements.gameLayout) {
+      this.elements.gameLayout.classList.toggle("has-progress", shouldShowSheet);
+    }
+
+    if (!this.elements.characterSheet || !this.elements.sheetSummary) {
+      return;
+    }
+
+    this.elements.characterSheet.hidden = !shouldShowSheet;
+
+    if (this.elements.heroLevel) {
+      this.elements.heroLevel.textContent = `Level ${hero.level}`;
+    }
+
+    if (!shouldShowSheet) {
+      this.elements.sheetSummary.replaceChildren();
+      return;
+    }
+
+    const rows = [];
+
+    if (hero.name) {
+      rows.push(sheetDatum("Name", hero.name));
+    }
+
+    if (hero.race) {
+      rows.push(sheetDatum("Race", hero.race));
+    }
+
+    if (hero.origin) {
+      rows.push(sheetDatum("Origin", hero.origin));
+    }
+
+    if (hero.background) {
+      rows.push(sheetDatum("Background", hero.background));
+    }
+
+    if (hero.hasAssignedBaseScores()) {
+      rows.push(sheetDatum("Ability Scores", formatCompactScores(hero)));
+    }
+
+    if (hero.className) {
+      rows.push(sheetDatum("Class", hero.className));
+    }
+
+    if (hero.classKey && Number.isFinite(hero.armorClass)) {
+      rows.push(sheetDatum("Armor Class", formatScore(hero.armorClass)));
+    }
+
+    if (hero.classKey && Number.isFinite(hero.hitPoints.current) && Number.isFinite(hero.hitPoints.max)) {
+      rows.push(sheetDatum("Hit Points", `${hero.hitPoints.current}/${hero.hitPoints.max}`));
+    }
+
+    if (hero.provisions.length > 0) {
+      rows.push(sheetDatum("Provisions", hero.provisions.join(", ")));
+    }
+
+    if (hero.spells.length > 0) {
+      rows.push(sheetDatum(hero.instrument ? "Songs" : "Spells", hero.spells.join(", ")));
+    }
+
+    if (hero.instrument) {
+      rows.push(sheetDatum("Instrument", hero.instrument));
+    }
+
+    if (hero.weapon) {
+      rows.push(sheetDatum("Weapon", hero.weapon));
+    }
+
+    if (hero.armor) {
+      rows.push(sheetDatum("Armor", hero.armor));
+    }
+
+    if (hero.classKey || hero.weapon || hero.armor) {
+      rows.push(sheetDatum("Gold", stringifyValue(hero.stats.gold)));
+    }
+
+    if (hero.inventory.length > 0) {
+      rows.push(sheetDatum("Inventory", hero.inventory.join(", ")));
+    }
+
+    this.elements.sheetSummary.replaceChildren(...rows);
   }
 
   renderAbilityScores(hero) {
@@ -502,6 +573,11 @@ class AdventureGame {
       return;
     }
 
+    if (scene.builder === "identity-entry") {
+      this.renderIdentityEntryBuilder(hero);
+      return;
+    }
+
     if (scene.builder === "ability-assignment") {
       this.renderAbilityAssignmentBuilder(hero);
       return;
@@ -514,6 +590,36 @@ class AdventureGame {
 
     this.elements.builderPanel.hidden = true;
     this.elements.builderPanel.replaceChildren();
+  }
+
+  renderIdentityEntryBuilder(hero) {
+    const panel = this.elements.builderPanel;
+    panel.hidden = false;
+    panel.className = "builder-panel identity-builder";
+
+    const heading = document.createElement("div");
+    heading.className = "builder-heading";
+    heading.append(
+      createElement("h3", "Tell the barkeep who you are"),
+      createElement("p", "The character sheet appears after you choose a race, then grows as each station adds another completed piece."),
+    );
+
+    const label = document.createElement("label");
+    label.className = "name-field";
+    label.setAttribute("for", "heroNameEntry");
+
+    const labelText = createElement("span", "Character Name");
+    const input = document.createElement("input");
+    input.id = "heroNameEntry";
+    input.maxLength = 28;
+    input.placeholder = "Enter a name";
+    input.value = hero.name;
+    input.addEventListener("input", (event) => {
+      this.updateHeroName(event.currentTarget.value);
+    });
+
+    label.append(labelText, input);
+    panel.replaceChildren(heading, label);
   }
 
   renderAbilityAssignmentBuilder(hero) {
@@ -876,6 +982,31 @@ class AdventureGame {
   }
 }
 
+function shouldShowCharacterSheet(hero) {
+  return Boolean(
+    hero.raceKey ||
+      hero.backgroundKey ||
+      hero.hasAssignedBaseScores() ||
+      hero.classKey ||
+      hero.provisions.length ||
+      hero.spells.length ||
+      hero.instrument ||
+      hero.weapon ||
+      hero.armor ||
+      hero.inventory.length,
+  );
+}
+
+function sheetDatum(label, value) {
+  const wrapper = document.createElement("div");
+  wrapper.append(createElement("dt", label), createElement("dd", value));
+  return wrapper;
+}
+
+function formatCompactScores(hero) {
+  return ATTRIBUTE_KEYS.map((attribute) => `${getAbilityDefinition(attribute).shortLabel} ${formatScore(hero.stats[attribute])}`).join(", ");
+}
+
 function renderList(list, values) {
   if (values.length === 0) {
     const empty = document.createElement("li");
@@ -1089,12 +1220,15 @@ function isNumericValue(value) {
 }
 
 const elements = {
+  gameLayout: document.querySelector("#gameLayout"),
   sceneImage: document.querySelector("#sceneImage"),
   sceneKicker: document.querySelector("#sceneKicker"),
   sceneTitle: document.querySelector("#sceneTitle"),
   sceneText: document.querySelector("#sceneText"),
   builderPanel: document.querySelector("#builderPanel"),
   choiceList: document.querySelector("#choiceList"),
+  characterSheet: document.querySelector("#characterSheet"),
+  sheetSummary: document.querySelector("#sheetSummary"),
   heroName: document.querySelector("#heroName"),
   heroLevel: document.querySelector("#heroLevel"),
   identityRace: document.querySelector("#identityRace"),

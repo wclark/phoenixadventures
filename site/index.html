@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Phoenix Adventures</title>
-    <link rel="stylesheet" href="styles.css?v=20260619-3" />
+    <link rel="stylesheet" href="styles.css?v=20260619-4" />
   </head>
   <body>
     <div class="app-shell">
@@ -19,7 +19,7 @@
         </div>
       </header>
 
-      <main class="game-layout">
+      <main id="gameLayout" class="game-layout">
         <section class="scene-panel" aria-labelledby="sceneTitle">
           <img id="sceneImage" class="scene-image" src="assets/scene-sracs-tavern.png" alt="" />
           <div class="scene-copy">
@@ -31,45 +31,20 @@
           <div id="choiceList" class="choice-list" aria-label="Available choices"></div>
         </section>
 
-        <aside class="progress-panel" aria-label="Character builder progress">
+        <aside id="characterSheet" class="progress-panel" aria-label="Character sheet" hidden>
           <section class="progress-block">
             <div class="progress-heading">
-              <h2>Builder Progress</h2>
+              <h2>Character Sheet</h2>
               <span id="heroLevel">Level 1</span>
             </div>
-            <label class="name-field" for="heroName">
-              <span>Character Name</span>
-              <input id="heroName" maxlength="28" placeholder="Enter a name" />
-            </label>
-            <dl class="progress-list">
-              <div>
-                <dt>Race</dt>
-                <dd id="identityRace">Unchosen</dd>
-              </div>
-              <div>
-                <dt>Origin</dt>
-                <dd id="identityOrigin">Undeclared</dd>
-              </div>
-              <div>
-                <dt>Background</dt>
-                <dd id="identityBackground">Unchosen</dd>
-              </div>
-              <div>
-                <dt>Class</dt>
-                <dd id="identityClass">Unregistered</dd>
-              </div>
-              <div>
-                <dt>Gold</dt>
-                <dd id="statGold">12</dd>
-              </div>
-            </dl>
+            <dl id="sheetSummary" class="progress-list"></dl>
           </section>
         </aside>
       </main>
       <img id="logPixel" class="log-pixel" src="assets/character-pixel.svg" alt="" aria-hidden="true" />
     </div>
 
-    <script src="adventure-data.js?v=20260619-3"></script>
-    <script src="game.js?v=20260619-3"></script>
+    <script src="adventure-data.js?v=20260619-4"></script>
+    <script src="game.js?v=20260619-4"></script>
   </body>
 </html>
