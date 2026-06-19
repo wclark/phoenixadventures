@@ -1,6 +1,6 @@
 const STORAGE_KEY = "phoenix-adventures-save";
-const TRACKING_VERSION = "20260619-6";
-const STATE_VERSION = "builder-20260619-6";
+const TRACKING_VERSION = "20260619-7";
+const STATE_VERSION = "builder-20260619-7";
 const ATTRIBUTE_KEYS = ["strength", "intelligence", "wisdom", "dexterity", "constitution", "charisma"];
 const LEGACY_STAT_MAP = {
   might: "strength",

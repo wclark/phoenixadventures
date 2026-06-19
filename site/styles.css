@@ -132,7 +132,7 @@ input:focus-visible {
 }
 
 .game-layout.has-progress {
-  grid-template-columns: minmax(0, 1fr) 260px;
+  grid-template-columns: minmax(0, 1fr) clamp(280px, 30vw, 420px);
 }
 
 .scene-panel,
@@ -602,6 +602,21 @@ input:focus-visible {
   min-height: 52px;
 }
 
+@media (min-width: 980px) {
+  .progress-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .progress-list .sheet-ability-block {
+    grid-column: 1 / -1;
+  }
+
+  .sheet-ability-column {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
 .sheet-stat-area {
   display: grid;
   grid-template-columns: 122px minmax(0, 1fr);
@@ -710,6 +725,14 @@ input:focus-visible {
     padding-top: 12px;
   }
 
+  .game-layout {
+    gap: 14px;
+  }
+
+  .game-layout.has-progress {
+    grid-template-columns: minmax(0, 1fr) minmax(340px, 38%);
+  }
+
   .topbar {
     padding: 4px 0 12px;
   }
@@ -755,8 +778,13 @@ input:focus-visible {
     padding: 12px 20px 18px;
   }
 
+  .assignment-grid {
+    gap: 6px;
+  }
+
   .assignment-row {
-    gap: 8px;
+    grid-template-columns: minmax(112px, 0.7fr) minmax(198px, 1.3fr) minmax(86px, 0.45fr) 60px;
+    gap: 6px;
     padding: 6px;
   }
 
@@ -766,6 +794,11 @@ input:focus-visible {
 
   .score-choice {
     min-height: 36px;
+  }
+
+  .score-options {
+    grid-template-columns: repeat(6, minmax(28px, 1fr));
+    gap: 4px;
   }
 
   .modifier-list div {
@@ -789,6 +822,23 @@ input:focus-visible {
     min-height: 44px;
     gap: 1px;
     padding: 3px 5px;
+  }
+
+  .progress-block {
+    padding: 12px;
+  }
+
+  .progress-list {
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .progress-list div {
+    padding: 7px 8px;
+  }
+
+  .sheet-ability-column {
+    gap: 6px;
   }
 }
 
