@@ -296,17 +296,17 @@ input:focus-visible {
 
 .assignment-grid {
   display: grid;
-  gap: 10px;
+  gap: 8px;
 }
 
 .assignment-row {
   display: grid;
   grid-template-columns: minmax(150px, 0.85fr) minmax(250px, 1.45fr) minmax(116px, 0.55fr) minmax(84px, 0.38fr);
-  gap: 12px;
+  gap: 10px;
   align-items: stretch;
   border: 1px solid var(--line);
   border-radius: 6px;
-  padding: 10px;
+  padding: 8px;
   background: rgba(20, 16, 15, 0.38);
 }
 
@@ -322,13 +322,16 @@ input:focus-visible {
 }
 
 .assignment-label span,
-.assignment-modifiers > span,
 .modifier-list span,
-.final-score-card span,
-.final-score-card small {
+.final-score-card span {
   color: var(--muted);
   font-size: 12px;
   line-height: 1.25;
+}
+
+.final-score-card span {
+  font-size: 10px;
+  line-height: 1;
 }
 
 .score-options {
@@ -339,7 +342,7 @@ input:focus-visible {
 }
 
 .score-choice {
-  min-height: 44px;
+  min-height: 40px;
   border-radius: 6px;
   padding: 0;
   color: #d8c7a7;
@@ -392,13 +395,13 @@ input:focus-visible {
 
 .modifier-list div {
   display: flex;
-  min-height: 32px;
+  min-height: 28px;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
   border: 1px solid rgba(234, 216, 184, 0.14);
   border-radius: 6px;
-  padding: 6px 8px;
+  padding: 5px 8px;
   background: rgba(20, 16, 15, 0.26);
 }
 
@@ -409,26 +412,26 @@ input:focus-visible {
 
 .final-score-card {
   display: grid;
-  min-height: 74px;
+  min-height: 48px;
   align-content: center;
   justify-items: center;
-  gap: 4px;
+  gap: 2px;
   border: 1px solid rgba(215, 168, 73, 0.48);
   border-radius: 6px;
-  padding: 8px 6px;
+  padding: 4px 6px;
   text-align: center;
   background: rgba(20, 16, 15, 0.7);
 }
 
 .final-score-card strong {
   color: var(--gold);
-  font-size: 26px;
+  font-size: 22px;
   line-height: 1;
 }
 
 .final-score-card em {
   color: #d8c7a7;
-  font-size: 13px;
+  font-size: 12px;
   font-style: normal;
   font-weight: 700;
   line-height: 1;
@@ -436,7 +439,7 @@ input:focus-visible {
 
 .apply-scores-button {
   width: 100%;
-  margin-top: 12px;
+  margin-top: 10px;
 }
 
 .review-strip {
@@ -596,7 +599,7 @@ input:focus-visible {
 }
 
 .sheet-ability-column .final-score-card {
-  min-height: 82px;
+  min-height: 52px;
 }
 
 .sheet-stat-area {
@@ -699,6 +702,94 @@ input:focus-visible {
   height: 1px;
   opacity: 0;
   pointer-events: none;
+}
+
+@media (max-width: 1100px) and (orientation: landscape) {
+  .app-shell {
+    width: min(100% - 20px, 1040px);
+    padding-top: 12px;
+  }
+
+  .topbar {
+    padding: 4px 0 12px;
+  }
+
+  .topbar h1 {
+    font-size: 32px;
+  }
+
+  .scene-image {
+    max-height: 150px;
+    aspect-ratio: 21 / 6;
+  }
+
+  .scene-copy {
+    padding: 16px 20px 8px;
+  }
+
+  .scene-copy h2 {
+    font-size: 26px;
+  }
+
+  .scene-copy p:last-child {
+    margin-top: 10px;
+    font-size: 15px;
+    line-height: 1.42;
+  }
+
+  .builder-panel {
+    margin: 4px 20px 0;
+    padding-top: 12px;
+  }
+
+  .builder-heading {
+    gap: 5px;
+    margin-bottom: 10px;
+  }
+
+  .score-pool {
+    margin-bottom: 10px;
+  }
+
+  .choice-list {
+    padding: 12px 20px 18px;
+  }
+
+  .assignment-row {
+    gap: 8px;
+    padding: 6px;
+  }
+
+  .assignment-label span {
+    display: none;
+  }
+
+  .score-choice {
+    min-height: 36px;
+  }
+
+  .modifier-list div {
+    min-height: 24px;
+    padding: 3px 6px;
+  }
+
+  .final-score-card span {
+    font-size: 9px;
+  }
+
+  .final-score-card strong {
+    font-size: 20px;
+  }
+
+  .final-score-card em {
+    font-size: 11px;
+  }
+
+  .final-score-card {
+    min-height: 44px;
+    gap: 1px;
+    padding: 3px 5px;
+  }
 }
 
 @media (max-width: 900px) {
