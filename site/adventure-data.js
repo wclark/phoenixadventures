@@ -1,51 +1,51 @@
 /**
- * Editable adventure definition for Phoenix Adventures.
+ * Editable character-generator path for Phoenix Adventures.
  *
- * Keep story content here: scene text, image paths, map links, choices, checks,
- * rewards, and future encounter hooks. The engine in game.js should stay
- * generic so the adventure can grow without rewriting rendering logic.
+ * This file owns story content and character creation choices. The engine in
+ * game.js renders scenes, applies effects, and sends the log-pixel request.
  */
 
 /**
  * @typedef {Object} StatBlock
- * @property {number} strength
- * @property {number} intelligence
- * @property {number} wisdom
- * @property {number} dexterity
- * @property {number} constitution
- * @property {number} charisma
- * @property {number} gold
+ * @property {number=} strength
+ * @property {number=} intelligence
+ * @property {number=} wisdom
+ * @property {number=} dexterity
+ * @property {number=} constitution
+ * @property {number=} charisma
+ * @property {number=} gold
+ */
+
+/**
+ * @typedef {Object} CharacterFields
+ * @property {string=} race
+ * @property {string=} origin
+ * @property {string=} background
+ * @property {string=} className
+ * @property {string[]=} spells
+ * @property {string[]=} provisions
+ * @property {string=} instrument
+ * @property {string=} armor
+ * @property {string=} weapon
  */
 
 /**
  * @typedef {Object} ChoiceEffects
  * @property {string[]=} addItems
- * @property {string[]=} removeItems
  * @property {Partial<StatBlock>=} statDeltas
+ * @property {Partial<CharacterFields>=} setCharacter
+ * @property {boolean=} rollAbilities
+ * @property {boolean=} resetCharacter
  * @property {number=} hitPointDelta
  * @property {number=} armorClassDelta
  * @property {string=} history
  */
 
 /**
- * @typedef {Object} ChoiceCheckOutcome
- * @property {string=} nextSceneId
- * @property {ChoiceEffects=} effects
- */
-
-/**
- * @typedef {Object} ChoiceCheck
- * @property {"strength"|"intelligence"|"wisdom"|"dexterity"|"constitution"|"charisma"} stat
- * @property {number} target
- * @property {number=} sides
- * @property {ChoiceCheckOutcome=} success
- * @property {ChoiceCheckOutcome=} failure
- */
-
-/**
  * @typedef {Object} ChoiceRequirements
  * @property {string[]=} items
  * @property {Partial<StatBlock>=} stats
+ * @property {Partial<CharacterFields>=} character
  */
 
 /**
@@ -54,416 +54,547 @@
  * @property {string} label
  * @property {string=} nextSceneId
  * @property {ChoiceRequirements=} requires
+ * @property {boolean=} hideUnavailable
  * @property {ChoiceEffects=} effects
- * @property {ChoiceCheck=} check
- */
-
-/**
- * @typedef {Object} SceneDefinition
- * @property {string} id
- * @property {string} mapNodeId
- * @property {string} kicker
- * @property {string} title
- * @property {string} image
- * @property {string} imageAlt
- * @property {string} text
- * @property {ChoiceDefinition[]} choices
  */
 
 window.PHOENIX_ADVENTURE = {
   title: "Phoenix Adventures",
-  startSceneId: "sracs-tavern",
-  openingHistory: ["Arrived at SRAC'S as sunset touched the ruined keep."],
+  startSceneId: "sracs-gate",
+  openingHistory: ["Arrived outside SRAC'S, where every adventurer begins as a question."],
+  trackingPixel: "assets/character-pixel.svg",
   player: {
-    name: "Ash",
+    name: "",
     level: 1,
     stats: {
-      gold: 8,
+      gold: 12,
     },
-    inventory: ["Torch", "Travel Rations"],
+    inventory: [],
   },
   map: {
     image: "assets/campus-ruins-map.svg",
     nodes: [
-      { id: "sracs-tavern", label: "SRAC'S", sceneId: "sracs-tavern", x: 0.74, y: 0.31 },
-      { id: "central-courtyard", label: "Central Courtyard", sceneId: "central-courtyard", x: 0.41, y: 0.45 },
-      { id: "north-hall", label: "North Hall", sceneId: "north-hall", x: 0.39, y: 0.3 },
-      { id: "tournament-grounds", label: "Tournament Grounds", sceneId: "tournament-grounds", x: 0.38, y: 0.76 },
-      { id: "training-courts", label: "Training Courts", sceneId: "training-courts", x: 0.74, y: 0.61 },
+      { id: "sracs-gate", label: "SRAC'S", sceneId: "sracs-gate", x: 0.74, y: 0.31 },
+      { id: "outdoor-bar", label: "Outdoor Bar", sceneId: "outdoor-bar", x: 0.78, y: 0.46 },
+      { id: "gymnasium", label: "Gymnasium", sceneId: "gymnasium", x: 0.38, y: 0.76 },
+      { id: "main-office", label: "Main Office", sceneId: "main-office", x: 0.42, y: 0.32 },
+      { id: "cafeteria", label: "Cafeteria", sceneId: "cafeteria", x: 0.41, y: 0.44 },
+      { id: "library", label: "Library", sceneId: "library", x: 0.33, y: 0.28 },
+      { id: "music-room", label: "Music Room", sceneId: "music-room", x: 0.31, y: 0.52 },
+      { id: "stem-workshops", label: "STEM Workshops", sceneId: "stem-workshops", x: 0.74, y: 0.61 },
     ],
   },
   scenes: [
     {
-      id: "sracs-tavern",
-      mapNodeId: "sracs-tavern",
+      id: "sracs-gate",
+      mapNodeId: "sracs-gate",
       kicker: "SRAC'S",
-      title: "The charter hall is now a tavern at the edge of the keep.",
+      title: "The tavern waits at the edge of the keep.",
       image: "assets/scene-sracs-tavern.png",
       imageAlt: "SRAC'S tavern, a long fantasy tavern with lantern-lit windows, purple doors, trees, a white fence, and storm clouds overhead.",
       text:
-        "The low white hall has been reborn in timber, lantern light, and phoenix-red paint. Beyond its separate wagon yard, Falconrise Keep gathers around a central courtyard and a bell that should have fallen years ago.",
+        "Rain-dark cobbles lead to the purple doors of SRAC'S. The sign creaks above the porch, and warm voices spill from within. This is not the start of a quest yet. This is where the person who will take that quest gets made.",
       choices: [
         {
-          id: "study-map",
-          label: "Study the ruin map",
-          nextSceneId: "ruin-map",
+          id: "enter-sracs",
+          label: "Enter SRAC'S",
+          nextSceneId: "barkeep",
           effects: {
-            addItems: ["Ruin Map"],
-            history: "Studied the map of Falconrise Keep.",
-          },
-        },
-        {
-          id: "enter-courtyard",
-          label: "Enter the broken courtyard",
-          nextSceneId: "central-courtyard",
-          effects: {
-            history: "Passed beneath the falcon gate.",
-          },
-        },
-        {
-          id: "search-shrine",
-          label: "Search the roadside shrine",
-          nextSceneId: "roadside-shrine",
-          effects: {
-            history: "Stopped at the roadside shrine.",
-          },
-        },
-        {
-          id: "question-merchant",
-          label: "Question the hooded merchant",
-          nextSceneId: "tavern-yard",
-          effects: {
-            history: "Shared a fire with the hooded merchant.",
+            history: "Stepped inside SRAC'S to meet the barkeep.",
           },
         },
       ],
     },
     {
-      id: "ruin-map",
-      mapNodeId: "sracs-tavern",
-      kicker: "Fictional Map",
-      title: "The keep follows the old campus bones.",
-      image: "assets/campus-ruins-map.svg",
-      imageAlt: "A parchment-style fantasy map showing SRAC'S, a wagon yard, hall wings, a central courtyard, training courts, fields, and a tournament track.",
-      text:
-        "The parchment simplifies the old grounds into adventure landmarks: main hall wings around a central courtyard, the detached SRAC'S tavern and wagon yard, training courts, ball fields, and a tournament track.",
-      choices: [
-        {
-          id: "mark-north-hall",
-          label: "Mark the north hall",
-          nextSceneId: "north-hall",
-          effects: {
-            history: "Marked the north hall on the ruin map.",
-          },
-        },
-        {
-          id: "mark-courtyard",
-          label: "Mark the central courtyard",
-          nextSceneId: "central-courtyard",
-          effects: {
-            history: "Marked the central courtyard on the ruin map.",
-          },
-        },
-        {
-          id: "mark-tournament-grounds",
-          label: "Mark the tournament oval",
-          nextSceneId: "tournament-grounds",
-          effects: {
-            history: "Marked the tournament oval on the ruin map.",
-          },
-        },
-        {
-          id: "return-to-sracs",
-          label: "Return to SRAC'S",
-          nextSceneId: "sracs-tavern",
-        },
-      ],
-    },
-    {
-      id: "north-hall",
-      mapNodeId: "north-hall",
-      kicker: "North Hall",
-      title: "A bronze bell swings without wind.",
-      image: "assets/scene-courtyard.svg",
-      imageAlt: "A ruined school courtyard transformed into a fantasy stone hall with vines, arches, and warm evening light.",
-      text:
-        "Stone birds watch from a broken arcade. The bell rope is braided with red thread, and the dust beneath it has been disturbed by fresh tracks.",
-      choices: [
-        {
-          id: "pull-bell-rope",
-          label: "Pull the bell rope",
-          check: {
-            stat: "wisdom",
-            target: 12,
-            success: {
-              nextSceneId: "cinderwake-threshold",
-              effects: {
-                history: "The bell answered and revealed the Cinderwake Threshold.",
-              },
-            },
-            failure: {
-              nextSceneId: "north-hall",
-              effects: {
-                statDeltas: { gold: -1 },
-                history: "The bell stayed silent, and the delay cost a little coin.",
-              },
-            },
-          },
-        },
-        {
-          id: "track-footprints",
-          label: "Track the fresh footprints",
-          check: {
-            stat: "wisdom",
-            target: 10,
-            success: {
-              nextSceneId: "tournament-grounds",
-              effects: {
-                history: "Tracked fresh footprints toward the tournament grounds.",
-              },
-            },
-            failure: {
-              nextSceneId: "central-courtyard",
-              effects: {
-                history: "Lost the footprints and circled back to the courtyard.",
-              },
-            },
-          },
-        },
-        {
-          id: "return-to-map",
-          label: "Return to the map",
-          nextSceneId: "ruin-map",
-        },
-      ],
-    },
-    {
-      id: "central-courtyard",
-      mapNodeId: "central-courtyard",
-      kicker: "Central Courtyard",
-      title: "Vines lace the courtyard stones like old spellwork.",
-      image: "assets/scene-courtyard.svg",
-      imageAlt: "A central ruined courtyard with stone wings, broken paving, vines, and a carved falcon sigil.",
-      text:
-        "Long hall wings lean inward around a grass-grown court. The paving stones are split by amber weeds, and a carved falcon sigil glints from a fallen lintel.",
-      choices: [
-        {
-          id: "recover-falcon-sigil",
-          label: "Recover the falcon sigil",
-          nextSceneId: "central-courtyard",
-          effects: {
-            addItems: ["Falcon Sigil"],
-            history: "Recovered a falcon sigil from Ash Court.",
-          },
-        },
-        {
-          id: "listen-at-arcade",
-          label: "Listen at the broken arcade",
-          check: {
-            stat: "wisdom",
-            target: 11,
-            success: {
-              nextSceneId: "north-hall",
-              effects: {
-                history: "Heard the hollow bell and followed the sound north.",
-              },
-            },
-            failure: {
-              nextSceneId: "central-courtyard",
-              effects: {
-                history: "The arcade only answered with wind.",
-              },
-            },
-          },
-        },
-        {
-          id: "cross-training-yards",
-          label: "Cross to the training yards",
-          nextSceneId: "training-courts",
-        },
-        {
-          id: "return-to-sracs",
-          label: "Return to SRAC'S",
-          nextSceneId: "sracs-tavern",
-        },
-      ],
-    },
-    {
-      id: "roadside-shrine",
-      mapNodeId: "sracs-tavern",
-      kicker: "Roadside Shrine",
-      title: "An offering bowl glows under old ash.",
-      image: "assets/scene-gatehouse.svg",
-      imageAlt: "A fantasy gatehouse path with old stonework, sunset trees, and a small shrine along the road.",
-      text:
-        "The shrine is cracked but warm to the touch. A phoenix sigil flashes once when you brush away the dust.",
-      choices: [
-        {
-          id: "take-ember-charm",
-          label: "Take the ember charm",
-          nextSceneId: "sracs-tavern",
-          effects: {
-            addItems: ["Ember Charm"],
-            history: "Recovered an ember charm.",
-          },
-        },
-        {
-          id: "leave-gold",
-          label: "Leave a gold coin",
-          nextSceneId: "sracs-tavern",
-          effects: {
-            statDeltas: { gold: -1, wisdom: 1 },
-            history: "Left an offering at the shrine.",
-          },
-        },
-      ],
-    },
-    {
-      id: "tavern-yard",
-      mapNodeId: "sracs-tavern",
-      kicker: "Tavern Yard",
-      title: "The merchant knows the ruin by another name.",
+      id: "barkeep",
+      mapNodeId: "sracs-gate",
+      kicker: "The Barkeep",
+      title: "A barkeep asks your name and where you are from.",
       image: "assets/scene-sracs-tavern.png",
-      imageAlt: "The SRAC'S tavern exterior with glowing windows, trees, cobblestones, and a sign over the right entrance.",
+      imageAlt: "The lantern-lit exterior of SRAC'S, where the barkeep begins the character ledger.",
       text:
-        "He waits beside the wagon yard and calls the ruin Falconrise Keep. He will trade a charcoal-rubbed map for five gold, and his pack smells faintly of rain, iron, and cedar smoke.",
+        "The barkeep slides a clean card across the counter. \"Name first,\" they say, tapping the sheet. \"Then tell me whose roads taught you to walk. Woodland boughs? Dwarven stone? Human streets? Halfling fields?\" Enter a name on the character sheet, then choose your people.",
       choices: [
         {
-          id: "buy-map",
-          label: "Buy the map",
-          nextSceneId: "ruin-map",
-          requires: {
-            stats: { gold: 5 },
-          },
+          id: "race-woodland-elf",
+          label: "I'm of the Woodland Elves.",
+          nextSceneId: "outdoor-bar",
           effects: {
-            statDeltas: { gold: -5 },
-            addItems: ["Ruin Map"],
-            history: "Bought a map to Falconrise Keep.",
+            setCharacter: { race: "Elf", origin: "Woodland Elves" },
+            history: "Declared kinship with the Woodland Elves.",
           },
         },
         {
-          id: "decline-map",
-          label: "Decline and return to watch",
-          nextSceneId: "sracs-tavern",
+          id: "race-hill-dwarf",
+          label: "I'm of the Hill Dwarves.",
+          nextSceneId: "outdoor-bar",
+          effects: {
+            setCharacter: { race: "Dwarf", origin: "Hill Dwarves" },
+            history: "Declared kinship with the Hill Dwarves.",
+          },
+        },
+        {
+          id: "race-river-halfling",
+          label: "I'm of the River Halflings.",
+          nextSceneId: "outdoor-bar",
+          effects: {
+            setCharacter: { race: "Halfling", origin: "River Halflings" },
+            history: "Declared kinship with the River Halflings.",
+          },
+        },
+        {
+          id: "race-santa-rosa-human",
+          label: "I'm of the Free Folk of Santa Rosa.",
+          nextSceneId: "outdoor-bar",
+          effects: {
+            setCharacter: { race: "Human", origin: "Free Folk of Santa Rosa" },
+            history: "Declared kinship with the Free Folk of Santa Rosa.",
+          },
+        },
+        {
+          id: "race-emberborn",
+          label: "I'm of the Emberborn.",
+          nextSceneId: "outdoor-bar",
+          effects: {
+            setCharacter: { race: "Dragonborn", origin: "Emberborn" },
+            history: "Declared kinship with the Emberborn.",
+          },
         },
       ],
     },
     {
-      id: "training-courts",
-      mapNodeId: "training-courts",
-      kicker: "Training Courts",
-      title: "Cracked courts serve as the keep's practice yard.",
-      image: "assets/scene-tournament-grounds.svg",
-      imageAlt: "An overgrown athletic ground transformed into a fantasy training yard with cracked courts and ruined terraces.",
+      id: "outdoor-bar",
+      mapNodeId: "outdoor-bar",
+      kicker: "Outdoor Bar",
+      title: "Around the courtyard bar, strangers trade stories.",
+      image: "assets/scene-courtyard.svg",
+      imageAlt: "A ruined central courtyard remade as an outdoor tavern patio.",
       text:
-        "Faded court lines show through dust and grass. Racks of broken practice spears lean against a wall where old chain-link has become thorned iron.",
+        "Beyond the side door, the outdoor bar hums under canvas awnings. Travelers lean over railings and ask what you did before SRAC'S wrote you into the ledger.",
       choices: [
         {
-          id: "inspect-spears",
-          label: "Inspect the broken spear rack",
-          check: {
-            stat: "strength",
-            target: 11,
-            success: {
-              nextSceneId: "training-courts",
-              effects: {
-                addItems: ["Practice Spear"],
-                history: "Pulled a usable practice spear from the rack.",
-              },
-            },
-            failure: {
-              nextSceneId: "training-courts",
-              effects: {
-                history: "The rack collapsed into dust before anything useful came free.",
-              },
-            },
+          id: "background-sage",
+          label: "I kept old books and stranger secrets.",
+          nextSceneId: "gymnasium",
+          effects: {
+            setCharacter: { background: "Sage" },
+            addItems: ["Ink-stained Notebook"],
+            history: "Chose the Sage background.",
           },
         },
         {
-          id: "cross-to-tournament",
-          label: "Cross to the tournament oval",
-          nextSceneId: "tournament-grounds",
+          id: "background-folk-hero",
+          label: "I stood up when no one else would.",
+          nextSceneId: "gymnasium",
+          effects: {
+            setCharacter: { background: "Folk Hero" },
+            addItems: ["Lucky Token"],
+            history: "Chose the Folk Hero background.",
+          },
         },
         {
-          id: "return-courtyard",
-          label: "Return to the central courtyard",
-          nextSceneId: "central-courtyard",
+          id: "background-urchin",
+          label: "I learned every alley by moonlight.",
+          nextSceneId: "gymnasium",
+          effects: {
+            setCharacter: { background: "Urchin" },
+            addItems: ["Bent Lockpick"],
+            history: "Chose the Urchin background.",
+          },
+        },
+        {
+          id: "background-artisan",
+          label: "I made things that outlasted their makers.",
+          nextSceneId: "gymnasium",
+          effects: {
+            setCharacter: { background: "Guild Artisan" },
+            addItems: ["Maker's Chisel"],
+            history: "Chose the Guild Artisan background.",
+          },
+        },
+        {
+          id: "background-outlander",
+          label: "I followed tracks past the map edge.",
+          nextSceneId: "gymnasium",
+          effects: {
+            setCharacter: { background: "Outlander" },
+            addItems: ["Weathered Compass"],
+            history: "Chose the Outlander background.",
+          },
         },
       ],
     },
     {
-      id: "tournament-grounds",
-      mapNodeId: "tournament-grounds",
-      kicker: "Tournament Oval",
-      title: "The old athletic grounds have become a knight's arena.",
+      id: "gymnasium",
+      mapNodeId: "gymnasium",
+      kicker: "Gymnasium",
+      title: "The old gym measures what your story can survive.",
       image: "assets/scene-tournament-grounds.svg",
-      imageAlt: "A ruined athletic oval transformed into a tournament arena with dry grass, broken terraces, and drifting ash feathers.",
+      imageAlt: "An athletic ground transformed into a fantasy training arena.",
       text:
-        "The oval field is ringed by broken terraces and cracked training yards. Dry grass whispers underfoot, and ash feathers drift over the goal lines like black snow.",
+        "The gymnasium floor is marked with six chalk circles: lift, solve, listen, dodge, endure, persuade. Step through the trials and your ability scores are rolled: 4d6, keep the highest three.",
       choices: [
         {
-          id: "pocket-ash-feather",
-          label: "Pocket an ash feather",
-          nextSceneId: "tournament-grounds",
+          id: "roll-abilities",
+          label: "Take the six ability trials",
+          nextSceneId: "main-office",
           effects: {
-            addItems: ["Ash Feather"],
-            history: "Found an ash feather in the tournament oval.",
+            rollAbilities: true,
+            history: "Completed the Gymnasium trials and revealed ability scores.",
           },
-        },
-        {
-          id: "cross-training-yard",
-          label: "Cross the cracked training yard",
-          check: {
-            stat: "strength",
-            target: 13,
-            success: {
-              nextSceneId: "cinderwake-threshold",
-              effects: {
-                history: "Forced a path through the training yard to the buried gate.",
-              },
-            },
-            failure: {
-              nextSceneId: "training-courts",
-              effects: {
-                history: "The cracked yard forced a retreat to the courts.",
-              },
-            },
-          },
-        },
-        {
-          id: "circle-back-courtyard",
-          label: "Circle back to Ash Court",
-          nextSceneId: "central-courtyard",
-        },
-        {
-          id: "return-map",
-          label: "Return to the map",
-          nextSceneId: "ruin-map",
         },
       ],
     },
     {
-      id: "cinderwake-threshold",
-      mapNodeId: "north-hall",
-      kicker: "Cinderwake Threshold",
-      title: "The hidden gate opens like an eye.",
-      image: "assets/scene-tournament-grounds.svg",
-      imageAlt: "A fantasy ruin lit by red light from a hidden underground gate.",
+      id: "main-office",
+      mapNodeId: "main-office",
+      kicker: "Main Office",
+      title: "The registrar asks which class belongs on your record.",
+      image: "assets/scene-courtyard.svg",
+      imageAlt: "A ruined hall office with warm light, registers, and class banners.",
       text:
-        "Beyond the gate, red light pulses through a buried hall. This is where the first real encounter will live as the game grows.",
+        "Behind the main desk, class banners hang like enrollment forms for impossible futures. The registrar dips a quill and waits.",
       choices: [
         {
-          id: "note-threshold",
-          label: "Record the threshold on the map",
-          nextSceneId: "ruin-map",
+          id: "class-wizard",
+          label: "Wizard",
+          nextSceneId: "cafeteria",
           effects: {
-            history: "Recorded the gate beneath Falconrise Keep.",
+            setCharacter: { className: "Wizard" },
+            addItems: ["Blank Spellbook"],
+            history: "Registered as a Wizard.",
           },
         },
         {
-          id: "rest-banners",
-          label: "Rest beneath the falcon banners",
-          nextSceneId: "sracs-tavern",
+          id: "class-paladin",
+          label: "Paladin",
+          nextSceneId: "cafeteria",
+          effects: {
+            setCharacter: { className: "Paladin" },
+            addItems: ["Oath Primer"],
+            history: "Registered as a Paladin.",
+          },
+        },
+        {
+          id: "class-ranger",
+          label: "Ranger",
+          nextSceneId: "cafeteria",
+          effects: {
+            setCharacter: { className: "Ranger" },
+            addItems: ["Trail Map"],
+            history: "Registered as a Ranger.",
+          },
+        },
+        {
+          id: "class-rogue",
+          label: "Rogue",
+          nextSceneId: "cafeteria",
+          effects: {
+            setCharacter: { className: "Rogue" },
+            addItems: ["Practice Picks"],
+            history: "Registered as a Rogue.",
+          },
+        },
+        {
+          id: "class-fighter",
+          label: "Fighter",
+          nextSceneId: "cafeteria",
+          effects: {
+            setCharacter: { className: "Fighter" },
+            addItems: ["Training Medal"],
+            history: "Registered as a Fighter.",
+          },
+        },
+        {
+          id: "class-cleric",
+          label: "Cleric",
+          nextSceneId: "cafeteria",
+          effects: {
+            setCharacter: { className: "Cleric" },
+            addItems: ["Prayer Beads"],
+            history: "Registered as a Cleric.",
+          },
+        },
+        {
+          id: "class-bard",
+          label: "Bard",
+          nextSceneId: "cafeteria",
+          effects: {
+            setCharacter: { className: "Bard" },
+            addItems: ["Song Ledger"],
+            history: "Registered as a Bard.",
+          },
+        },
+        {
+          id: "class-tinkerer",
+          label: "Tinkerer",
+          nextSceneId: "cafeteria",
+          effects: {
+            setCharacter: { className: "Tinkerer" },
+            addItems: ["Gear Sketchbook"],
+            history: "Registered as a Tinkerer.",
+          },
+        },
+      ],
+    },
+    {
+      id: "cafeteria",
+      mapNodeId: "cafeteria",
+      kicker: "Cafeteria",
+      title: "The quartermaster packs provisions for the road.",
+      image: "assets/scene-courtyard.svg",
+      imageAlt: "A warm ruined hall serving counter stocked with fantasy provisions.",
+      text:
+        "The cafeteria line has become a quartermaster's counter. Pick the provisions that sound like they belong in your pack.",
+      choices: [
+        {
+          id: "provisions-trail-rations",
+          label: "Trail rations and canteen",
+          nextSceneId: "study-choice",
+          effects: {
+            setCharacter: { provisions: ["Trail Rations", "Canteen"] },
+            addItems: ["Trail Rations", "Canteen"],
+            history: "Packed trail rations and a canteen.",
+          },
+        },
+        {
+          id: "provisions-herbal-kit",
+          label: "Herbal tea and healer's bundle",
+          nextSceneId: "study-choice",
+          effects: {
+            setCharacter: { provisions: ["Herbal Tea", "Healer's Bundle"] },
+            addItems: ["Herbal Tea", "Healer's Bundle"],
+            history: "Packed herbal tea and a healer's bundle.",
+          },
+        },
+        {
+          id: "provisions-feast-box",
+          label: "Feast box and sweet rolls",
+          nextSceneId: "study-choice",
+          effects: {
+            setCharacter: { provisions: ["Feast Box", "Sweet Rolls"] },
+            addItems: ["Feast Box", "Sweet Rolls"],
+            history: "Packed a feast box and sweet rolls.",
+          },
+        },
+      ],
+    },
+    {
+      id: "study-choice",
+      mapNodeId: "cafeteria",
+      kicker: "Hallway",
+      title: "Two elective halls wait beyond the cafeteria.",
+      image: "assets/campus-ruins-map.svg",
+      imageAlt: "A simplified fantasy campus map of Falconrise Keep.",
+      text:
+        "The library glows with spell-script. The music room answers with tuning strings. The STEM workshops clatter farther down the hall for anyone ready to gear up.",
+      choices: [
+        {
+          id: "go-library-wizard",
+          label: "Visit the Library for spells",
+          nextSceneId: "library",
+          requires: { character: { className: ["Wizard", "Paladin", "Ranger", "Cleric"] } },
+          hideUnavailable: true,
+        },
+        {
+          id: "go-music-room",
+          label: "Visit the Music Room",
+          nextSceneId: "music-room",
+          requires: { character: { className: "Bard" } },
+          hideUnavailable: true,
+        },
+        {
+          id: "go-stem-workshops",
+          label: "Head to the STEM workshops",
+          nextSceneId: "stem-workshops",
+        },
+      ],
+    },
+    {
+      id: "library",
+      mapNodeId: "library",
+      kicker: "Library",
+      title: "Choose the magic you want in reach.",
+      image: "assets/scene-courtyard.svg",
+      imageAlt: "A ruined school library transformed into a candlelit spell archive.",
+      text:
+        "Stacks of books lean like old towers. A librarian points you toward three beginning spell bundles and pretends not to notice the shelves whispering your name.",
+      choices: [
+        {
+          id: "spells-ember-and-ward",
+          label: "Ember, Light, and Shield",
+          nextSceneId: "stem-workshops",
+          effects: {
+            setCharacter: { spells: ["Ember", "Light", "Shield"] },
+            addItems: ["Spell Bundle: Ember, Light, Shield"],
+            history: "Selected the Ember, Light, and Shield spell bundle.",
+          },
+        },
+        {
+          id: "spells-vine-and-mending",
+          label: "Vine Snare, Mending, and Speak with Beasts",
+          nextSceneId: "stem-workshops",
+          effects: {
+            setCharacter: { spells: ["Vine Snare", "Mending", "Speak with Beasts"] },
+            addItems: ["Spell Bundle: Vine Snare, Mending, Speak with Beasts"],
+            history: "Selected the Vine Snare, Mending, and Speak with Beasts spell bundle.",
+          },
+        },
+        {
+          id: "spells-oath-and-courage",
+          label: "Blessing, Courage, and Sacred Flame",
+          nextSceneId: "stem-workshops",
+          effects: {
+            setCharacter: { spells: ["Blessing", "Courage", "Sacred Flame"] },
+            addItems: ["Spell Bundle: Blessing, Courage, Sacred Flame"],
+            history: "Selected the Blessing, Courage, and Sacred Flame spell bundle.",
+          },
+        },
+      ],
+    },
+    {
+      id: "music-room",
+      mapNodeId: "music-room",
+      kicker: "Music Room",
+      title: "Pick the sound your legend enters with.",
+      image: "assets/scene-courtyard.svg",
+      imageAlt: "A ruined school music room with instruments, banners, and candlelight.",
+      text:
+        "A room of battered instruments hums in harmony. The music teacher asks whether you lead with strings, pipes, or drums.",
+      choices: [
+        {
+          id: "instrument-lute",
+          label: "Lute and charm songs",
+          nextSceneId: "stem-workshops",
+          effects: {
+            setCharacter: { instrument: "Lute", spells: ["Charm", "Inspire", "Echo"] },
+            addItems: ["Lute"],
+            history: "Selected a lute and charm songs.",
+          },
+        },
+        {
+          id: "instrument-flute",
+          label: "Flute and wind songs",
+          nextSceneId: "stem-workshops",
+          effects: {
+            setCharacter: { instrument: "Flute", spells: ["Gust", "Lullaby", "Quickstep"] },
+            addItems: ["Flute"],
+            history: "Selected a flute and wind songs.",
+          },
+        },
+        {
+          id: "instrument-drum",
+          label: "Drum and courage songs",
+          nextSceneId: "stem-workshops",
+          effects: {
+            setCharacter: { instrument: "Drum", spells: ["Courage", "Thunderbeat", "Rally"] },
+            addItems: ["Drum"],
+            history: "Selected a drum and courage songs.",
+          },
+        },
+      ],
+    },
+    {
+      id: "stem-workshops",
+      mapNodeId: "stem-workshops",
+      kicker: "STEM Workshops",
+      title: "Tinkerers offer armor, weapons, and bright ideas.",
+      image: "assets/scene-tournament-grounds.svg",
+      imageAlt: "Training courts transformed into tinkerer workshops full of tools, racks, and gear.",
+      text:
+        "The STEM classrooms have become tinkerer workshops. Workbenches glitter with rivets, wood shavings, practice blades, and half-finished contraptions.",
+      choices: [
+        {
+          id: "gear-staff-robes",
+          label: "Buy staff, robes, and component pouch (4 gold)",
+          nextSceneId: "character-complete",
+          requires: { stats: { gold: 4 } },
+          effects: {
+            setCharacter: { weapon: "Quarterstaff", armor: "Traveling Robes" },
+            addItems: ["Quarterstaff", "Traveling Robes", "Component Pouch"],
+            statDeltas: { gold: -4 },
+            history: "Chose staff, robes, and a component pouch.",
+          },
+        },
+        {
+          id: "gear-bow-leather",
+          label: "Buy shortbow, leather armor, and knife (7 gold)",
+          nextSceneId: "character-complete",
+          requires: { stats: { gold: 7 } },
+          effects: {
+            setCharacter: { weapon: "Shortbow", armor: "Leather Armor" },
+            addItems: ["Shortbow", "Leather Armor", "Utility Knife"],
+            statDeltas: { gold: -7 },
+            history: "Chose shortbow, leather armor, and a utility knife.",
+          },
+        },
+        {
+          id: "gear-sword-shield",
+          label: "Buy sword, shield, and chain shirt (10 gold)",
+          nextSceneId: "character-complete",
+          requires: { stats: { gold: 10 } },
+          effects: {
+            setCharacter: { weapon: "Longsword", armor: "Chain Shirt and Shield" },
+            addItems: ["Longsword", "Shield", "Chain Shirt"],
+            statDeltas: { gold: -10 },
+            armorClassDelta: 3,
+            history: "Chose sword, shield, and a chain shirt.",
+          },
+        },
+        {
+          id: "gear-tools-crossbow",
+          label: "Buy toolkit, light crossbow, and padded coat (6 gold)",
+          nextSceneId: "character-complete",
+          requires: { stats: { gold: 6 } },
+          effects: {
+            setCharacter: { weapon: "Light Crossbow", armor: "Padded Coat" },
+            addItems: ["Tinkerer's Toolkit", "Light Crossbow", "Padded Coat"],
+            statDeltas: { gold: -6 },
+            history: "Chose toolkit, light crossbow, and a padded coat.",
+          },
+        },
+      ],
+    },
+    {
+      id: "character-complete",
+      mapNodeId: "sracs-gate",
+      kicker: "Ledger Complete",
+      title: "Your character is ready to leave SRAC'S.",
+      image: "assets/scene-sracs-tavern.png",
+      imageAlt: "SRAC'S tavern glowing under storm clouds as a new adventurer prepares to depart.",
+      text:
+        "The barkeep stamps the ledger, the quartermaster cinches your pack, and the registrar files your card. Your character now exists in the story and in the request logs carried by the tracking pixel.",
+      choices: [
+        {
+          id: "review-map",
+          label: "Review the campus map",
+          nextSceneId: "character-map",
+        },
+        {
+          id: "restart-generator",
+          label: "Start a new character",
+          nextSceneId: "sracs-gate",
+          effects: {
+            resetCharacter: true,
+            history: "Returned to the SRAC'S gate to begin again.",
+          },
+        },
+      ],
+    },
+    {
+      id: "character-map",
+      mapNodeId: "sracs-gate",
+      kicker: "Character Route",
+      title: "The campus has become a character sheet you walk through.",
+      image: "assets/campus-ruins-map.svg",
+      imageAlt: "A simplified fantasy map showing SRAC'S, the courtyard, halls, gym, fields, and workshops.",
+      text:
+        "SRAC'S starts the name and origin. The outdoor bar gives background. The Gymnasium reveals ability scores. The Main Office registers class. The Cafeteria fills the pack. The Library, Music Room, and STEM Workshops finish spells, songs, armor, and weapons.",
+      choices: [
+        {
+          id: "return-complete",
+          label: "Return to the completed ledger",
+          nextSceneId: "character-complete",
         },
       ],
     },

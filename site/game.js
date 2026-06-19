@@ -1,19 +1,10 @@
 const STORAGE_KEY = "phoenix-adventures-save";
+const TRACKING_VERSION = "20260619-1";
 const ATTRIBUTE_KEYS = ["strength", "intelligence", "wisdom", "dexterity", "constitution", "charisma"];
 const LEGACY_STAT_MAP = {
   might: "strength",
   wits: "wisdom",
   spirit: "wisdom",
-};
-const SCENE_ALIASES = {
-  camp: "sracs-tavern",
-  mapRoom: "ruin-map",
-  ruins: "north-hall",
-  courtyard: "central-courtyard",
-  shrine: "roadside-shrine",
-  merchant: "tavern-yard",
-  tournament: "tournament-grounds",
-  emberGate: "cinderwake-threshold",
 };
 
 class Scene {
@@ -32,26 +23,79 @@ class Scene {
 class Adventurer {
   constructor(profile = {}) {
     const incomingStats = profile.stats || {};
-    const rolledStats = rollAbilityScores();
 
-    this.name = profile.name || "Ash";
+    this.name = profile.name || "";
     this.level = readNumber(profile.level, 1);
     this.stats = ATTRIBUTE_KEYS.reduce((stats, attribute) => {
-      stats[attribute] = readNumber(incomingStats[attribute], rolledStats[attribute]);
+      stats[attribute] = readNullableNumber(incomingStats[attribute]);
       return stats;
     }, {});
     this.stats.gold = readNumber(incomingStats.gold ?? profile.gold, 0);
-    this.armorClass = readNumber(profile.armorClass, calculateArmorClass(this.stats.dexterity));
+    this.race = profile.race || "";
+    this.origin = profile.origin || "";
+    this.background = profile.background || "";
+    this.className = profile.className || "";
+    this.spells = Array.isArray(profile.spells) ? [...profile.spells] : [];
+    this.provisions = Array.isArray(profile.provisions) ? [...profile.provisions] : [];
+    this.instrument = profile.instrument || "";
+    this.armor = profile.armor || "";
+    this.weapon = profile.weapon || "";
+    this.armorClass = readNullableNumber(profile.armorClass);
     this.hitPoints = normalizeHitPoints(profile.hitPoints, this.stats.constitution);
     this.inventory = Array.isArray(profile.inventory) ? [...profile.inventory] : [];
+
+    this.refreshDerivedVitals();
+  }
+
+  hasAbilityScores() {
+    return ATTRIBUTE_KEYS.every((attribute) => Number.isFinite(this.stats[attribute]));
+  }
+
+  rollAbilities() {
+    this.stats = {
+      ...this.stats,
+      ...rollAbilityScores(),
+    };
+    this.armorClass = calculateArmorClass(this.stats.dexterity);
+    this.hitPoints = normalizeHitPoints(null, this.stats.constitution);
+  }
+
+  refreshDerivedVitals() {
+    if (!this.hasAbilityScores()) {
+      this.armorClass = null;
+      this.hitPoints = { current: null, max: null };
+      return;
+    }
+
+    this.armorClass = readNumber(this.armorClass, calculateArmorClass(this.stats.dexterity));
+    this.hitPoints = normalizeHitPoints(this.hitPoints, this.stats.constitution);
   }
 
   applyEffects(effects = {}) {
+    if (effects.resetCharacter) {
+      const replacement = new Adventurer({ stats: { gold: 12 } });
+      Object.assign(this, replacement);
+    }
+
+    if (effects.rollAbilities) {
+      this.rollAbilities();
+    }
+
+    this.applyCharacterFields(effects.setCharacter);
     this.applyStatDeltas(effects.statDeltas);
     this.applyHitPointDelta(effects.hitPointDelta);
     this.applyArmorClassDelta(effects.armorClassDelta);
     this.addItems(effects.addItems);
-    this.removeItems(effects.removeItems);
+  }
+
+  applyCharacterFields(fields = {}) {
+    Object.entries(fields).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        this[key] = [...value];
+      } else {
+        this[key] = value;
+      }
+    });
   }
 
   applyStatDeltas(statDeltas = {}) {
@@ -64,7 +108,7 @@ class Adventurer {
   }
 
   applyHitPointDelta(delta) {
-    if (!Number.isFinite(Number(delta))) {
+    if (!isNumericValue(delta) || !isNumericValue(this.hitPoints.current)) {
       return;
     }
 
@@ -72,11 +116,11 @@ class Adventurer {
   }
 
   applyArmorClassDelta(delta) {
-    if (!Number.isFinite(Number(delta))) {
+    if (!isNumericValue(delta)) {
       return;
     }
 
-    this.armorClass += Number(delta);
+    this.armorClass = readNumber(this.armorClass, calculateArmorClass(this.stats.dexterity)) + Number(delta);
   }
 
   addItems(items = []) {
@@ -85,31 +129,6 @@ class Adventurer {
         this.inventory.push(item);
       }
     });
-  }
-
-  removeItems(items = []) {
-    if (items.length === 0) {
-      return;
-    }
-
-    this.inventory = this.inventory.filter((item) => !items.includes(item));
-  }
-
-  rollCheck(check) {
-    const stat = LEGACY_STAT_MAP[check.stat] || check.stat;
-    const sides = check.sides || 20;
-    const roll = Math.floor(Math.random() * sides) + 1;
-    const modifier = this.checkModifier(stat);
-    const total = roll + modifier;
-
-    return {
-      stat,
-      target: check.target,
-      roll,
-      modifier,
-      total,
-      success: total >= check.target,
-    };
   }
 
   requirementProblems(requirements = {}) {
@@ -127,11 +146,16 @@ class Adventurer {
       }
     });
 
-    return problems;
-  }
+    Object.entries(requirements.character || {}).forEach(([field, expected]) => {
+      const actual = this[field];
+      const expectedValues = Array.isArray(expected) ? expected : [expected];
 
-  checkModifier(stat) {
-    return ATTRIBUTE_KEYS.includes(stat) ? abilityModifier(this.stats[stat]) : Number(this.stats[stat]) || 0;
+      if (!expectedValues.includes(actual)) {
+        problems.push(`Needs ${expectedValues.join(" or ")}`);
+      }
+    });
+
+    return problems;
   }
 
   toJSON() {
@@ -139,6 +163,15 @@ class Adventurer {
       name: this.name,
       level: this.level,
       stats: { ...this.stats },
+      race: this.race,
+      origin: this.origin,
+      background: this.background,
+      className: this.className,
+      spells: [...this.spells],
+      provisions: [...this.provisions],
+      instrument: this.instrument,
+      armor: this.armor,
+      weapon: this.weapon,
       armorClass: this.armorClass,
       hitPoints: { ...this.hitPoints },
       inventory: [...this.inventory],
@@ -153,6 +186,7 @@ class Adventure {
     this.startSceneId = definition.startSceneId;
     this.openingHistory = definition.openingHistory || [];
     this.playerTemplate = definition.player;
+    this.trackingPixel = definition.trackingPixel || "assets/character-pixel.svg";
     this.scenes = new Map((definition.scenes || []).map((scene) => [scene.id, new Scene(scene)]));
   }
 
@@ -165,7 +199,6 @@ class Adventure {
       sceneId: this.startSceneId,
       player: new Adventurer(this.playerTemplate).toJSON(),
       history: [...this.openingHistory],
-      internalRolls: [],
     };
   }
 
@@ -185,18 +218,14 @@ class Adventure {
       ...defaultState,
       sceneId: this.resolveSceneId(saved.sceneId),
       player: new Adventurer({
-        name: playerData.name || defaultState.player.name,
-        level: playerData.level || defaultState.player.level,
+        ...defaultState.player,
+        ...playerData,
         stats: {
           ...defaultState.player.stats,
           ...(playerData.stats || {}),
         },
-        armorClass: playerData.armorClass,
-        hitPoints: playerData.hitPoints,
-        inventory: Array.isArray(playerData.inventory) ? playerData.inventory : defaultState.player.inventory,
       }).toJSON(),
       history: Array.isArray(saved.history) ? saved.history : defaultState.history,
-      internalRolls: Array.isArray(saved.internalRolls) ? saved.internalRolls.slice(-30) : [],
     };
   }
 
@@ -211,18 +240,14 @@ class Adventure {
           ...migrateLegacyStats(saved.stats || {}),
           ...(saved.stats || {}),
         },
-        armorClass: saved.armorClass,
-        hitPoints: saved.hitPoints,
         inventory: Array.isArray(saved.inventory) ? saved.inventory : this.playerTemplate.inventory,
       }).toJSON(),
       history: Array.isArray(saved.log) ? saved.log : [...this.openingHistory],
-      internalRolls: [],
     };
   }
 
   resolveSceneId(sceneId) {
-    const resolvedSceneId = SCENE_ALIASES[sceneId] || sceneId;
-    return this.scenes.has(resolvedSceneId) ? resolvedSceneId : this.startSceneId;
+    return this.scenes.has(sceneId) ? sceneId : this.startSceneId;
   }
 }
 
@@ -242,13 +267,16 @@ class AdventureGame {
   bindEvents() {
     this.elements.heroName.addEventListener("input", () => {
       const hero = new Adventurer(this.state.player);
-      hero.name = this.elements.heroName.value.trim() || this.adventure.playerTemplate.name;
+      hero.name = this.elements.heroName.value.trim();
       this.state.player = hero.toJSON();
       this.saveState();
+      this.updateTrackingPixel("name");
+      this.renderIdentity(hero);
     });
 
     this.elements.saveButton.addEventListener("click", () => {
       this.saveState();
+      this.updateTrackingPixel("save");
       flashButton(this.elements.saveButton, "Saved");
     });
 
@@ -267,44 +295,64 @@ class AdventureGame {
     this.elements.sceneImage.alt = scene.imageAlt;
     this.elements.sceneKicker.textContent = scene.kicker;
     this.elements.sceneTitle.textContent = scene.title;
-    this.elements.sceneText.textContent = scene.text;
+    this.elements.sceneText.textContent = this.interpolate(scene.text, hero);
     this.elements.heroName.value = hero.name;
     this.elements.heroLevel.textContent = `Level ${hero.level}`;
-    this.elements.statStrength.textContent = hero.stats.strength;
-    this.elements.statIntelligence.textContent = hero.stats.intelligence;
-    this.elements.statWisdom.textContent = hero.stats.wisdom;
-    this.elements.statDexterity.textContent = hero.stats.dexterity;
-    this.elements.statConstitution.textContent = hero.stats.constitution;
-    this.elements.statCharisma.textContent = hero.stats.charisma;
-    this.elements.modStrength.textContent = formatModifier(abilityModifier(hero.stats.strength));
-    this.elements.modIntelligence.textContent = formatModifier(abilityModifier(hero.stats.intelligence));
-    this.elements.modWisdom.textContent = formatModifier(abilityModifier(hero.stats.wisdom));
-    this.elements.modDexterity.textContent = formatModifier(abilityModifier(hero.stats.dexterity));
-    this.elements.modConstitution.textContent = formatModifier(abilityModifier(hero.stats.constitution));
-    this.elements.modCharisma.textContent = formatModifier(abilityModifier(hero.stats.charisma));
-    this.elements.armorClass.textContent = hero.armorClass;
-    this.elements.hitPoints.textContent = `${hero.hitPoints.current}/${hero.hitPoints.max}`;
-    this.elements.statGold.textContent = hero.stats.gold;
 
+    this.renderIdentity(hero);
+    this.renderAbilityScores(hero);
     this.renderChoices(scene.choices, hero);
     renderList(this.elements.inventoryList, hero.inventory);
+    this.updateTrackingPixel("render");
+  }
+
+  renderIdentity(hero) {
+    const name = hero.name || "Unnamed";
+    this.elements.identityRace.textContent = hero.race || "Unchosen";
+    this.elements.identityOrigin.textContent = hero.origin ? `${name} of the ${hero.origin}` : "Undeclared";
+    this.elements.identityBackground.textContent = hero.background || "Unchosen";
+    this.elements.identityClass.textContent = hero.className || "Unregistered";
+  }
+
+  renderAbilityScores(hero) {
+    ATTRIBUTE_KEYS.forEach((attribute) => {
+      const score = hero.stats[attribute];
+      const scoreElement = this.elements[`stat${capitalize(attribute)}`];
+      const modifierElement = this.elements[`mod${capitalize(attribute)}`];
+
+      scoreElement.textContent = formatScore(score);
+      modifierElement.textContent = formatModifier(abilityModifier(score));
+    });
+
+    this.elements.armorClass.textContent = formatScore(hero.armorClass);
+    this.elements.hitPoints.textContent =
+      Number.isFinite(hero.hitPoints.current) && Number.isFinite(hero.hitPoints.max)
+        ? `${hero.hitPoints.current}/${hero.hitPoints.max}`
+        : "--";
+    this.elements.statGold.textContent = hero.stats.gold;
   }
 
   renderChoices(choices, hero) {
-    this.elements.choiceList.replaceChildren(
-      ...choices.map((choice) => {
-        const button = document.createElement("button");
+    const buttons = choices
+      .map((choice) => {
         const problems = hero.requirementProblems(choice.requires);
 
+        if (choice.hideUnavailable && problems.length > 0) {
+          return null;
+        }
+
+        const button = document.createElement("button");
         button.type = "button";
-        button.textContent = choice.label;
+        button.textContent = this.interpolate(choice.label, hero);
         button.disabled = problems.length > 0;
         button.title = problems.join("; ");
         button.addEventListener("click", () => this.choose(choice));
 
         return button;
-      }),
-    );
+      })
+      .filter(Boolean);
+
+    this.elements.choiceList.replaceChildren(...buttons);
   }
 
   choose(choice) {
@@ -314,37 +362,12 @@ class AdventureGame {
       return;
     }
 
-    let nextSceneId = choice.nextSceneId || this.state.sceneId;
-
-    if (choice.check) {
-      const result = hero.rollCheck(choice.check);
-      const outcome = result.success ? choice.check.success : choice.check.failure;
-
-      this.recordInternalRoll(choice, result);
-      hero.applyEffects(outcome?.effects);
-      this.recordHistory(outcome?.effects?.history);
-      nextSceneId = outcome?.nextSceneId || nextSceneId;
-    } else {
-      hero.applyEffects(choice.effects);
-      this.recordHistory(choice.effects?.history);
-    }
-
+    hero.applyEffects(choice.effects);
+    this.recordHistory(choice.effects?.history);
     this.state.player = hero.toJSON();
-    this.state.sceneId = this.adventure.resolveSceneId(nextSceneId);
+    this.state.sceneId = this.adventure.resolveSceneId(choice.nextSceneId || this.state.sceneId);
     this.saveState();
     this.render();
-  }
-
-  recordInternalRoll(choice, result) {
-    this.state.internalRolls = [
-      ...(this.state.internalRolls || []),
-      {
-        sceneId: this.state.sceneId,
-        choiceId: choice.id,
-        at: new Date().toISOString(),
-        ...result,
-      },
-    ].slice(-30);
   }
 
   recordHistory(entry) {
@@ -353,6 +376,13 @@ class AdventureGame {
     }
 
     this.state.history = [...(this.state.history || []), entry].slice(-50);
+  }
+
+  interpolate(text, hero) {
+    return text
+      .replaceAll("{name}", hero.name || "the traveler")
+      .replaceAll("{origin}", hero.origin || "nowhere named")
+      .replaceAll("{class}", hero.className || "unregistered");
   }
 
   loadState() {
@@ -366,9 +396,52 @@ class AdventureGame {
   saveState() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
   }
+
+  updateTrackingPixel(eventName) {
+    if (!this.elements.logPixel) {
+      return;
+    }
+
+    const hero = new Adventurer(this.state.player);
+    const params = new URLSearchParams({
+      v: TRACKING_VERSION,
+      event: eventName,
+      scene: this.state.sceneId,
+      name: hero.name,
+      race: hero.race,
+      origin: hero.origin,
+      background: hero.background,
+      class: hero.className,
+      ac: stringifyValue(hero.armorClass),
+      hp: stringifyValue(hero.hitPoints.current),
+      hpMax: stringifyValue(hero.hitPoints.max),
+      gold: stringifyValue(hero.stats.gold),
+      spells: hero.spells.join("|"),
+      provisions: hero.provisions.join("|"),
+      instrument: hero.instrument,
+      armor: hero.armor,
+      weapon: hero.weapon,
+      inventory: hero.inventory.join("|"),
+      rid: `${Date.now()}-${Math.floor(Math.random() * 100000)}`,
+    });
+
+    ATTRIBUTE_KEYS.forEach((attribute) => {
+      params.set(attribute, stringifyValue(hero.stats[attribute]));
+    });
+
+    this.elements.logPixel.src = `${this.adventure.trackingPixel}?${params.toString()}`;
+  }
 }
 
 function renderList(list, values) {
+  if (values.length === 0) {
+    const empty = document.createElement("li");
+    empty.textContent = "Pack is empty";
+    empty.className = "empty-token";
+    list.replaceChildren(empty);
+    return;
+  }
+
   list.replaceChildren(
     ...values.map((value) => {
       const item = document.createElement("li");
@@ -412,18 +485,31 @@ function rollAbilityScore() {
 }
 
 function abilityModifier(score) {
-  return Math.floor((Number(score) - 10) / 2);
+  return isNumericValue(score) ? Math.floor((Number(score) - 10) / 2) : null;
 }
 
 function formatModifier(modifier) {
+  if (!Number.isFinite(Number(modifier))) {
+    return "--";
+  }
+
   return `${modifier >= 0 ? "+" : ""}${modifier}`;
 }
 
+function formatScore(score) {
+  return isNumericValue(score) ? String(score) : "--";
+}
+
 function calculateArmorClass(dexterity) {
-  return 10 + abilityModifier(dexterity);
+  const modifier = abilityModifier(dexterity);
+  return Number.isFinite(modifier) ? 10 + modifier : null;
 }
 
 function normalizeHitPoints(hitPoints, constitution) {
+  if (!isNumericValue(constitution)) {
+    return { current: null, max: null };
+  }
+
   const max = readNumber(hitPoints?.max, Math.max(1, 8 + abilityModifier(constitution)));
   const current = clamp(readNumber(hitPoints?.current, max), 0, max);
 
@@ -432,19 +518,31 @@ function normalizeHitPoints(hitPoints, constitution) {
 
 function migrateLegacyStats(stats = {}) {
   return Object.entries(LEGACY_STAT_MAP).reduce((migrated, [legacyStat, nextStat]) => {
-    if (Number.isFinite(Number(stats[legacyStat])) && !Number.isFinite(Number(stats[nextStat]))) {
+    if (isNumericValue(stats[legacyStat]) && !isNumericValue(stats[nextStat])) {
       migrated[nextStat] = 10 + Number(stats[legacyStat]);
     }
     return migrated;
   }, {});
 }
 
+function readNullableNumber(value) {
+  return isNumericValue(value) ? Number(value) : null;
+}
+
 function readNumber(value, fallback) {
-  return Number.isFinite(Number(value)) ? Number(value) : fallback;
+  return isNumericValue(value) ? Number(value) : fallback;
 }
 
 function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
+}
+
+function stringifyValue(value) {
+  return isNumericValue(value) || value ? String(value) : "";
+}
+
+function isNumericValue(value) {
+  return value !== null && value !== undefined && value !== "" && Number.isFinite(Number(value));
 }
 
 const elements = {
@@ -455,6 +553,10 @@ const elements = {
   choiceList: document.querySelector("#choiceList"),
   heroName: document.querySelector("#heroName"),
   heroLevel: document.querySelector("#heroLevel"),
+  identityRace: document.querySelector("#identityRace"),
+  identityOrigin: document.querySelector("#identityOrigin"),
+  identityBackground: document.querySelector("#identityBackground"),
+  identityClass: document.querySelector("#identityClass"),
   statStrength: document.querySelector("#statStrength"),
   statIntelligence: document.querySelector("#statIntelligence"),
   statWisdom: document.querySelector("#statWisdom"),
@@ -473,6 +575,7 @@ const elements = {
   saveButton: document.querySelector("#saveButton"),
   newGameButton: document.querySelector("#newGameButton"),
   inventoryList: document.querySelector("#inventoryList"),
+  logPixel: document.querySelector("#logPixel"),
 };
 
 window.PhoenixAdventure = {

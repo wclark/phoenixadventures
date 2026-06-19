@@ -25,6 +25,7 @@ $NoCacheFiles = @(
   @{ Local = "adventure-data.js"; ContentType = "application/javascript" },
   @{ Local = "game.js"; ContentType = "application/javascript" },
   @{ Local = "styles.css"; ContentType = "text/css" },
+  @{ Local = "assets/character-pixel.svg"; ContentType = "image/svg+xml" },
   @{ Local = "assets/scene-sracs-tavern.svg"; ContentType = "image/svg+xml" }
 )
 

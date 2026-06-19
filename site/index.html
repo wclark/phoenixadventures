@@ -4,17 +4,17 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Phoenix Adventures</title>
-    <link rel="stylesheet" href="styles.css?v=20260524-2" />
+    <link rel="stylesheet" href="styles.css?v=20260619-1" />
   </head>
   <body>
     <div class="app-shell">
       <header class="topbar">
         <div>
-          <p class="eyebrow">Static alpha</p>
+          <p class="eyebrow">Character generator alpha</p>
           <h1>Phoenix Adventures</h1>
         </div>
         <div class="topbar-actions">
-          <button id="newGameButton" type="button">New Quest</button>
+          <button id="newGameButton" type="button">New Character</button>
           <button id="saveButton" type="button">Save</button>
         </div>
       </header>
@@ -37,50 +37,68 @@
               <span id="heroLevel">Level 1</span>
             </div>
             <label class="name-field" for="heroName">
-              <span>Name</span>
-              <input id="heroName" maxlength="28" value="Ash" />
+              <span>Character Name</span>
+              <input id="heroName" maxlength="28" placeholder="Enter a name" />
             </label>
+            <dl class="identity-list">
+              <div>
+                <dt>Race</dt>
+                <dd id="identityRace">Unchosen</dd>
+              </div>
+              <div>
+                <dt>Origin</dt>
+                <dd id="identityOrigin">Undeclared</dd>
+              </div>
+              <div>
+                <dt>Background</dt>
+                <dd id="identityBackground">Unchosen</dd>
+              </div>
+              <div>
+                <dt>Class</dt>
+                <dd id="identityClass">Unregistered</dd>
+              </div>
+            </dl>
             <div class="sheet-stat-area">
               <div class="attribute-list" aria-label="Character attributes">
                 <div>
                   <span>Strength</span>
-                  <strong id="statStrength">10</strong>
-                  <small id="modStrength">+0</small>
+                  <strong id="statStrength">--</strong>
+                  <small id="modStrength">--</small>
                 </div>
                 <div>
                   <span>Intelligence</span>
-                  <strong id="statIntelligence">10</strong>
-                  <small id="modIntelligence">+0</small>
+                  <strong id="statIntelligence">--</strong>
+                  <small id="modIntelligence">--</small>
                 </div>
                 <div>
                   <span>Wisdom</span>
-                  <strong id="statWisdom">10</strong>
-                  <small id="modWisdom">+0</small>
+                  <strong id="statWisdom">--</strong>
+                  <small id="modWisdom">--</small>
                 </div>
                 <div>
                   <span>Dexterity</span>
-                  <strong id="statDexterity">10</strong>
-                  <small id="modDexterity">+0</small>
+                  <strong id="statDexterity">--</strong>
+                  <small id="modDexterity">--</small>
                 </div>
                 <div>
                   <span>Constitution</span>
-                  <strong id="statConstitution">10</strong>
-                  <small id="modConstitution">+0</small>
+                  <strong id="statConstitution">--</strong>
+                  <small id="modConstitution">--</small>
                 </div>
                 <div>
                   <span>Charisma</span>
-                  <strong id="statCharisma">10</strong>
-                  <small id="modCharisma">+0</small>
+                  <strong id="statCharisma">--</strong>
+                  <small id="modCharisma">--</small>
                 </div>
               </div>
               <div class="vital-list" aria-label="Combat stats">
                 <div>
                   <span>Armor Class</span>
-                  <strong id="armorClass">10</strong>
+                  <strong id="armorClass">--</strong>
                 </div>
                 <div>
                   <span>Hit Points</span>
-                  <strong id="hitPoints">8/8</strong>
+                  <strong id="hitPoints">--</strong>
                 </div>
                 <div>
                   <span>Gold</span>
@@ -96,9 +114,10 @@
           </section>
         </aside>
       </main>
+      <img id="logPixel" class="log-pixel" src="assets/character-pixel.svg" alt="" aria-hidden="true" />
     </div>
 
-    <script src="adventure-data.js?v=20260524-2"></script>
-    <script src="game.js?v=20260524-2"></script>
+    <script src="adventure-data.js?v=20260619-1"></script>
+    <script src="game.js?v=20260619-1"></script>
   </body>
 </html>

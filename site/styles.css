@@ -214,6 +214,7 @@ input:focus-visible {
 
 .sheet-heading span,
 .name-field span,
+.identity-list dt,
 .attribute-list span,
 .vital-list span,
 .token-list {
@@ -234,6 +235,31 @@ input:focus-visible {
   padding: 0 12px;
   color: var(--parchment);
   background: rgba(20, 16, 15, 0.7);
+}
+
+.identity-list {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0 0;
+}
+
+.identity-list div {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 9px 11px;
+  background: rgba(20, 16, 15, 0.42);
+}
+
+.identity-list dt,
+.identity-list dd {
+  margin: 0;
+}
+
+.identity-list dd {
+  margin-top: 3px;
+  color: var(--parchment);
+  font-size: 14px;
+  line-height: 1.3;
 }
 
 .sheet-stat-area {
@@ -323,6 +349,19 @@ input:focus-visible {
   padding: 6px 10px;
   color: var(--parchment);
   background: rgba(179, 77, 47, 0.16);
+}
+
+.token-list .empty-token {
+  color: var(--muted);
+  background: rgba(20, 16, 15, 0.38);
+}
+
+.log-pixel {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
 }
 
 @media (max-width: 900px) {

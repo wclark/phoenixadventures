@@ -7,3 +7,5 @@ The Falconrise Keep assets are original, fictionalized game art inspired by broa
 `scene-sracs-tavern.png` is the primary SRAC'S fantasy tavern starting-place image.
 
 `scene-sracs-tavern.svg` is only a compatibility wrapper for cached clients that still request the old SVG path.
+
+`character-pixel.svg` is a transparent log pixel. The app appends character-generator state as query parameters so AWS request logs can capture completed and in-progress builds.
