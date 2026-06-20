@@ -943,6 +943,7 @@ input:focus-visible {
 
 .progress-heading span,
 .name-field span,
+.sex-field span,
 .progress-list dt,
 .attribute-list span,
 .vital-list span,
@@ -956,9 +957,15 @@ input:focus-visible {
   gap: 8px;
 }
 
-.identity-builder .name-field {
+.identity-builder .name-field,
+.identity-builder .sex-field {
   max-width: 420px;
   margin-bottom: 8px;
+}
+
+.sex-field {
+  display: grid;
+  gap: 8px;
 }
 
 .name-field input {
@@ -969,6 +976,34 @@ input:focus-visible {
   padding: 0 12px;
   color: var(--parchment);
   background: rgba(20, 16, 15, 0.7);
+}
+
+.segmented-control {
+  display: inline-grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 300px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 3px;
+  background: rgba(20, 16, 15, 0.5);
+}
+
+.segment-button {
+  min-height: 36px;
+  border: 0;
+  padding: 0 14px;
+  color: var(--muted);
+  background: transparent;
+}
+
+.segment-button:hover {
+  transform: none;
+  background: rgba(95, 125, 78, 0.28);
+}
+
+.segment-button.is-selected {
+  color: #1b120d;
+  background: var(--gold);
 }
 
 .option-existing {
@@ -1059,10 +1094,13 @@ input:focus-visible {
   gap: 7px;
   max-height: calc(100dvh - 112px);
   margin: 10px 0 0;
-  overflow: hidden;
+  padding-right: 3px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-color: rgba(215, 168, 73, 0.62) rgba(20, 16, 15, 0.28);
 }
 
-.progress-list div {
+.progress-list > div {
   border: 1px solid var(--line);
   border-radius: 6px;
   padding: 8px 10px;
@@ -1087,6 +1125,71 @@ input:focus-visible {
   background: transparent;
 }
 
+.sheet-portrait-block {
+  grid-column: 1 / -1;
+}
+
+.character-portrait {
+  display: grid;
+  gap: 8px;
+  margin: 7px 0 0;
+}
+
+.character-portrait-image {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border: 1px solid rgba(215, 168, 73, 0.5);
+  border-radius: 6px;
+  background: rgba(20, 16, 15, 0.62);
+  box-shadow: inset 0 -40px 80px rgba(20, 16, 15, 0.18);
+}
+
+.character-portrait-atlas {
+  display: block;
+  width: 400%;
+  height: 600%;
+  max-width: none;
+  transform-origin: top left;
+}
+
+.character-portrait figcaption {
+  color: #d8c7a7;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.sheet-detail-block {
+  grid-column: 1 / -1;
+}
+
+.sheet-detail-list {
+  display: grid;
+  gap: 7px;
+  margin: 7px 0 0;
+}
+
+.sheet-detail-list div {
+  border: 1px solid rgba(234, 216, 184, 0.14);
+  border-radius: 6px;
+  padding: 7px 8px;
+  background: rgba(20, 16, 15, 0.3);
+}
+
+.sheet-detail-list dt {
+  color: var(--gold);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.sheet-detail-list dd {
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 1.34;
+}
+
 .sheet-ability-column {
   display: grid;
   gap: 8px;
@@ -1099,7 +1202,7 @@ input:focus-visible {
 
 @media (min-width: 980px) {
   .progress-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr);
     align-items: start;
   }
 
@@ -1489,7 +1592,7 @@ input:focus-visible {
     margin-top: 8px;
   }
 
-  .progress-list div {
+  .progress-list > div {
     padding: 7px 8px;
   }
 

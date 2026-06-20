@@ -1,9 +1,55 @@
 const STORAGE_KEY = "phoenix-adventures-save";
 const AUTH_STORAGE_KEY = "phoenix-adventures-user";
 const USER_CONFIG_BASE_URL = "data/users";
-const TRACKING_VERSION = "20260620-4";
+const TRACKING_VERSION = "20260620-5";
 const STATE_VERSION = "builder-20260619-8";
 const ATTRIBUTE_KEYS = ["strength", "intelligence", "wisdom", "dexterity", "constitution", "charisma"];
+const SEX_OPTIONS = ["male", "female"];
+const CHARACTER_ATLAS = {
+  male: "assets/characters/race-atlas-masculine.webp",
+  female: "assets/characters/race-atlas-feminine.webp",
+};
+const CHARACTER_ATLAS_COLUMNS = 4;
+const CHARACTER_ATLAS_ROWS = 6;
+const CHARACTER_ATLAS_CELLS = [
+  ["black-dragonborn", "Black Dragonborn"],
+  ["blue-dragonborn", "Blue Dragonborn"],
+  ["brass-dragonborn", "Brass Dragonborn"],
+  ["bronze-dragonborn", "Bronze Dragonborn"],
+  ["copper-dragonborn", "Copper Dragonborn"],
+  ["gold-dragonborn", "Gold Dragonborn"],
+  ["green-dragonborn", "Green Dragonborn"],
+  ["red-dragonborn", "Red Dragonborn"],
+  ["silver-dragonborn", "Silver Dragonborn"],
+  ["white-dragonborn", "White Dragonborn"],
+  ["hill-dwarf", "Hill Dwarf"],
+  ["mountain-dwarf", "Mountain Dwarf"],
+  ["high-elf", "High Elf"],
+  ["wood-elf", "Wood Elf"],
+  ["dark-elf", "Dark Elf"],
+  ["lightfoot-halfling", "Lightfoot Halfling"],
+  ["stout-halfling", "Stout Halfling"],
+  ["human", "Human"],
+  ["forest-gnome", "Forest Gnome"],
+  ["rock-gnome", "Rock Gnome"],
+  ["half-elf", "Half-Elf"],
+  ["half-orc", "Half-Orc"],
+  ["tiefling", "Tiefling"],
+  ["emberborn", "Emberborn"],
+].reduce((cells, [key, label], index) => {
+  cells[key] = {
+    key,
+    label,
+    column: index % CHARACTER_ATLAS_COLUMNS,
+    row: Math.floor(index / CHARACTER_ATLAS_COLUMNS),
+  };
+  return cells;
+}, {});
+const RACE_PORTRAIT_KEY_MAP = {
+  "woodland-elf": "wood-elf",
+  "forge-dwarf": "mountain-dwarf",
+  "sunlit-halfling": "lightfoot-halfling",
+};
 const LEGACY_STAT_MAP = {
   might: "strength",
   wits: "wisdom",
@@ -31,6 +77,7 @@ class Adventurer {
 
     this.name = profile.name || "";
     this.level = readNumber(profile.level, 1);
+    this.sex = normalizeSex(profile.sex);
     this.raceKey = profile.raceKey || inferDefinitionKey("races", profile.race, profile.origin);
     this.backgroundKey = profile.backgroundKey || inferDefinitionKey("backgrounds", profile.background);
     this.classKey = profile.classKey || inferDefinitionKey("classes", profile.className);
@@ -312,6 +359,7 @@ class Adventurer {
     return {
       name: this.name,
       level: this.level,
+      sex: this.sex,
       raceKey: this.raceKey,
       race: this.race,
       origin: this.origin,
@@ -752,6 +800,15 @@ class AdventureGame {
     this.renderCharacterSheet(hero);
   }
 
+  updateHeroSex(value) {
+    const hero = new Adventurer(this.state.player);
+    hero.sex = normalizeSex(value);
+    this.state.player = hero.toJSON();
+    this.saveState();
+    this.updateTrackingPixel("sex");
+    this.render();
+  }
+
   renderCharacterSheet(hero) {
     const hasSheetContent = shouldShowCharacterSheet(hero);
     const activeView = hasSheetContent && this.state.view === "sheet" ? "sheet" : "adventure";
@@ -783,9 +840,13 @@ class AdventureGame {
 
     const rows = [];
 
+    rows.push(sheetCharacterPortrait(hero));
+
     if (hero.name) {
       rows.push(sheetDatum("Name", hero.name));
     }
+
+    rows.push(sheetDatum("Sex", formatStatLabel(hero.sex)));
 
     if (hero.race) {
       rows.push(sheetDatum("Race", hero.race));
@@ -813,6 +874,11 @@ class AdventureGame {
 
     if (hero.proficiencies.length > 0) {
       rows.push(sheetDatum("Proficiencies", hero.proficiencies.join(", ")));
+    }
+
+    const raceProfile = sheetRaceProfile(hero);
+    if (raceProfile) {
+      rows.push(raceProfile);
     }
 
     if (hero.hasAssignedBaseScores()) {
@@ -973,8 +1039,26 @@ class AdventureGame {
       this.updateHeroName(event.currentTarget.value);
     });
 
+    const sexField = document.createElement("div");
+    sexField.className = "sex-field";
+    sexField.append(createElement("span", "Character Sex"));
+
+    const sexControl = document.createElement("div");
+    sexControl.className = "segmented-control";
+    SEX_OPTIONS.forEach((option) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "segment-button";
+      button.textContent = formatStatLabel(option);
+      button.setAttribute("aria-pressed", String(hero.sex === option));
+      button.classList.toggle("is-selected", hero.sex === option);
+      button.addEventListener("click", () => this.updateHeroSex(option));
+      sexControl.append(button);
+    });
+    sexField.append(sexControl);
+
     label.append(labelText, input);
-    panel.replaceChildren(heading, label);
+    panel.replaceChildren(heading, label, sexField);
   }
 
   renderOptionPickerBuilder(scene, hero) {
@@ -1480,6 +1564,7 @@ class AdventureGame {
       playerName: user?.playerName || "",
       scene: this.state.sceneId,
       name: hero.name,
+      sex: hero.sex,
       raceKey: hero.raceKey,
       race: hero.race,
       origin: hero.origin,
@@ -1565,6 +1650,80 @@ function sheetDatum(label, value) {
   const wrapper = document.createElement("div");
   wrapper.append(createElement("dt", label), createElement("dd", value));
   return wrapper;
+}
+
+function sheetCharacterPortrait(hero) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "sheet-portrait-block";
+
+  const cell = resolveCharacterPortraitCell(hero);
+  const image = document.createElement("div");
+  image.className = "character-portrait-image";
+  image.setAttribute("role", "img");
+  image.setAttribute("aria-label", `${cell.label} character reference`);
+
+  const atlas = document.createElement("img");
+  atlas.className = "character-portrait-atlas";
+  atlas.src = `${CHARACTER_ATLAS[hero.sex]}?v=${TRACKING_VERSION}`;
+  atlas.alt = "";
+  atlas.setAttribute("aria-hidden", "true");
+  atlas.style.transform = `translate(${cell.column * -25}%, ${atlasRowOffset(cell) * -(100 / CHARACTER_ATLAS_ROWS)}%)`;
+  image.append(atlas);
+
+  const caption = createElement("figcaption", `${cell.label} - ${formatStatLabel(hero.sex)} reference`);
+  const figure = document.createElement("figure");
+  figure.className = "character-portrait";
+  figure.append(image, caption);
+
+  const details = document.createElement("dd");
+  details.append(figure);
+  wrapper.append(createElement("dt", "Character Reference"), details);
+  return wrapper;
+}
+
+function sheetRaceProfile(hero) {
+  const race = hero.raceDefinition;
+
+  if (!race) {
+    return null;
+  }
+
+  const entries = [
+    ["Origin", hero.origin],
+    ["Field Notes", race.summary],
+    ["Ability Pattern", formatRaceBonuses(hero)],
+    ["Traits", normalizeStringArray(race.traits).join(", ")],
+    ["Common Paths", race.advice],
+  ].filter(([, value]) => value);
+
+  return entries.length > 0 ? sheetDetailList("Race Profile", entries) : null;
+}
+
+function sheetDetailList(label, entries) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "sheet-detail-block";
+
+  const list = document.createElement("dl");
+  list.className = "sheet-detail-list";
+  entries.forEach(([term, value]) => {
+    const item = document.createElement("div");
+    item.append(createElement("dt", term), createElement("dd", value));
+    list.append(item);
+  });
+
+  const details = document.createElement("dd");
+  details.append(list);
+  wrapper.append(createElement("dt", label), details);
+  return wrapper;
+}
+
+function resolveCharacterPortraitCell(hero) {
+  const portraitKey = hero.raceDefinition?.portraitKey || RACE_PORTRAIT_KEY_MAP[hero.raceKey] || hero.raceKey || "human";
+  return CHARACTER_ATLAS_CELLS[portraitKey] || CHARACTER_ATLAS_CELLS.human;
+}
+
+function atlasRowOffset(cell) {
+  return cell.row >= 3 && cell.row < CHARACTER_ATLAS_ROWS - 1 ? cell.row + 0.34 : cell.row;
 }
 
 function sheetAbilityScores(hero) {
@@ -1762,6 +1921,10 @@ function normalizeAbilityPool(values) {
   return Array.isArray(values)
     ? values.map((value) => Number(value)).filter((value) => Number.isFinite(value)).slice(0, ATTRIBUTE_KEYS.length)
     : [];
+}
+
+function normalizeSex(value) {
+  return SEX_OPTIONS.includes(value) ? value : "male";
 }
 
 function normalizeStringArray(values) {
