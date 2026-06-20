@@ -1,7 +1,7 @@
 const STORAGE_KEY = "phoenix-adventures-save";
 const AUTH_STORAGE_KEY = "phoenix-adventures-user";
 const USER_CONFIG_BASE_URL = "data/users";
-const TRACKING_VERSION = "20260620-3";
+const TRACKING_VERSION = "20260620-4";
 const STATE_VERSION = "builder-20260619-8";
 const ATTRIBUTE_KEYS = ["strength", "intelligence", "wisdom", "dexterity", "constitution", "charisma"];
 const LEGACY_STAT_MAP = {
@@ -654,7 +654,20 @@ class AdventureGame {
 
       const copy = document.createElement("div");
       copy.className = "event-copy";
-      copy.append(createElement("p", event.kicker || ""), createElement("h2", event.title || ""), createElement("span", event.text || ""));
+      copy.append(createElement("p", event.kicker || ""), createElement("h2", event.title || ""));
+
+      if (event.text) {
+        const story = createElement("span", event.text);
+        story.className = "event-text";
+        copy.append(story);
+      }
+
+      if (event.prompt) {
+        const task = createElement("strong", event.prompt);
+        task.className = "event-task";
+        copy.append(task);
+      }
+
       card.append(copy);
       return card;
     });
@@ -674,6 +687,7 @@ class AdventureGame {
       image: scene.image,
       imageAlt: scene.imageAlt,
       text: this.interpolate(scene.text, hero),
+      prompt: this.scenePrompt(scene, hero),
     };
     const events = Array.isArray(this.state.events) ? this.state.events : [];
     const last = events[events.length - 1];
@@ -689,6 +703,44 @@ class AdventureGame {
 
     this.state.events = [...events, renderedEvent].slice(-18);
     return true;
+  }
+
+  scenePrompt(scene, hero) {
+    if (scene.builder === "identity-entry") {
+      return "Enter a character name, then choose a race from the cards at the bottom.";
+    }
+
+    if (scene.builder === "ability-assignment") {
+      if (!hero.hasAbilityPool()) {
+        return "Roll six ability scores from the bottom rail to begin.";
+      }
+
+      return hero.hasAssignedBaseScores()
+        ? "Review each attribute screen or change a rolled number before continuing."
+        : "Move through the attribute screens and assign one rolled number to each ability.";
+    }
+
+    if (scene.builder === "option-picker") {
+      const config = scene.builderConfig || {};
+      const mode = config.mode || "single";
+      const minimum = readNumber(config.min, mode === "single" ? 1 : 0);
+      const maximum = readNumber(config.max, mode === "single" ? 1 : getOptionDefinitions(config.source).length);
+      return optionPickerHelp(mode, minimum, maximum);
+    }
+
+    if (scene.builder === "character-review") {
+      return "Review the finished sheet here, or open the full character panel from the right edge.";
+    }
+
+    if (scene.choices.length === 1) {
+      return `Choose "${this.interpolate(scene.choices[0].label, hero)}" to continue.`;
+    }
+
+    if (scene.choices.length > 1) {
+      return "Choose one of the option cards at the bottom to continue.";
+    }
+
+    return "";
   }
 
   updateHeroName(value) {
@@ -1052,7 +1104,7 @@ class AdventureGame {
       createElement(
         "p",
         hero.race
-          ? `${hero.race} bonuses: ${formatRaceBonuses(hero)}. Pick where each rolled base score belongs.`
+          ? `${hero.race} bonuses: ${formatRaceBonuses(hero)}. Each attribute screen shows the final score before you apply it.`
           : "Pick a race before assigning scores so the final totals include racial bonuses.",
       ),
     );
@@ -1064,51 +1116,69 @@ class AdventureGame {
       return;
     }
 
-    const pool = document.createElement("div");
-    pool.className = "score-pool";
-    pool.append(createElement("span", "Rolled scores"));
-    hero.abilityPool.forEach((score) => {
-      const chip = createElement("strong", String(score));
-      pool.append(chip);
-    });
-
-    const assignmentGrid = document.createElement("div");
-    assignmentGrid.className = "assignment-grid";
     const assignedIndexes = assignedIndexMap(hero);
     const controls = [];
+    const firstOpenIndex = ATTRIBUTE_KEYS.findIndex((attribute) => !Number.isInteger(assignedIndexes[attribute]));
+    const startIndex = firstOpenIndex >= 0 ? firstOpenIndex : 0;
+
+    const status = document.createElement("div");
+    status.className = "ability-status";
+
+    const carousel = document.createElement("section");
+    carousel.className = "splide ability-carousel";
+    carousel.setAttribute("aria-label", "Ability score assignment");
+
+    const track = document.createElement("div");
+    track.className = "splide__track";
+
+    const slideList = document.createElement("ul");
+    slideList.className = "splide__list";
 
     ATTRIBUTE_KEYS.forEach((attribute) => {
-      const row = document.createElement("div");
-      row.className = "assignment-row";
-      row.dataset.attribute = attribute;
+      const slide = document.createElement("li");
+      slide.className = "splide__slide ability-slide";
+      slide.dataset.attribute = attribute;
 
-      const label = document.createElement("div");
-      label.className = "assignment-label";
-      label.append(createElement("strong", formatStatLabel(attribute)), createElement("span", getAbilityDefinition(attribute).description));
+      const definition = getAbilityDefinition(attribute);
+      const raceBonus = hero.raceBonus(attribute);
+      const detail = document.createElement("div");
+      detail.className = "ability-detail";
 
+      const headingRow = document.createElement("div");
+      headingRow.className = "ability-detail-heading";
+      headingRow.append(createElement("span", definition.shortLabel), createElement("h4", definition.label || formatStatLabel(attribute)));
+
+      const description = createElement("p", definition.description || "");
+      description.className = "ability-description";
+
+      const facts = document.createElement("dl");
+      facts.className = "ability-facts";
+      facts.append(
+        abilityFact("Used for", definition.description || "General checks and saving throws."),
+        abilityFact("Skills", impactedSkillNames(attribute).join(", ") || "No linked skills in this data set."),
+        abilityFact("Race bonus", hero.race ? `${hero.race}: ${formatSigned(raceBonus)}` : "Choose a race first."),
+      );
+
+      const finalCard = createFinalScoreCard(attribute, null);
+      finalCard.classList.add("ability-final");
+      detail.append(headingRow, description, facts);
+
+      const control = {
+        attribute,
+        slide,
+        optionButtons: [],
+        assignmentIndex: Number.isInteger(assignedIndexes[attribute]) ? assignedIndexes[attribute] : null,
+        finalCard,
+      };
+
+      const pickArea = document.createElement("div");
+      pickArea.className = "ability-score-picker";
+
+      const pickLabel = createElement("span", "Choose one rolled score");
       const scoreOptions = document.createElement("div");
       scoreOptions.className = "score-options";
       scoreOptions.setAttribute("role", "group");
       scoreOptions.setAttribute("aria-label", `${formatStatLabel(attribute)} score options`);
-
-      const modifiers = document.createElement("div");
-      modifiers.className = "assignment-modifiers";
-
-      const modifierList = document.createElement("div");
-      modifierList.className = "modifier-list";
-      modifiers.append(modifierList);
-
-      const finalCard = createFinalScoreCard(attribute, null);
-      finalCard.classList.add("assignment-final");
-
-      const control = {
-        attribute,
-        row,
-        optionButtons: [],
-        assignmentIndex: Number.isInteger(assignedIndexes[attribute]) ? assignedIndexes[attribute] : null,
-        modifierList,
-        finalCard,
-      };
 
       hero.abilityPool.forEach((score, index) => {
         const option = document.createElement("button");
@@ -1133,10 +1203,14 @@ class AdventureGame {
         control.optionButtons.push(option);
       });
 
-      row.append(label, scoreOptions, modifiers, finalCard);
-      assignmentGrid.append(row);
+      pickArea.append(pickLabel, scoreOptions);
+      slide.append(detail, finalCard, pickArea);
+      slideList.append(slide);
       controls.push(control);
     });
+
+    track.append(slideList);
+    carousel.append(track);
 
     const applyButton = document.createElement("button");
     applyButton.type = "button";
@@ -1150,6 +1224,8 @@ class AdventureGame {
           .filter(Number.isInteger),
       );
 
+      status.textContent = `${selectedIndexes.size} of ${ATTRIBUTE_KEYS.length} abilities assigned`;
+
       controls.forEach((control) => {
         control.optionButtons.forEach((option, index) => {
           const selectedHere = control.assignmentIndex === index;
@@ -1160,14 +1236,14 @@ class AdventureGame {
           option.setAttribute("aria-pressed", String(selectedHere));
           option.title = usedElsewhere ? "Assigned to another ability; click to move it here." : `Assign ${option.textContent} to ${formatStatLabel(control.attribute)}`;
         });
+        control.slide.classList.toggle("is-complete", Number.isInteger(control.assignmentIndex));
       });
 
-      controls.forEach(({ attribute, assignmentIndex, modifierList, finalCard }) => {
+      controls.forEach(({ attribute, assignmentIndex, finalCard }) => {
         const baseScore = Number.isInteger(assignmentIndex) ? hero.abilityPool[assignmentIndex] : null;
         const adjustment = abilityAdjustmentTotal(hero, attribute);
         const finalScore = Number.isFinite(baseScore) ? baseScore + adjustment : null;
 
-        renderModifierList(modifierList, hero, attribute);
         updateFinalScoreCard(finalCard, attribute, finalScore);
       });
 
@@ -1198,7 +1274,19 @@ class AdventureGame {
     });
 
     updateAssignmentPreview();
-    panel.replaceChildren(heading, pool, assignmentGrid, applyButton);
+    panel.replaceChildren(heading, status, carousel, applyButton);
+
+    if (window.Splide) {
+      new window.Splide(carousel, {
+        arrows: true,
+        drag: true,
+        gap: "12px",
+        pagination: true,
+        perPage: 1,
+        speed: 260,
+        start: startIndex,
+      }).mount();
+    }
   }
 
   renderCharacterReviewBuilder(hero) {
@@ -1587,6 +1675,18 @@ function getAbilityDefinition(attribute) {
     shortLabel: formatStatLabel(attribute).slice(0, 3).toUpperCase(),
     description: "",
   };
+}
+
+function impactedSkillNames(attribute) {
+  return getOptionDefinitions("skills")
+    .filter((skill) => String(skill.ability || "").toLowerCase() === attribute)
+    .map((skill) => skill.name || formatStatLabel(skill.key || ""));
+}
+
+function abilityFact(label, value) {
+  const group = document.createElement("div");
+  group.append(createElement("dt", label), createElement("dd", value));
+  return group;
 }
 
 function inferDefinitionKey(collection, ...values) {
