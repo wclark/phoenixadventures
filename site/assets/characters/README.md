@@ -26,4 +26,4 @@ Cell order is left to right, top to bottom:
 15. Half-Orc
 16. Tiefling
 
-Style baseline: fine-detail dark brown monochrome sketch art on parchment, full-body centered neutral pose, adult proportions, modest simple unarmored clothes, no weapons, no class-specific props, no in-image text, and no sexualized styling. Dragonborn color subtypes intentionally collapse to the single Dragonborn cell.
+Style baseline: fine-detail dark brown monochrome sketch art on parchment, full-body centered neutral pose, adult proportions, modest simple unarmored clothes, no weapons, no class-specific props, no in-image text, and no sexualized styling. Humanlike ancestries should show varied apparent ethnic features, face shapes, hair textures, and sepia skin-value shading across the full atlas. Dragonborn color subtypes intentionally collapse to the single Dragonborn cell.
