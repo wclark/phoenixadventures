@@ -6,7 +6,7 @@
  * edited without changing the game engine.
  */
 
-const PHOENIX_DATA_URL = "data/game-data.json?v=20260619-9";
+const PHOENIX_DATA_URL = "data/game-data.json?v=20260620-1";
 
 window.PhoenixDataReady = loadPhoenixAdventure();
 

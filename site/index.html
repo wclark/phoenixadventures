@@ -4,32 +4,37 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Phoenix Adventures</title>
-    <link rel="stylesheet" href="styles.css?v=20260619-9" />
+    <link rel="stylesheet" href="styles.css?v=20260620-1" />
   </head>
   <body>
-    <div class="app-shell">
+    <section id="loginScreen" class="login-screen" aria-labelledby="loginTitle">
+      <form id="loginForm" class="login-card">
+        <p class="eyebrow">Player login</p>
+        <h1 id="loginTitle">Phoenix Adventures</h1>
+        <label class="login-field" for="playerNameEntry">
+          <span>Player Name</span>
+          <input id="playerNameEntry" name="playerName" type="text" autocomplete="username" required />
+        </label>
+        <label class="login-field" for="playerPasswordEntry">
+          <span>Password</span>
+          <input id="playerPasswordEntry" name="password" type="password" autocomplete="current-password" required />
+        </label>
+        <p id="loginError" class="login-error" role="alert" aria-live="polite"></p>
+        <button id="loginButton" type="submit">Enter</button>
+      </form>
+    </section>
+
+    <div id="appShell" class="app-shell" hidden>
       <header class="topbar">
         <div>
           <p class="eyebrow">Character builder alpha</p>
           <h1>Phoenix Adventures</h1>
         </div>
         <div class="topbar-actions">
+          <span id="playerBadge" class="player-badge"></span>
           <button id="newGameButton" type="button">New Character</button>
           <button id="saveButton" type="button">Save</button>
-          <button id="viewToggleButton" class="view-toggle-button" type="button" aria-label="Show character sheet" aria-pressed="false" title="Show character sheet" hidden>
-            <svg class="view-toggle-icon sheet-icon" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M7 3h8l4 4v14H7z" />
-              <path d="M15 3v5h5" />
-              <path d="M10 12h6" />
-              <path d="M10 16h6" />
-            </svg>
-            <svg class="view-toggle-icon log-icon" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M5 5h14" />
-              <path d="M5 10h14" />
-              <path d="M5 15h10" />
-              <path d="M5 20h8" />
-            </svg>
-          </button>
+          <button id="logoutButton" type="button">Log Out</button>
         </div>
       </header>
 
@@ -49,11 +54,20 @@
             <dl id="sheetSummary" class="progress-list"></dl>
           </section>
         </aside>
+
+        <button id="viewToggleButton" class="sheet-drawer-toggle" type="button" aria-label="Open character sheet" aria-expanded="false" title="Open character sheet" hidden>
+          <svg class="drawer-chevron open-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M14 6l-6 6 6 6" />
+          </svg>
+          <svg class="drawer-chevron close-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M10 6l6 6-6 6" />
+          </svg>
+        </button>
       </main>
       <img id="logPixel" class="log-pixel" src="assets/character-pixel.svg" alt="" aria-hidden="true" />
     </div>
 
-    <script src="adventure-data.js?v=20260619-9"></script>
-    <script src="game.js?v=20260619-9"></script>
+    <script src="adventure-data.js?v=20260620-1"></script>
+    <script src="game.js?v=20260620-1"></script>
   </body>
 </html>

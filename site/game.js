@@ -1,5 +1,7 @@
 const STORAGE_KEY = "phoenix-adventures-save";
-const TRACKING_VERSION = "20260619-9";
+const AUTH_STORAGE_KEY = "phoenix-adventures-user";
+const USER_CONFIG_BASE_URL = "data/users";
+const TRACKING_VERSION = "20260620-1";
 const STATE_VERSION = "builder-20260619-8";
 const ATTRIBUTE_KEYS = ["strength", "intelligence", "wisdom", "dexterity", "constitution", "charisma"];
 const LEGACY_STAT_MAP = {
@@ -420,29 +422,60 @@ class AdventureGame {
   constructor(adventure, elements) {
     this.adventure = adventure;
     this.elements = elements;
-    this.state = this.loadState();
+    this.currentUser = this.loadUserSession();
+    this.state = this.currentUser ? this.loadState() : this.adventure.createDefaultState();
+    this.loginInFlight = false;
   }
 
   start() {
     this.bindEvents();
-    this.saveState();
-    this.render();
+    this.renderAuth();
+
+    if (this.currentUser) {
+      this.saveState();
+      this.render();
+    }
   }
 
   bindEvents() {
+    this.elements.loginForm?.addEventListener("submit", (event) => {
+      event.preventDefault();
+      this.handleLogin();
+    });
+
+    this.elements.logoutButton?.addEventListener("click", () => {
+      this.updateTrackingPixel("logout");
+      localStorage.removeItem(AUTH_STORAGE_KEY);
+      this.currentUser = null;
+      this.state = this.adventure.createDefaultState();
+      this.renderAuth();
+    });
+
     this.elements.saveButton.addEventListener("click", () => {
+      if (!this.requireUser()) {
+        return;
+      }
+
       this.saveState();
       this.updateTrackingPixel("save");
       flashButton(this.elements.saveButton, "Saved");
     });
 
     this.elements.newGameButton.addEventListener("click", () => {
+      if (!this.requireUser()) {
+        return;
+      }
+
       this.state = this.adventure.createDefaultState();
       this.saveState();
       this.render();
     });
 
     this.elements.viewToggleButton?.addEventListener("click", () => {
+      if (!this.requireUser()) {
+        return;
+      }
+
       const hero = new Adventurer(this.state.player);
       if (!shouldShowCharacterSheet(hero)) {
         return;
@@ -454,7 +487,137 @@ class AdventureGame {
     });
   }
 
+  async handleLogin() {
+    if (this.loginInFlight) {
+      return;
+    }
+
+    const playerNameInput = this.elements.playerNameEntry;
+    const passwordInput = this.elements.playerPasswordEntry;
+    const loginButton = this.elements.loginButton;
+    const loginError = this.elements.loginError;
+    const normalizedName = normalizePlayerName(playerNameInput?.value || "");
+    const password = passwordInput?.value || "";
+
+    if (loginError) {
+      loginError.textContent = "";
+    }
+
+    if (!normalizedName || !password) {
+      if (loginError) {
+        loginError.textContent = "Enter player name and password.";
+      }
+      return;
+    }
+
+    this.loginInFlight = true;
+    if (loginButton) {
+      loginButton.disabled = true;
+      loginButton.textContent = "Checking...";
+    }
+
+    try {
+      const userId = await createCredentialId(normalizedName, password);
+      const config = await loadUserConfig(userId);
+      const session = {
+        id: userId,
+        playerName: config.playerName || playerNameInput.value.trim(),
+        normalizedName,
+        storageKey: config.storageKey || `${STORAGE_KEY}:${userId}`,
+      };
+
+      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session));
+      this.currentUser = session;
+      this.state = this.loadState();
+      this.saveState();
+      if (passwordInput) {
+        passwordInput.value = "";
+      }
+      this.renderAuth();
+      this.render();
+      this.updateTrackingPixel("login");
+    } catch {
+      if (loginError) {
+        loginError.textContent = "Player name or password did not match.";
+      }
+    } finally {
+      this.loginInFlight = false;
+      if (loginButton) {
+        loginButton.disabled = false;
+        loginButton.textContent = "Enter";
+      }
+    }
+  }
+
+  renderAuth() {
+    const hasUser = Boolean(this.currentUser);
+
+    if (this.elements.loginScreen) {
+      this.elements.loginScreen.hidden = hasUser;
+    }
+
+    if (this.elements.appShell) {
+      this.elements.appShell.hidden = !hasUser;
+    }
+
+    document.body.classList.toggle("is-authenticated", hasUser);
+
+    if (this.elements.playerBadge) {
+      this.elements.playerBadge.textContent = hasUser ? this.currentUser.playerName : "";
+    }
+
+    if (!hasUser) {
+      this.elements.playerPasswordEntry && (this.elements.playerPasswordEntry.value = "");
+      window.requestAnimationFrame(() => this.elements.playerNameEntry?.focus());
+    }
+  }
+
+  requireUser() {
+    const session = this.loadUserSession();
+
+    if (!session) {
+      this.currentUser = null;
+      this.renderAuth();
+      return null;
+    }
+
+    if (!this.currentUser || this.currentUser.id !== session.id) {
+      this.currentUser = session;
+      this.state = this.loadState();
+      this.renderAuth();
+    }
+
+    return this.currentUser;
+  }
+
+  loadUserSession() {
+    try {
+      const session = JSON.parse(localStorage.getItem(AUTH_STORAGE_KEY));
+
+      if (!session?.id || !session?.playerName) {
+        return null;
+      }
+
+      return {
+        id: String(session.id),
+        playerName: String(session.playerName),
+        normalizedName: String(session.normalizedName || ""),
+        storageKey: session.storageKey ? String(session.storageKey) : `${STORAGE_KEY}:${session.id}`,
+      };
+    } catch {
+      return null;
+    }
+  }
+
+  stateStorageKey() {
+    return this.currentUser?.storageKey || STORAGE_KEY;
+  }
+
   render() {
+    if (!this.requireUser()) {
+      return;
+    }
+
     const scene = this.adventure.getScene(this.state.sceneId);
     const hero = new Adventurer(this.state.player);
 
@@ -500,11 +663,6 @@ class AdventureGame {
 
     if (changed) {
       this.saveState();
-      window.requestAnimationFrame(() => {
-        if (this.state.view !== "sheet") {
-          window.scrollTo({ top: document.documentElement.scrollHeight });
-        }
-      });
     }
   }
 
@@ -556,11 +714,9 @@ class AdventureGame {
       return;
     }
 
-    if (this.elements.scenePanel) {
-      this.elements.scenePanel.hidden = activeView === "sheet";
-    }
-
-    this.elements.characterSheet.hidden = activeView !== "sheet";
+    this.elements.characterSheet.hidden = !hasSheetContent;
+    this.elements.characterSheet.classList.toggle("is-open", activeView === "sheet");
+    this.elements.characterSheet.setAttribute("aria-hidden", String(activeView !== "sheet"));
 
     this.renderViewToggle(hasSheetContent, activeView);
 
@@ -663,10 +819,10 @@ class AdventureGame {
 
     button.hidden = !hasSheetContent;
     button.disabled = !hasSheetContent;
-    button.classList.toggle("is-sheet-view", activeView === "sheet");
-    button.setAttribute("aria-pressed", String(activeView === "sheet"));
+    button.classList.toggle("is-open", activeView === "sheet");
+    button.setAttribute("aria-expanded", String(activeView === "sheet"));
 
-    const label = activeView === "sheet" ? "Show adventure log" : "Show character sheet";
+    const label = activeView === "sheet" ? "Close character sheet" : "Open character sheet";
     button.setAttribute("aria-label", label);
     button.title = label;
   }
@@ -1201,15 +1357,25 @@ class AdventureGame {
   }
 
   loadState() {
+    if (!this.currentUser) {
+      return this.adventure.createDefaultState();
+    }
+
     try {
-      return this.adventure.normalizeState(JSON.parse(localStorage.getItem(STORAGE_KEY)));
+      const storageKey = this.stateStorageKey();
+      const saved = localStorage.getItem(storageKey) || localStorage.getItem(STORAGE_KEY);
+      return this.adventure.normalizeState(JSON.parse(saved));
     } catch {
       return this.adventure.createDefaultState();
     }
   }
 
   saveState() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
+    if (!this.currentUser) {
+      return;
+    }
+
+    localStorage.setItem(this.stateStorageKey(), JSON.stringify(this.state));
   }
 
   updateTrackingPixel(eventName) {
@@ -1218,9 +1384,12 @@ class AdventureGame {
     }
 
     const hero = new Adventurer(this.state.player);
+    const user = this.currentUser;
     const params = new URLSearchParams({
       v: TRACKING_VERSION,
       event: eventName,
+      userId: user?.id || "",
+      playerName: user?.playerName || "",
       scene: this.state.sceneId,
       name: hero.name,
       raceKey: hero.raceKey,
@@ -1256,6 +1425,33 @@ class AdventureGame {
 
     this.elements.logPixel.src = `${this.adventure.trackingPixel}?${params.toString()}`;
   }
+}
+
+function normalizePlayerName(value) {
+  return value.trim().replace(/\s+/g, " ").toLowerCase();
+}
+
+async function createCredentialId(normalizedName, password) {
+  const source = `${normalizedName}:${password}`;
+  const encoded = new TextEncoder().encode(source);
+  const digest = await crypto.subtle.digest("SHA-256", encoded);
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+async function loadUserConfig(userId) {
+  const response = await fetch(`${USER_CONFIG_BASE_URL}/${userId}.json?v=${TRACKING_VERSION}`, { cache: "no-store" });
+
+  if (!response.ok) {
+    throw new Error(`User config not found: ${response.status}`);
+  }
+
+  const config = await response.json();
+
+  if (config.id !== userId) {
+    throw new Error("User config id mismatch");
+  }
+
+  return config;
 }
 
 function shouldShowCharacterSheet(hero) {
@@ -1597,6 +1793,15 @@ function isNumericValue(value) {
 }
 
 const elements = {
+  appShell: document.querySelector("#appShell"),
+  loginScreen: document.querySelector("#loginScreen"),
+  loginForm: document.querySelector("#loginForm"),
+  playerNameEntry: document.querySelector("#playerNameEntry"),
+  playerPasswordEntry: document.querySelector("#playerPasswordEntry"),
+  loginButton: document.querySelector("#loginButton"),
+  loginError: document.querySelector("#loginError"),
+  playerBadge: document.querySelector("#playerBadge"),
+  logoutButton: document.querySelector("#logoutButton"),
   gameLayout: document.querySelector("#gameLayout"),
   scenePanel: document.querySelector(".scene-panel"),
   eventLog: document.querySelector("#eventLog"),

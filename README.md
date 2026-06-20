@@ -8,13 +8,28 @@ A dependency-free static character builder for `phoenixadventures.org`.
 - `site/styles.css` - responsive interface styling
 - `site/adventure-data.js` - editable builder data for races, backgrounds, classes, scenes, and choices
 - `site/game.js` - reusable scene engine, score assignment, character state, tracking pixel, inventory, and save-state logic
+- `site/data/users/` - static hashed player config files used by the login gate
 - `site/assets/` - replaceable art assets
 - `docs/art-direction.md` - source notes and fictionalization rules for the school-to-castle treatment
 - `deploy.ps1` - syncs the static site folder to S3
 
 ## Local preview
 
-Open `site/index.html` in a browser. No build step is required.
+Run a tiny static server so `fetch()` can load JSON files. No build step is required.
+
+```powershell
+cd site
+python -m http.server 4199 --bind 127.0.0.1
+```
+
+Then visit `http://127.0.0.1:4199/`.
+
+Starter players:
+
+- `Bill Clark` / `test`
+- `Duncan Clark` / `test`
+
+The login id is the SHA-256 hash of `lowercase-player-name:password`, and the matching config is fetched from `site/data/users/{hash}.json`.
 
 ## Deploy
 
@@ -25,7 +40,7 @@ aws login --profile personal-sites
 
 The deploy script syncs only the `site/` folder to `s3://phoenixadventures-org`.
 
-The app emits a hidden request to `assets/character-pixel.svg` with character state encoded as query parameters, including race/class/background keys, the rolled score pool, assigned base scores, racial bonuses, final ability scores, gear, and inventory. CloudFront standard logging v2 records those requests in the `cs-uri-query` field under `s3://cloudfront-logs-645377689567-us-west-1/cloudfront/phoenixadventures.org/{yyyy}/{MM}/{dd}/{HH}/`.
+The app emits a hidden request to `assets/character-pixel.svg` with player id/name and character state encoded as query parameters, including race/class/background keys, the rolled score pool, assigned base scores, racial bonuses, final ability scores, gear, and inventory. CloudFront standard logging v2 records those requests in the `cs-uri-query` field under `s3://cloudfront-logs-645377689567-us-west-1/cloudfront/phoenixadventures.org/{yyyy}/{MM}/{dd}/{HH}/`.
 
 ## AWS resources
 
