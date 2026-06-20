@@ -1,11 +1,11 @@
 # Character Atlases
 
-The character sheet and race option cards use two 4x4 race reference atlases:
+The character sheet and race option cards use 4x4 race reference atlases configured by `site/data/game-data.json`.
 
 - `race-atlas-masculine.webp`
 - `race-atlas-feminine.webp`
 
-The PNG files are the generated source images. The WebP files are the live site assets.
+The PNG files are the generated source images. The WebP files are the live site assets. The variant names organize reference art only; they are not a character creation choice.
 
 Cell order is left to right, top to bottom:
 
@@ -17,13 +17,13 @@ Cell order is left to right, top to bottom:
 6. Dark Elf
 7. Lightfoot Halfling
 8. Stout Halfling
-9. Human
-10. Forest Gnome
-11. Rock Gnome
-12. Half-Elf
-13. Half-Orc
-14. Tiefling
-15. Emberborn
-16. Unassigned parchment placeholder
+9. Brush Creek Human
+10. Brookwood Human
+11. Tanglewood Human
+12. Forest Gnome
+13. Rock Gnome
+14. Half-Elf
+15. Half-Orc
+16. Tiefling
 
-Style baseline: fine-detail dark brown monochrome sketch art on parchment, full-body centered neutral pose, adult proportions, simple unarmored clothes, no weapons, no class-specific props, no in-image text. Dragonborn color subtypes intentionally collapse to the single Dragonborn cell.
+Style baseline: fine-detail dark brown monochrome sketch art on parchment, full-body centered neutral pose, adult proportions, modest simple unarmored clothes, no weapons, no class-specific props, no in-image text, and no sexualized styling. Dragonborn color subtypes intentionally collapse to the single Dragonborn cell.

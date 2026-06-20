@@ -45,13 +45,218 @@
       "description": "Presence, persuasion, performance, and force of personality."
     }
   },
+  "characterAtlas": {
+    "columns": 4,
+    "rows": 4,
+    "defaultVariant": "masculine",
+    "variants": {
+      "masculine": "assets/characters/race-atlas-masculine.webp",
+      "feminine": "assets/characters/race-atlas-feminine.webp"
+    },
+    "cells": [
+      {
+        "key": "dragonborn",
+        "label": "Dragonborn"
+      },
+      {
+        "key": "hill-dwarf",
+        "label": "Hill Dwarf"
+      },
+      {
+        "key": "mountain-dwarf",
+        "label": "Mountain Dwarf"
+      },
+      {
+        "key": "high-elf",
+        "label": "High Elf"
+      },
+      {
+        "key": "wood-elf",
+        "label": "Wood Elf"
+      },
+      {
+        "key": "dark-elf",
+        "label": "Dark Elf"
+      },
+      {
+        "key": "lightfoot-halfling",
+        "label": "Lightfoot Halfling"
+      },
+      {
+        "key": "stout-halfling",
+        "label": "Stout Halfling"
+      },
+      {
+        "key": "brush-creek-human",
+        "label": "Brush Creek Human"
+      },
+      {
+        "key": "brookwood-human",
+        "label": "Brookwood Human"
+      },
+      {
+        "key": "tanglewood-human",
+        "label": "Tanglewood Human"
+      },
+      {
+        "key": "forest-gnome",
+        "label": "Forest Gnome"
+      },
+      {
+        "key": "rock-gnome",
+        "label": "Rock Gnome"
+      },
+      {
+        "key": "half-elf",
+        "label": "Half-Elf"
+      },
+      {
+        "key": "half-orc",
+        "label": "Half-Orc"
+      },
+      {
+        "key": "tiefling",
+        "label": "Tiefling"
+      }
+    ]
+  },
   "races": [
     {
-      "key": "woodland-elf",
-      "name": "Woodland Elf",
-      "origin": "the Woodland Elves",
+      "key": "dragonborn",
+      "name": "Dragonborn",
+      "origin": "the Dragonborn Clans",
+      "portraitKey": "dragonborn",
+      "quote": "I am {name} of the Dragonborn Clans.",
+      "summary": "Proud, direct, and marked by old draconic traditions without belonging to any one color lineage.",
+      "advice": "A strong fit for fighters, paladins, sorcerers, and bold leaders.",
+      "bestFor": "Fighter, Paladin, Sorcerer",
+      "abilityBonuses": {
+        "strength": 2,
+        "charisma": 1
+      },
+      "languages": [
+        "Common",
+        "Draconic"
+      ],
+      "skills": [
+        "Intimidation"
+      ],
+      "proficiencies": [
+        "Athletics"
+      ],
+      "traits": [
+        "Draconic bearing",
+        "Elemental memory",
+        "Hard to frighten"
+      ],
+      "items": [
+        "Scale-marked token"
+      ]
+    },
+    {
+      "key": "hill-dwarf",
+      "name": "Hill Dwarf",
+      "origin": "the Hill Dwarf Holds",
+      "portraitKey": "hill-dwarf",
+      "quote": "I am {name} of the Hill Dwarf Holds.",
+      "summary": "Steady, patient, and hard to wear down on long roads or in deep ruins.",
+      "advice": "A strong fit for clerics, fighters, paladins, and resilient guides.",
+      "bestFor": "Cleric, Fighter, Paladin",
+      "abilityBonuses": {
+        "constitution": 2,
+        "wisdom": 1
+      },
+      "languages": [
+        "Common",
+        "Dwarvish"
+      ],
+      "skills": [
+        "Medicine"
+      ],
+      "proficiencies": [
+        "Smith's Tools"
+      ],
+      "traits": [
+        "Dwarven resilience",
+        "Stonecunning",
+        "Hill endurance"
+      ],
+      "items": [
+        "Worn clan charm"
+      ]
+    },
+    {
+      "key": "mountain-dwarf",
+      "name": "Mountain Dwarf",
+      "origin": "the Mountain Dwarf Clans",
+      "portraitKey": "mountain-dwarf",
+      "quote": "I am {name} of the Mountain Dwarf Clans.",
+      "summary": "Strong, practical, and comfortable with stone, metal, and stubborn problems.",
+      "advice": "A strong fit for fighters, paladins, clerics, and inventors.",
+      "bestFor": "Fighter, Paladin, Cleric",
+      "abilityBonuses": {
+        "constitution": 2,
+        "strength": 2
+      },
+      "languages": [
+        "Common",
+        "Dwarvish"
+      ],
+      "skills": [
+        "History"
+      ],
+      "proficiencies": [
+        "Medium Armor",
+        "Smith's Tools"
+      ],
+      "traits": [
+        "Dwarven resilience",
+        "Stonecunning",
+        "Armor familiarity"
+      ],
+      "items": [
+        "Forge-stamped buckle"
+      ]
+    },
+    {
+      "key": "high-elf",
+      "name": "High Elf",
+      "origin": "the High Elf Courts",
+      "portraitKey": "high-elf",
+      "quote": "I am {name} of the High Elf Courts.",
+      "summary": "Studious, precise, and drawn to old names, maps, songs, and hidden rules.",
+      "advice": "A strong fit for wizards, bards, rogues, and careful strategists.",
+      "bestFor": "Wizard, Bard, Rogue",
+      "abilityBonuses": {
+        "dexterity": 2,
+        "intelligence": 1
+      },
+      "languages": [
+        "Common",
+        "Elvish"
+      ],
+      "skills": [
+        "Arcana"
+      ],
+      "proficiencies": [
+        "Longsword",
+        "Longbow"
+      ],
+      "traits": [
+        "Keen senses",
+        "Trance",
+        "Arcane training"
+      ],
+      "items": [
+        "Silver ink stylus"
+      ]
+    },
+    {
+      "key": "wood-elf",
+      "name": "Wood Elf",
+      "origin": "the Wood Elf Groves",
       "portraitKey": "wood-elf",
-      "quote": "I am {name} of the Woodland Elves.",
+      "quote": "I am {name} of the Wood Elf Groves.",
       "summary": "Quick, watchful, and comfortable moving through overgrown halls and shaded courtyards.",
       "advice": "A strong fit for rangers, rogues, bards, and wise scouts.",
       "bestFor": "Ranger, Rogue, Bard",
@@ -80,44 +285,44 @@
       ]
     },
     {
-      "key": "forge-dwarf",
-      "name": "Forge Dwarf",
-      "origin": "the Forge Clans",
-      "portraitKey": "mountain-dwarf",
-      "quote": "I am {name} of the Forge Clans.",
-      "summary": "Stout, practical, and hard to shake when the halls begin to groan.",
-      "advice": "A strong fit for fighters, paladins, clerics, and resilient inventors.",
-      "bestFor": "Paladin, Fighter, Cleric",
+      "key": "dark-elf",
+      "name": "Dark Elf",
+      "origin": "the Dark Elf Enclaves",
+      "portraitKey": "dark-elf",
+      "quote": "I am {name} of the Dark Elf Enclaves.",
+      "summary": "Sharp-eyed, self-possessed, and practiced at reading danger before it moves.",
+      "advice": "A strong fit for rogues, warlocks, wizards, and tactical scouts.",
+      "bestFor": "Rogue, Warlock, Wizard",
       "abilityBonuses": {
-        "constitution": 2,
-        "strength": 1
+        "dexterity": 2,
+        "charisma": 1
       },
       "languages": [
         "Common",
-        "Dwarvish"
+        "Elvish"
       ],
       "skills": [
-        "History"
+        "Perception"
       ],
       "proficiencies": [
-        "Medium Armor",
-        "Smith's Tools"
+        "Rapier",
+        "Hand Crossbow"
       ],
       "traits": [
-        "Stonecunning",
-        "Poison resistance",
-        "Steady under pressure"
+        "Keen senses",
+        "Trance",
+        "Dark-adapted sight"
       ],
       "items": [
-        "Forge-stamped belt buckle"
+        "Black glass bead"
       ]
     },
     {
-      "key": "sunlit-halfling",
-      "name": "Sunlit Halfling",
-      "origin": "the Sunlit Roads",
+      "key": "lightfoot-halfling",
+      "name": "Lightfoot Halfling",
+      "origin": "the Lightfoot Roads",
       "portraitKey": "lightfoot-halfling",
-      "quote": "I am {name} of the Sunlit Roads.",
+      "quote": "I am {name} of the Lightfoot Roads.",
       "summary": "Lucky, bright-hearted, and hard to corner in a crowded room.",
       "advice": "A strong fit for rogues, bards, rangers, and nimble paladins.",
       "bestFor": "Rogue, Bard, Ranger",
@@ -145,45 +350,45 @@
       ]
     },
     {
-      "key": "emberborn",
-      "name": "Emberborn",
-      "origin": "the Emberborn Houses",
-      "portraitKey": "emberborn",
-      "quote": "I am {name} of the Emberborn Houses.",
-      "summary": "Intense, commanding, and touched by old fire beneath the ruined keep.",
-      "advice": "A strong fit for wizards, paladins, warlocks, and bold leaders.",
-      "bestFor": "Wizard, Paladin, Warlock",
+      "key": "stout-halfling",
+      "name": "Stout Halfling",
+      "origin": "the Stout Halfling Hearths",
+      "portraitKey": "stout-halfling",
+      "quote": "I am {name} of the Stout Halfling Hearths.",
+      "summary": "Grounded, brave, and surprisingly tough when trouble gets close.",
+      "advice": "A strong fit for rogues, clerics, fighters, and steady companions.",
+      "bestFor": "Rogue, Cleric, Fighter",
       "abilityBonuses": {
-        "charisma": 2,
-        "intelligence": 1
+        "dexterity": 2,
+        "constitution": 1
       },
       "languages": [
         "Common",
-        "Draconic"
+        "Halfling"
       ],
       "skills": [
-        "Intimidation"
+        "Survival"
       ],
       "proficiencies": [
-        "Arcane Focus"
+        "Sling"
       ],
       "traits": [
-        "Fire resistance",
-        "Ember-lit eyes",
-        "Can sense recent magical heat"
+        "Lucky",
+        "Brave",
+        "Stout resilience"
       ],
       "items": [
-        "Coal-black signet"
+        "Hearthstone button"
       ]
     },
     {
-      "key": "human",
-      "name": "Human",
-      "origin": "the Free Villages",
-      "portraitKey": "human",
-      "quote": "I am {name} of the Free Villages.",
-      "summary": "Adaptable, ambitious, and ready to learn from every corner of the keep.",
-      "advice": "A flexible choice for any class or strange path.",
+      "key": "brush-creek-human",
+      "name": "Brush Creek Human",
+      "origin": "Brush Creek",
+      "portraitKey": "brush-creek-human",
+      "quote": "I am {name} from Brush Creek.",
+      "summary": "Practical, neighborly, and used to solving problems with whatever is close at hand.",
+      "advice": "A flexible human choice for any class, especially sturdy scouts and protectors.",
       "bestFor": "Any class",
       "abilityBonuses": {
         "strength": 1,
@@ -197,7 +402,7 @@
         "Common"
       ],
       "skills": [
-        "Persuasion"
+        "Survival"
       ],
       "proficiencies": [
         "Simple Weapons"
@@ -205,10 +410,242 @@
       "traits": [
         "Extra training",
         "Broad curiosity",
-        "Quick learner"
+        "Creekside practicality"
       ],
       "items": [
-        "Village keepsake"
+        "Brush Creek keepsake"
+      ]
+    },
+    {
+      "key": "brookwood-human",
+      "name": "Brookwood Human",
+      "origin": "Brookwood",
+      "portraitKey": "brookwood-human",
+      "quote": "I am {name} from Brookwood.",
+      "summary": "Observant, community-minded, and comfortable moving between workshops, markets, and libraries.",
+      "advice": "A flexible human choice for any class, especially curious problem-solvers.",
+      "bestFor": "Any class",
+      "abilityBonuses": {
+        "strength": 1,
+        "intelligence": 1,
+        "wisdom": 1,
+        "dexterity": 1,
+        "constitution": 1,
+        "charisma": 1
+      },
+      "languages": [
+        "Common"
+      ],
+      "skills": [
+        "Investigation"
+      ],
+      "proficiencies": [
+        "Artisan's Tools"
+      ],
+      "traits": [
+        "Extra training",
+        "Broad curiosity",
+        "Brookwood resourcefulness"
+      ],
+      "items": [
+        "Brookwood trade token"
+      ]
+    },
+    {
+      "key": "tanglewood-human",
+      "name": "Tanglewood Human",
+      "origin": "Tanglewood",
+      "portraitKey": "tanglewood-human",
+      "quote": "I am {name} from Tanglewood.",
+      "summary": "Independent, alert, and used to finding paths through confusing places.",
+      "advice": "A flexible human choice for any class, especially explorers and negotiators.",
+      "bestFor": "Any class",
+      "abilityBonuses": {
+        "strength": 1,
+        "intelligence": 1,
+        "wisdom": 1,
+        "dexterity": 1,
+        "constitution": 1,
+        "charisma": 1
+      },
+      "languages": [
+        "Common"
+      ],
+      "skills": [
+        "Nature"
+      ],
+      "proficiencies": [
+        "Simple Weapons"
+      ],
+      "traits": [
+        "Extra training",
+        "Broad curiosity",
+        "Tanglewood wayfinding"
+      ],
+      "items": [
+        "Tanglewood cord charm"
+      ]
+    },
+    {
+      "key": "forest-gnome",
+      "name": "Forest Gnome",
+      "origin": "the Forest Gnome Hollows",
+      "portraitKey": "forest-gnome",
+      "quote": "I am {name} of the Forest Gnome Hollows.",
+      "summary": "Clever, quiet, and good at noticing small signs that others miss.",
+      "advice": "A strong fit for wizards, druids, rangers, and careful scouts.",
+      "bestFor": "Wizard, Druid, Ranger",
+      "abilityBonuses": {
+        "intelligence": 2,
+        "dexterity": 1
+      },
+      "languages": [
+        "Common",
+        "Gnomish"
+      ],
+      "skills": [
+        "Nature"
+      ],
+      "proficiencies": [
+        "Tinker's Tools"
+      ],
+      "traits": [
+        "Gnome cunning",
+        "Natural illusion",
+        "Small-creature empathy"
+      ],
+      "items": [
+        "Acorn whistle"
+      ]
+    },
+    {
+      "key": "rock-gnome",
+      "name": "Rock Gnome",
+      "origin": "the Rock Gnome Workshops",
+      "portraitKey": "rock-gnome",
+      "quote": "I am {name} of the Rock Gnome Workshops.",
+      "summary": "Inventive, precise, and delighted by locks, gears, maps, and practical puzzles.",
+      "advice": "A strong fit for wizards, artificers, rogues, and problem-solvers.",
+      "bestFor": "Wizard, Rogue, Inventor",
+      "abilityBonuses": {
+        "intelligence": 2,
+        "constitution": 1
+      },
+      "languages": [
+        "Common",
+        "Gnomish"
+      ],
+      "skills": [
+        "Investigation"
+      ],
+      "proficiencies": [
+        "Tinker's Tools"
+      ],
+      "traits": [
+        "Gnome cunning",
+        "Artificer's lore",
+        "Clockwork knack"
+      ],
+      "items": [
+        "Tiny brass gear"
+      ]
+    },
+    {
+      "key": "half-elf",
+      "name": "Half-Elf",
+      "origin": "the Crossroad Families",
+      "portraitKey": "half-elf",
+      "quote": "I am {name} of the Crossroad Families.",
+      "summary": "Adaptable, observant, and used to seeing a problem from more than one side.",
+      "advice": "A strong fit for bards, paladins, warlocks, rogues, and diplomats.",
+      "bestFor": "Bard, Paladin, Rogue",
+      "abilityBonuses": {
+        "charisma": 2,
+        "dexterity": 1,
+        "wisdom": 1
+      },
+      "languages": [
+        "Common",
+        "Elvish"
+      ],
+      "skills": [
+        "Insight",
+        "Persuasion"
+      ],
+      "proficiencies": [
+        "Simple Weapons"
+      ],
+      "traits": [
+        "Keen senses",
+        "Flexible training",
+        "Hard to charm"
+      ],
+      "items": [
+        "Two-sided family token"
+      ]
+    },
+    {
+      "key": "half-orc",
+      "name": "Half-Orc",
+      "origin": "the Border Camps",
+      "portraitKey": "half-orc",
+      "quote": "I am {name} of the Border Camps.",
+      "summary": "Powerful, determined, and hard to stop when friends need help.",
+      "advice": "A strong fit for fighters, barbarians, paladins, and guardians.",
+      "bestFor": "Fighter, Paladin, Barbarian",
+      "abilityBonuses": {
+        "strength": 2,
+        "constitution": 1
+      },
+      "languages": [
+        "Common",
+        "Orc"
+      ],
+      "skills": [
+        "Athletics"
+      ],
+      "proficiencies": [
+        "Intimidation"
+      ],
+      "traits": [
+        "Relentless endurance",
+        "Powerful build",
+        "Battlefield grit"
+      ],
+      "items": [
+        "Carved tusk bead"
+      ]
+    },
+    {
+      "key": "tiefling",
+      "name": "Tiefling",
+      "origin": "the Tiefling Houses",
+      "portraitKey": "tiefling",
+      "quote": "I am {name} of the Tiefling Houses.",
+      "summary": "Intense, clever, and used to being noticed before being understood.",
+      "advice": "A strong fit for warlocks, bards, sorcerers, paladins, and bold leaders.",
+      "bestFor": "Warlock, Bard, Sorcerer",
+      "abilityBonuses": {
+        "charisma": 2,
+        "intelligence": 1
+      },
+      "languages": [
+        "Common",
+        "Infernal"
+      ],
+      "skills": [
+        "Deception"
+      ],
+      "proficiencies": [
+        "Arcane Focus"
+      ],
+      "traits": [
+        "Fire resistance",
+        "Infernal legacy",
+        "Unusual presence"
+      ],
+      "items": [
+        "Dark glass signet"
       ]
     }
   ],

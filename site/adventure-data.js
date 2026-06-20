@@ -6,7 +6,7 @@
  * edited without changing the game engine.
  */
 
-const PHOENIX_DATA_URL = "data/game-data.json?v=20260620-6";
+const PHOENIX_DATA_URL = "data/game-data.json?v=20260620-7";
 
 window.PhoenixDataReady = loadPhoenixAdventure();
 
@@ -36,6 +36,7 @@ function buildPhoenixAdventure(source) {
     startSceneId: data.startSceneId,
     openingHistory: data.openingHistory || [],
     trackingPixel: data.trackingPixel,
+    characterAtlas: data.characterAtlas || {},
     abilities: data.abilities,
     races: data.races,
     backgrounds: data.backgrounds,
@@ -390,6 +391,7 @@ function raceChoice(race, abilities) {
     id: `race-${race.key}`,
     label: race.name,
     portraitKey: race.portraitKey || race.key,
+    portraitVariant: race.portraitVariant,
     summary: race.summary,
     meta: {
       "Ability bonuses": formatBonuses(race.abilityBonuses, abilities),
