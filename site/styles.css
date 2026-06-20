@@ -10,6 +10,11 @@
   --line: rgba(234, 216, 184, 0.22);
   --panel: rgba(33, 27, 27, 0.88);
   --shadow: 0 24px 60px rgba(0, 0, 0, 0.38);
+  --screen-pad-x: max(18px, env(safe-area-inset-left), env(safe-area-inset-right));
+  --screen-pad-top: max(10px, env(safe-area-inset-top));
+  --screen-pad-bottom: max(12px, env(safe-area-inset-bottom));
+  --rail-height: 128px;
+  --drawer-width: min(430px, calc(100vw - 46px));
 }
 
 * {
@@ -140,11 +145,11 @@ input:focus-visible {
 .app-shell {
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
-  width: min(1180px, calc(100vw - 24px));
+  width: 100vw;
   height: 100vh;
   height: 100dvh;
-  margin: 0 auto;
-  padding: 12px 0;
+  margin: 0;
+  padding: var(--screen-pad-top) 0 0;
 }
 
 .topbar {
@@ -152,7 +157,7 @@ input:focus-visible {
   align-items: end;
   justify-content: space-between;
   gap: 18px;
-  padding: 2px 0 10px;
+  padding: 2px var(--screen-pad-x) 10px;
 }
 
 .topbar h1,
@@ -214,11 +219,11 @@ input:focus-visible {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   min-height: 0;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .game-layout::before {
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: 2;
   background: rgba(20, 16, 15, 0.44);
@@ -232,7 +237,6 @@ input:focus-visible {
   opacity: 1;
 }
 
-.scene-panel,
 .progress-block {
   border: 1px solid var(--line);
   border-radius: 8px;
@@ -245,7 +249,8 @@ input:focus-visible {
   grid-template-rows: minmax(150px, 1fr) auto auto;
   height: 100%;
   min-height: 0;
-  overflow: hidden;
+  overflow: visible;
+  padding-bottom: var(--rail-height);
 }
 
 .event-log {
@@ -253,7 +258,7 @@ input:focus-visible {
   align-content: start;
   gap: 12px;
   min-height: 0;
-  padding: 14px 20px 6px;
+  padding: 14px var(--screen-pad-x) 6px;
   overflow: hidden;
 }
 
@@ -314,15 +319,23 @@ input:focus-visible {
 }
 
 .choice-list {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
   display: flex;
   gap: 12px;
   min-width: 0;
-  padding: 12px 20px 16px;
+  min-height: var(--rail-height);
+  padding: 12px var(--screen-pad-x) calc(var(--screen-pad-bottom) + 14px);
   overflow-x: auto;
   overflow-y: hidden;
   scroll-padding: 20px;
   scroll-snap-type: x proximity;
   scrollbar-color: rgba(215, 168, 73, 0.62) rgba(20, 16, 15, 0.28);
+  background: linear-gradient(0deg, rgba(20, 16, 15, 0.98), rgba(20, 16, 15, 0.78) 82%, transparent);
+  transform: translateZ(0);
 }
 
 .choice-card {
@@ -388,7 +401,7 @@ input:focus-visible {
 
 .builder-panel {
   min-height: 0;
-  margin: 4px 20px 0;
+  margin: 4px var(--screen-pad-x) 0;
   border-top: 1px solid var(--line);
   padding-top: 12px;
   overflow: hidden;
@@ -664,14 +677,19 @@ input:focus-visible {
 }
 
 .progress-panel {
-  position: absolute;
+  position: fixed;
   top: 0;
   right: 0;
   bottom: 0;
   z-index: 3;
   display: grid;
-  width: min(430px, calc(100% - 46px));
+  width: var(--drawer-width);
   gap: 14px;
+  padding-top: var(--screen-pad-top);
+  padding-bottom: var(--screen-pad-bottom);
+  border-left: 1px solid var(--line);
+  background: rgba(20, 16, 15, 0.97);
+  box-shadow: -22px 0 60px rgba(0, 0, 0, 0.44);
   opacity: 0;
   transform: translateX(calc(100% + 16px));
   transition:
@@ -690,6 +708,10 @@ input:focus-visible {
   min-height: 0;
   padding: 14px;
   overflow: hidden;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .progress-heading {
@@ -821,7 +843,7 @@ input:focus-visible {
 .progress-list {
   display: grid;
   gap: 7px;
-  max-height: calc(100dvh - 130px);
+  max-height: calc(100dvh - 112px);
   margin: 10px 0 0;
   overflow: hidden;
 }
@@ -877,7 +899,7 @@ input:focus-visible {
 }
 
 .sheet-drawer-toggle {
-  position: absolute;
+  position: fixed;
   top: 50%;
   right: 0;
   z-index: 4;
@@ -890,9 +912,9 @@ input:focus-visible {
   color: var(--gold);
   background: rgba(20, 16, 15, 0.82);
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
-  transform: translateY(-50%);
+  transform: translate3d(0, -50%, 0);
   transition:
-    right 260ms ease,
+    transform 260ms ease,
     background 160ms ease;
 }
 
@@ -901,7 +923,7 @@ input:focus-visible {
 }
 
 .sheet-drawer-toggle.is-open {
-  right: min(430px, calc(100% - 46px));
+  transform: translate3d(calc(-1 * var(--drawer-width)), -50%, 0);
 }
 
 .drawer-chevron {
@@ -1030,7 +1052,7 @@ input:focus-visible {
 
 @media (max-width: 1100px) and (orientation: landscape) {
   .app-shell {
-    width: min(100vw - 18px, 1040px);
+    width: 100vw;
   }
 
   .topbar {
@@ -1047,7 +1069,7 @@ input:focus-visible {
   }
 
   .event-log {
-    padding: 14px 20px 6px;
+    padding: 14px var(--screen-pad-x) 6px;
   }
 
   .event-copy {
@@ -1065,7 +1087,7 @@ input:focus-visible {
   }
 
   .builder-panel {
-    margin: 4px 20px 0;
+    margin: 4px var(--screen-pad-x) 0;
     padding-top: 12px;
   }
 
@@ -1079,7 +1101,7 @@ input:focus-visible {
   }
 
   .choice-list {
-    padding: 10px 20px 14px;
+    padding: 10px var(--screen-pad-x) calc(var(--screen-pad-bottom) + 14px);
   }
 
   .assignment-grid {
@@ -1147,7 +1169,7 @@ input:focus-visible {
 
 @media (max-width: 900px) {
   .app-shell {
-    width: calc(100vw - 16px);
+    width: 100vw;
     padding-top: 8px;
   }
 
@@ -1172,7 +1194,7 @@ input:focus-visible {
   }
 
   .event-log {
-    padding: 12px 16px 6px;
+    padding: 12px var(--screen-pad-x) 6px;
   }
 
   .event-copy h2 {
@@ -1180,7 +1202,7 @@ input:focus-visible {
   }
 
   .choice-list {
-    padding: 14px 16px 18px;
+    padding: 14px var(--screen-pad-x) calc(var(--screen-pad-bottom) + 14px);
   }
 
   .score-options {
