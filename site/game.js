@@ -1,5 +1,5 @@
 const STORAGE_KEY = "phoenix-adventures-save";
-const TRACKING_VERSION = "20260619-8";
+const TRACKING_VERSION = "20260619-9";
 const STATE_VERSION = "builder-20260619-8";
 const ATTRIBUTE_KEYS = ["strength", "intelligence", "wisdom", "dexterity", "constitution", "charisma"];
 const LEGACY_STAT_MAP = {
@@ -358,6 +358,7 @@ class Adventure {
       player: new Adventurer(this.playerTemplate).toJSON(),
       history: [...this.openingHistory],
       events: [],
+      view: "adventure",
     };
   }
 
@@ -386,6 +387,7 @@ class Adventure {
       }).toJSON(),
       history: Array.isArray(saved.history) ? saved.history : defaultState.history,
       events: Array.isArray(saved.events) ? saved.events : defaultState.events,
+      view: saved.view === "sheet" ? "sheet" : "adventure",
     };
   }
 
@@ -405,6 +407,7 @@ class Adventure {
       }).toJSON(),
       history: Array.isArray(saved.log) ? saved.log : [...this.openingHistory],
       events: [],
+      view: "adventure",
     };
   }
 
@@ -435,6 +438,17 @@ class AdventureGame {
 
     this.elements.newGameButton.addEventListener("click", () => {
       this.state = this.adventure.createDefaultState();
+      this.saveState();
+      this.render();
+    });
+
+    this.elements.viewToggleButton?.addEventListener("click", () => {
+      const hero = new Adventurer(this.state.player);
+      if (!shouldShowCharacterSheet(hero)) {
+        return;
+      }
+
+      this.state.view = this.state.view === "sheet" ? "adventure" : "sheet";
       this.saveState();
       this.render();
     });
@@ -487,8 +501,9 @@ class AdventureGame {
     if (changed) {
       this.saveState();
       window.requestAnimationFrame(() => {
-        const scrollTarget = this.elements.eventLog.closest(".scene-panel") || this.elements.eventLog;
-        scrollTarget.scrollTop = scrollTarget.scrollHeight;
+        if (this.state.view !== "sheet") {
+          window.scrollTo({ top: document.documentElement.scrollHeight });
+        }
       });
     }
   }
@@ -528,23 +543,32 @@ class AdventureGame {
   }
 
   renderCharacterSheet(hero) {
-    const shouldShowSheet = shouldShowCharacterSheet(hero);
+    const hasSheetContent = shouldShowCharacterSheet(hero);
+    const activeView = hasSheetContent && this.state.view === "sheet" ? "sheet" : "adventure";
+
+    this.state.view = activeView;
 
     if (this.elements.gameLayout) {
-      this.elements.gameLayout.classList.toggle("has-progress", shouldShowSheet);
+      this.elements.gameLayout.classList.toggle("sheet-view", activeView === "sheet");
     }
 
     if (!this.elements.characterSheet || !this.elements.sheetSummary) {
       return;
     }
 
-    this.elements.characterSheet.hidden = !shouldShowSheet;
+    if (this.elements.scenePanel) {
+      this.elements.scenePanel.hidden = activeView === "sheet";
+    }
+
+    this.elements.characterSheet.hidden = activeView !== "sheet";
+
+    this.renderViewToggle(hasSheetContent, activeView);
 
     if (this.elements.heroLevel) {
       this.elements.heroLevel.textContent = `Level ${hero.level}`;
     }
 
-    if (!shouldShowSheet) {
+    if (!hasSheetContent) {
       this.elements.sheetSummary.replaceChildren();
       return;
     }
@@ -628,6 +652,23 @@ class AdventureGame {
     }
 
     this.elements.sheetSummary.replaceChildren(...rows);
+  }
+
+  renderViewToggle(hasSheetContent, activeView) {
+    const button = this.elements.viewToggleButton;
+
+    if (!button) {
+      return;
+    }
+
+    button.hidden = !hasSheetContent;
+    button.disabled = !hasSheetContent;
+    button.classList.toggle("is-sheet-view", activeView === "sheet");
+    button.setAttribute("aria-pressed", String(activeView === "sheet"));
+
+    const label = activeView === "sheet" ? "Show adventure log" : "Show character sheet";
+    button.setAttribute("aria-label", label);
+    button.title = label;
   }
 
   renderAbilityScores(hero) {
@@ -1557,6 +1598,7 @@ function isNumericValue(value) {
 
 const elements = {
   gameLayout: document.querySelector("#gameLayout"),
+  scenePanel: document.querySelector(".scene-panel"),
   eventLog: document.querySelector("#eventLog"),
   builderPanel: document.querySelector("#builderPanel"),
   choiceList: document.querySelector("#choiceList"),
@@ -1585,6 +1627,7 @@ const elements = {
   statGold: document.querySelector("#statGold"),
   saveButton: document.querySelector("#saveButton"),
   newGameButton: document.querySelector("#newGameButton"),
+  viewToggleButton: document.querySelector("#viewToggleButton"),
   inventoryList: document.querySelector("#inventoryList"),
   logPixel: document.querySelector("#logPixel"),
 };

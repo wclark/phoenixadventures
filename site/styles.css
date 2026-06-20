@@ -119,9 +119,48 @@ input:focus-visible {
   padding: 0 16px;
 }
 
-.topbar-actions button:last-child {
+.topbar-actions #saveButton {
   color: var(--parchment);
   background: transparent;
+}
+
+.view-toggle-button {
+  display: grid;
+  width: 44px;
+  padding: 0;
+  place-items: center;
+  color: var(--gold);
+  background: rgba(20, 16, 15, 0.4);
+}
+
+.view-toggle-button[hidden] {
+  display: none;
+}
+
+.view-toggle-button:hover {
+  background: rgba(95, 125, 78, 0.34);
+}
+
+.view-toggle-icon {
+  width: 22px;
+  height: 22px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.view-toggle-button .log-icon {
+  display: none;
+}
+
+.view-toggle-button.is-sheet-view .sheet-icon {
+  display: none;
+}
+
+.view-toggle-button.is-sheet-view .log-icon {
+  display: block;
 }
 
 .game-layout {
@@ -129,31 +168,6 @@ input:focus-visible {
   grid-template-columns: minmax(0, 1fr);
   gap: 18px;
   align-items: start;
-}
-
-.game-layout.has-progress {
-  grid-template-columns: minmax(0, 1fr) clamp(280px, 30vw, 420px);
-}
-
-@media (min-width: 901px) and (orientation: landscape) {
-  .game-layout {
-    height: min(760px, calc(100vh - 154px));
-    align-items: stretch;
-  }
-
-  .scene-panel,
-  .progress-panel {
-    max-height: 100%;
-    min-height: 0;
-  }
-
-  .progress-panel {
-    overflow-y: auto;
-  }
-
-  .progress-block {
-    min-height: 100%;
-  }
 }
 
 .scene-panel,
@@ -166,7 +180,7 @@ input:focus-visible {
 
 .scene-panel {
   min-height: 0;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 .event-log {
@@ -852,10 +866,6 @@ input:focus-visible {
     gap: 14px;
   }
 
-  .game-layout.has-progress {
-    grid-template-columns: minmax(0, 1fr) minmax(340px, 38%);
-  }
-
   .topbar {
     padding: 4px 0 12px;
   }
@@ -976,8 +986,7 @@ input:focus-visible {
   }
 
   .topbar,
-  .game-layout,
-  .game-layout.has-progress {
+  .game-layout {
     display: grid;
     grid-template-columns: 1fr;
   }
