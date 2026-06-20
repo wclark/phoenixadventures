@@ -1,0 +1,904 @@
+{
+  "title": "Phoenix Adventures",
+  "startSceneId": "sracs-gate",
+  "trackingPixel": "assets/character-pixel.svg",
+  "openingHistory": [
+    "The road bends toward SRAC'S, a warm tavern at the edge of a ruined school-castle."
+  ],
+  "player": {
+    "name": "",
+    "level": 1,
+    "stats": {
+      "gold": 12
+    },
+    "inventory": []
+  },
+  "abilities": {
+    "strength": {
+      "label": "Strength",
+      "shortLabel": "STR",
+      "description": "Raw power, athletics, climbing, lifting, and weapon strikes."
+    },
+    "intelligence": {
+      "label": "Intelligence",
+      "shortLabel": "INT",
+      "description": "Memory, study, arcana, investigation, and tactical planning."
+    },
+    "wisdom": {
+      "label": "Wisdom",
+      "shortLabel": "WIS",
+      "description": "Awareness, insight, survival, medicine, and reading a room."
+    },
+    "dexterity": {
+      "label": "Dexterity",
+      "shortLabel": "DEX",
+      "description": "Agility, stealth, balance, archery, and quick hands."
+    },
+    "constitution": {
+      "label": "Constitution",
+      "shortLabel": "CON",
+      "description": "Endurance, grit, resistance, and how many hits you can take."
+    },
+    "charisma": {
+      "label": "Charisma",
+      "shortLabel": "CHA",
+      "description": "Presence, persuasion, performance, and force of personality."
+    }
+  },
+  "races": [
+    {
+      "key": "woodland-elf",
+      "name": "Woodland Elf",
+      "origin": "the Woodland Elves",
+      "quote": "I am {name} of the Woodland Elves.",
+      "summary": "Quick, watchful, and comfortable moving through overgrown halls and shaded courtyards.",
+      "advice": "A strong fit for rangers, rogues, bards, and wise scouts.",
+      "bestFor": "Ranger, Rogue, Bard",
+      "abilityBonuses": {
+        "dexterity": 2,
+        "wisdom": 1
+      },
+      "languages": [
+        "Common",
+        "Elvish"
+      ],
+      "skills": [
+        "Perception"
+      ],
+      "proficiencies": [
+        "Longbow",
+        "Shortsword"
+      ],
+      "traits": [
+        "Keen Senses",
+        "Fleet of Foot",
+        "Can hide in light natural cover"
+      ],
+      "items": [
+        "Leaf-marked token"
+      ]
+    },
+    {
+      "key": "forge-dwarf",
+      "name": "Forge Dwarf",
+      "origin": "the Forge Clans",
+      "quote": "I am {name} of the Forge Clans.",
+      "summary": "Stout, practical, and hard to shake when the halls begin to groan.",
+      "advice": "A strong fit for fighters, paladins, clerics, and resilient inventors.",
+      "bestFor": "Paladin, Fighter, Cleric",
+      "abilityBonuses": {
+        "constitution": 2,
+        "strength": 1
+      },
+      "languages": [
+        "Common",
+        "Dwarvish"
+      ],
+      "skills": [
+        "History"
+      ],
+      "proficiencies": [
+        "Medium Armor",
+        "Smith's Tools"
+      ],
+      "traits": [
+        "Stonecunning",
+        "Poison resistance",
+        "Steady under pressure"
+      ],
+      "items": [
+        "Forge-stamped belt buckle"
+      ]
+    },
+    {
+      "key": "sunlit-halfling",
+      "name": "Sunlit Halfling",
+      "origin": "the Sunlit Roads",
+      "quote": "I am {name} of the Sunlit Roads.",
+      "summary": "Lucky, bright-hearted, and hard to corner in a crowded room.",
+      "advice": "A strong fit for rogues, bards, rangers, and nimble paladins.",
+      "bestFor": "Rogue, Bard, Ranger",
+      "abilityBonuses": {
+        "dexterity": 2,
+        "charisma": 1
+      },
+      "languages": [
+        "Common",
+        "Halfling"
+      ],
+      "skills": [
+        "Stealth"
+      ],
+      "proficiencies": [
+        "Sling"
+      ],
+      "traits": [
+        "Lucky",
+        "Brave",
+        "Can move through larger creatures' spaces"
+      ],
+      "items": [
+        "Lucky copper button"
+      ]
+    },
+    {
+      "key": "emberborn",
+      "name": "Emberborn",
+      "origin": "the Emberborn Houses",
+      "quote": "I am {name} of the Emberborn Houses.",
+      "summary": "Intense, commanding, and touched by old fire beneath the ruined keep.",
+      "advice": "A strong fit for wizards, paladins, warlocks, and bold leaders.",
+      "bestFor": "Wizard, Paladin, Warlock",
+      "abilityBonuses": {
+        "charisma": 2,
+        "intelligence": 1
+      },
+      "languages": [
+        "Common",
+        "Draconic"
+      ],
+      "skills": [
+        "Intimidation"
+      ],
+      "proficiencies": [
+        "Arcane Focus"
+      ],
+      "traits": [
+        "Fire resistance",
+        "Ember-lit eyes",
+        "Can sense recent magical heat"
+      ],
+      "items": [
+        "Coal-black signet"
+      ]
+    },
+    {
+      "key": "human",
+      "name": "Human",
+      "origin": "the Free Villages",
+      "quote": "I am {name} of the Free Villages.",
+      "summary": "Adaptable, ambitious, and ready to learn from every corner of the keep.",
+      "advice": "A flexible choice for any class or strange path.",
+      "bestFor": "Any class",
+      "abilityBonuses": {
+        "strength": 1,
+        "intelligence": 1,
+        "wisdom": 1,
+        "dexterity": 1,
+        "constitution": 1,
+        "charisma": 1
+      },
+      "languages": [
+        "Common"
+      ],
+      "skills": [
+        "Persuasion"
+      ],
+      "proficiencies": [
+        "Simple Weapons"
+      ],
+      "traits": [
+        "Extra training",
+        "Broad curiosity",
+        "Quick learner"
+      ],
+      "items": [
+        "Village keepsake"
+      ]
+    }
+  ],
+  "alignments": [
+    {
+      "key": "lawful-good",
+      "name": "Lawful Good",
+      "summary": "Protect others by honoring promises, order, and mercy."
+    },
+    {
+      "key": "neutral-good",
+      "name": "Neutral Good",
+      "summary": "Do the kind thing, even when rules or factions complicate it."
+    },
+    {
+      "key": "chaotic-good",
+      "name": "Chaotic Good",
+      "summary": "Break bad rules, help the vulnerable, and improvise freely."
+    },
+    {
+      "key": "lawful-neutral",
+      "name": "Lawful Neutral",
+      "summary": "Trust codes, duties, contracts, and the structure of the realm."
+    },
+    {
+      "key": "true-neutral",
+      "name": "True Neutral",
+      "summary": "Keep balance, stay pragmatic, and avoid being owned by any side."
+    },
+    {
+      "key": "chaotic-neutral",
+      "name": "Chaotic Neutral",
+      "summary": "Value freedom, curiosity, and the right to choose your own path."
+    },
+    {
+      "key": "lawful-evil",
+      "name": "Lawful Evil",
+      "summary": "Seek power through systems, bargains, leverage, and control."
+    },
+    {
+      "key": "neutral-evil",
+      "name": "Neutral Evil",
+      "summary": "Prioritize ambition, advantage, and survival over sentiment."
+    },
+    {
+      "key": "chaotic-evil",
+      "name": "Chaotic Evil",
+      "summary": "Pursue appetite and upheaval without much patience for limits."
+    }
+  ],
+  "backgrounds": [
+    {
+      "key": "courtyard-storyteller",
+      "name": "Courtyard Storyteller",
+      "summary": "You learned how to hold a circle's attention and make strangers lean in.",
+      "choiceText": "I have a story for the outdoor tables.",
+      "skillFocus": "Performance and Persuasion",
+      "skills": [
+        "Performance",
+        "Persuasion"
+      ],
+      "languages": [],
+      "proficiencies": [
+        "Musical Instrument"
+      ],
+      "items": [
+        "Pocket stage bell",
+        "Ink-splashed story cards"
+      ],
+      "details": [
+        "You know how to turn rumors into useful introductions.",
+        "People tend to remember you after a good tale."
+      ]
+    },
+    {
+      "key": "library-apprentice",
+      "name": "Library Apprentice",
+      "summary": "You indexed dangerous books before you were old enough to read all the warnings.",
+      "choiceText": "I learned from the shelves and locked drawers.",
+      "skillFocus": "Arcana and History",
+      "skills": [
+        "Arcana",
+        "History"
+      ],
+      "languages": [
+        "Draconic"
+      ],
+      "proficiencies": [
+        "Calligrapher's Supplies"
+      ],
+      "items": [
+        "Annotated bookmark",
+        "Tiny bottle of book glue"
+      ],
+      "details": [
+        "You can research a clue faster than most.",
+        "Old inscriptions feel less intimidating to you."
+      ]
+    },
+    {
+      "key": "field-scout",
+      "name": "Field Scout",
+      "summary": "You crossed ruined paths, watched weather signs, and mapped safe routes.",
+      "choiceText": "I know the ways between walls and woods.",
+      "skillFocus": "Nature and Survival",
+      "skills": [
+        "Nature",
+        "Survival"
+      ],
+      "languages": [],
+      "proficiencies": [
+        "Cartographer's Tools"
+      ],
+      "items": [
+        "Charcoal route map",
+        "Weathered compass"
+      ],
+      "details": [
+        "You notice tracks, broken branches, and unsafe footing.",
+        "You are comfortable camping away from the main road."
+      ]
+    },
+    {
+      "key": "workshop-runner",
+      "name": "Workshop Runner",
+      "summary": "You carried parts through the tinkerer rooms and learned which sparks mattered.",
+      "choiceText": "I kept the workshops supplied.",
+      "skillFocus": "Investigation and Sleight of Hand",
+      "skills": [
+        "Investigation",
+        "Sleight of Hand"
+      ],
+      "languages": [],
+      "proficiencies": [
+        "Tinker's Tools"
+      ],
+      "items": [
+        "Folded parts list",
+        "Small brass gear"
+      ],
+      "details": [
+        "You understand simple devices and locked cabinets.",
+        "You can talk to builders, smiths, and inventors without sounding lost."
+      ]
+    }
+  ],
+  "languages": [
+    {
+      "key": "common",
+      "name": "Common",
+      "summary": "The trade tongue used across the keep."
+    },
+    {
+      "key": "elvish",
+      "name": "Elvish",
+      "summary": "Elegant speech of old groves, moonlit songs, and careful promises."
+    },
+    {
+      "key": "dwarvish",
+      "name": "Dwarvish",
+      "summary": "Clipped, sturdy words built for craft, oath, and stone."
+    },
+    {
+      "key": "halfling",
+      "name": "Halfling",
+      "summary": "Warm road-speech full of food names, nicknames, and practical jokes."
+    },
+    {
+      "key": "draconic",
+      "name": "Draconic",
+      "summary": "Ancient syllables found in spell margins and heat-scarred tablets."
+    },
+    {
+      "key": "sylvan",
+      "name": "Sylvan",
+      "summary": "Fey language of briars, bargains, music, and half-hidden paths."
+    },
+    {
+      "key": "celestial",
+      "name": "Celestial",
+      "summary": "Radiant script used in vows, wards, blessings, and high records."
+    },
+    {
+      "key": "goblin",
+      "name": "Goblin",
+      "summary": "Fast camp-talk useful for tunnels, traps, and sharp bargaining."
+    }
+  ],
+  "skills": [
+    {
+      "key": "acrobatics",
+      "name": "Acrobatics",
+      "ability": "dexterity",
+      "summary": "Balance, flips, landings, and staying upright when things go sideways."
+    },
+    {
+      "key": "animal-handling",
+      "name": "Animal Handling",
+      "ability": "wisdom",
+      "summary": "Calm, guide, and read creatures that do not speak your language."
+    },
+    {
+      "key": "arcana",
+      "name": "Arcana",
+      "ability": "intelligence",
+      "summary": "Identify spells, magical creatures, sigils, and old enchantments."
+    },
+    {
+      "key": "athletics",
+      "name": "Athletics",
+      "ability": "strength",
+      "summary": "Climb, jump, swim, shove, and do difficult physical work."
+    },
+    {
+      "key": "deception",
+      "name": "Deception",
+      "ability": "charisma",
+      "summary": "Lie, bluff, disguise intentions, and keep a false story steady."
+    },
+    {
+      "key": "history",
+      "name": "History",
+      "ability": "intelligence",
+      "summary": "Recall kingdoms, legends, battles, lineages, and local lore."
+    },
+    {
+      "key": "insight",
+      "name": "Insight",
+      "ability": "wisdom",
+      "summary": "Read motives, mood, pressure, and what a person is not saying."
+    },
+    {
+      "key": "intimidation",
+      "name": "Intimidation",
+      "ability": "charisma",
+      "summary": "Apply pressure through presence, threat, reputation, or nerve."
+    },
+    {
+      "key": "investigation",
+      "name": "Investigation",
+      "ability": "intelligence",
+      "summary": "Search carefully, connect clues, and inspect mechanisms."
+    },
+    {
+      "key": "medicine",
+      "name": "Medicine",
+      "ability": "wisdom",
+      "summary": "Stabilize wounds, identify illness, and understand remedies."
+    },
+    {
+      "key": "nature",
+      "name": "Nature",
+      "ability": "intelligence",
+      "summary": "Know plants, weather, terrain, beasts, and natural hazards."
+    },
+    {
+      "key": "perception",
+      "name": "Perception",
+      "ability": "wisdom",
+      "summary": "Notice hidden movement, faint sounds, ambushes, and small details."
+    },
+    {
+      "key": "performance",
+      "name": "Performance",
+      "ability": "charisma",
+      "summary": "Sing, speak, act, dance, play, and hold an audience."
+    },
+    {
+      "key": "persuasion",
+      "name": "Persuasion",
+      "ability": "charisma",
+      "summary": "Earn trust, negotiate, encourage, and make a fair case."
+    },
+    {
+      "key": "religion",
+      "name": "Religion",
+      "ability": "intelligence",
+      "summary": "Understand rites, gods, temples, omens, and sacred symbols."
+    },
+    {
+      "key": "sleight-of-hand",
+      "name": "Sleight of Hand",
+      "ability": "dexterity",
+      "summary": "Palm objects, pick pockets, hide small motions, and manipulate delicate things."
+    },
+    {
+      "key": "stealth",
+      "name": "Stealth",
+      "ability": "dexterity",
+      "summary": "Move quietly, hide, and stay unseen in shadow or cover."
+    },
+    {
+      "key": "survival",
+      "name": "Survival",
+      "ability": "wisdom",
+      "summary": "Track, forage, navigate, predict weather, and avoid wilderness trouble."
+    }
+  ],
+  "proficiencies": [
+    {
+      "key": "light-armor",
+      "name": "Light Armor",
+      "type": "Armor",
+      "summary": "Protection that keeps you quick."
+    },
+    {
+      "key": "medium-armor",
+      "name": "Medium Armor",
+      "type": "Armor",
+      "summary": "Balanced protection with some weight."
+    },
+    {
+      "key": "heavy-armor",
+      "name": "Heavy Armor",
+      "type": "Armor",
+      "summary": "Serious protection for front-line heroes."
+    },
+    {
+      "key": "shields",
+      "name": "Shields",
+      "type": "Armor",
+      "summary": "A carried defense for careful advances."
+    },
+    {
+      "key": "simple-weapons",
+      "name": "Simple Weapons",
+      "type": "Weapon",
+      "summary": "Clubs, daggers, maces, spears, and other practical arms."
+    },
+    {
+      "key": "martial-weapons",
+      "name": "Martial Weapons",
+      "type": "Weapon",
+      "summary": "Specialized battlefield weapons that reward training."
+    },
+    {
+      "key": "thieves-tools",
+      "name": "Thieves' Tools",
+      "type": "Tool",
+      "summary": "Picks, probes, clamps, and tiny files for locks and traps."
+    },
+    {
+      "key": "tinkers-tools",
+      "name": "Tinker's Tools",
+      "type": "Tool",
+      "summary": "Small instruments for repairs, gadgets, and field fixes."
+    },
+    {
+      "key": "herbalism-kit",
+      "name": "Herbalism Kit",
+      "type": "Tool",
+      "summary": "Pouches, clippers, vials, and knowledge for simple remedies."
+    },
+    {
+      "key": "musical-instrument",
+      "name": "Musical Instrument",
+      "type": "Tool",
+      "summary": "Training with one instrument or performance tradition."
+    }
+  ],
+  "classes": [
+    {
+      "key": "wizard",
+      "name": "Wizard",
+      "summary": "A scholar of spellcraft who solves problems with preparation and arcane force.",
+      "primaryAbilities": [
+        "Intelligence"
+      ],
+      "hitDie": 6,
+      "proficiencies": [
+        "Daggers",
+        "Quarterstaffs",
+        "Arcane Focus"
+      ],
+      "skills": [
+        "Arcana",
+        "Investigation"
+      ],
+      "startingItem": "Primer of Practical Evocations",
+      "details": [
+        "Uses Intelligence for spellcasting.",
+        "Starts fragile but grows into deep utility."
+      ]
+    },
+    {
+      "key": "paladin",
+      "name": "Paladin",
+      "summary": "A sworn champion who mixes armor, courage, healing, and radiant judgment.",
+      "primaryAbilities": [
+        "Strength",
+        "Charisma"
+      ],
+      "hitDie": 10,
+      "proficiencies": [
+        "All Armor",
+        "Shields",
+        "Simple Weapons",
+        "Martial Weapons"
+      ],
+      "skills": [
+        "Athletics",
+        "Persuasion"
+      ],
+      "startingItem": "Oath Token",
+      "details": [
+        "Uses Charisma for divine features.",
+        "Wants strength, toughness, and presence."
+      ]
+    },
+    {
+      "key": "ranger",
+      "name": "Ranger",
+      "summary": "A pathfinder who reads terrain, tracks threats, and fights at the edge of danger.",
+      "primaryAbilities": [
+        "Dexterity",
+        "Wisdom"
+      ],
+      "hitDie": 10,
+      "proficiencies": [
+        "Light Armor",
+        "Medium Armor",
+        "Shields",
+        "Simple Weapons",
+        "Martial Weapons"
+      ],
+      "skills": [
+        "Nature",
+        "Perception",
+        "Survival"
+      ],
+      "startingItem": "Marked Trail Cord",
+      "details": [
+        "Rewards strong Wisdom and Dexterity.",
+        "Good at exploration and ranged combat."
+      ]
+    },
+    {
+      "key": "rogue",
+      "name": "Rogue",
+      "summary": "A specialist in stealth, timing, careful hands, and decisive strikes.",
+      "primaryAbilities": [
+        "Dexterity"
+      ],
+      "hitDie": 8,
+      "proficiencies": [
+        "Light Armor",
+        "Simple Weapons",
+        "Thieves' Tools"
+      ],
+      "skills": [
+        "Stealth",
+        "Investigation",
+        "Sleight of Hand"
+      ],
+      "startingItem": "Practice Lock",
+      "details": [
+        "Uses Dexterity for most core tricks.",
+        "Excellent at skills, traps, and precision."
+      ]
+    },
+    {
+      "key": "bard",
+      "name": "Bard",
+      "summary": "A performer and lore-keeper who turns charm, courage, and music into magic.",
+      "primaryAbilities": [
+        "Charisma"
+      ],
+      "hitDie": 8,
+      "proficiencies": [
+        "Light Armor",
+        "Simple Weapons",
+        "Musical Instrument"
+      ],
+      "skills": [
+        "Performance",
+        "Persuasion",
+        "History"
+      ],
+      "startingItem": "Blank Ballad Sheet",
+      "details": [
+        "Uses Charisma for spellcasting.",
+        "Good at helping allies and changing the tone of a scene."
+      ]
+    },
+    {
+      "key": "tinkerer",
+      "name": "Tinkerer",
+      "summary": "A workshop hero who builds clever tools, field repairs, and strange devices.",
+      "primaryAbilities": [
+        "Intelligence",
+        "Dexterity"
+      ],
+      "hitDie": 8,
+      "proficiencies": [
+        "Light Armor",
+        "Simple Weapons",
+        "Tinker's Tools"
+      ],
+      "skills": [
+        "Investigation",
+        "Arcana"
+      ],
+      "startingItem": "Box of Unlabeled Screws",
+      "details": [
+        "Rewards clever plans and tool use.",
+        "A flexible homebrew class for STEM workshop scenes."
+      ]
+    }
+  ],
+  "stores": {
+    "cafeteria": {
+      "name": "Cafeteria Provisions",
+      "bundles": [
+        {
+          "key": "traveler-rations",
+          "name": "Traveler's Rations",
+          "summary": "Dry fruit, oat cakes, cheese, and a corked flask of water.",
+          "items": [
+            "Traveler's Rations",
+            "Waterskin"
+          ],
+          "provisions": [
+            "Traveler's Rations",
+            "Waterskin"
+          ],
+          "cost": 2
+        },
+        {
+          "key": "healers-lunch",
+          "name": "Healer's Lunch",
+          "summary": "Soup, clean cloth, honey candy, and a small tonic.",
+          "items": [
+            "Healer's Lunch",
+            "Small Tonic"
+          ],
+          "provisions": [
+            "Healer's Lunch",
+            "Small Tonic"
+          ],
+          "cost": 3
+        },
+        {
+          "key": "trail-snacks",
+          "name": "Trail Snacks",
+          "summary": "Nuts, dried berries, hard candy, and a waxed paper pouch.",
+          "items": [
+            "Trail Snacks"
+          ],
+          "provisions": [
+            "Trail Snacks"
+          ],
+          "cost": 1
+        }
+      ]
+    },
+    "library": {
+      "name": "Library Spell Shelf",
+      "bundles": [
+        {
+          "key": "light-and-ward",
+          "name": "Light and Ward",
+          "summary": "Simple utility magic for dark halls and locked nerves.",
+          "spells": [
+            "Light",
+            "Mage Armor"
+          ],
+          "items": [
+            "Library Spell Notes: Light and Ward"
+          ],
+          "cost": 0
+        },
+        {
+          "key": "ember-and-frost",
+          "name": "Ember and Frost",
+          "summary": "Elemental tricks for dramatic problem solving.",
+          "spells": [
+            "Fire Bolt",
+            "Ray of Frost"
+          ],
+          "items": [
+            "Library Spell Notes: Ember and Frost"
+          ],
+          "cost": 0
+        },
+        {
+          "key": "message-and-mending",
+          "name": "Message and Mending",
+          "summary": "Quiet cantrips for clever heroes and careful plans.",
+          "spells": [
+            "Message",
+            "Mending"
+          ],
+          "items": [
+            "Library Spell Notes: Message and Mending"
+          ],
+          "cost": 0
+        }
+      ]
+    },
+    "musicRoom": {
+      "name": "Music Room",
+      "bundles": [
+        {
+          "key": "lute",
+          "name": "Lute",
+          "summary": "Warm strings for stories, courage, and tavern corners.",
+          "instrument": "Lute",
+          "spells": [
+            "Inspiring Verse"
+          ],
+          "items": [
+            "Lute"
+          ],
+          "cost": 0
+        },
+        {
+          "key": "drum",
+          "name": "Hand Drum",
+          "summary": "A steady beat for marching nerves and battle tempo.",
+          "instrument": "Hand Drum",
+          "spells": [
+            "Battle Rhythm"
+          ],
+          "items": [
+            "Hand Drum"
+          ],
+          "cost": 0
+        },
+        {
+          "key": "flute",
+          "name": "Silver Flute",
+          "summary": "Bright notes for misdirection, charm, and moonlit halls.",
+          "instrument": "Silver Flute",
+          "spells": [
+            "Silver Note"
+          ],
+          "items": [
+            "Silver Flute"
+          ],
+          "cost": 0
+        }
+      ]
+    },
+    "stemWorkshops": {
+      "name": "Tinkerer Workshops",
+      "bundles": [
+        {
+          "key": "light-kit",
+          "name": "Light Kit",
+          "summary": "Leather armor, a shortbow, and a repaired utility knife.",
+          "armor": "Leather Armor",
+          "weapon": "Shortbow",
+          "items": [
+            "Leather Armor",
+            "Shortbow",
+            "Utility Knife"
+          ],
+          "proficiencies": [
+            "Light Armor"
+          ],
+          "cost": 6
+        },
+        {
+          "key": "shield-kit",
+          "name": "Shield Kit",
+          "summary": "A reinforced shield, a mace, and a polished helm.",
+          "armor": "Shield",
+          "weapon": "Mace",
+          "items": [
+            "Shield",
+            "Mace",
+            "Polished Helm"
+          ],
+          "proficiencies": [
+            "Shields",
+            "Simple Weapons"
+          ],
+          "armorClassDelta": 2,
+          "cost": 7
+        },
+        {
+          "key": "workshop-tools",
+          "name": "Workshop Tools",
+          "summary": "Tinker's tools, wire, chalk, and a careful set of pliers.",
+          "items": [
+            "Tinker's Tools",
+            "Copper Wire",
+            "Marking Chalk"
+          ],
+          "proficiencies": [
+            "Tinker's Tools"
+          ],
+          "cost": 5
+        }
+      ]
+    }
+  }
+}

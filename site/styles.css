@@ -87,7 +87,7 @@ input:focus-visible {
 }
 
 .topbar h1,
-.scene-copy h2,
+.event-copy h2,
 .progress-block h2 {
   margin: 0;
   letter-spacing: 0;
@@ -135,6 +135,27 @@ input:focus-visible {
   grid-template-columns: minmax(0, 1fr) clamp(280px, 30vw, 420px);
 }
 
+@media (min-width: 901px) and (orientation: landscape) {
+  .game-layout {
+    height: min(760px, calc(100vh - 154px));
+    align-items: stretch;
+  }
+
+  .scene-panel,
+  .progress-panel {
+    max-height: 100%;
+    min-height: 0;
+  }
+
+  .progress-panel {
+    overflow-y: auto;
+  }
+
+  .progress-block {
+    min-height: 100%;
+  }
+}
+
 .scene-panel,
 .progress-block {
   border: 1px solid var(--line);
@@ -144,35 +165,64 @@ input:focus-visible {
 }
 
 .scene-panel {
-  overflow: hidden;
+  min-height: 0;
+  overflow-y: auto;
 }
 
-.scene-image {
+.event-log {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  padding: 18px 24px 8px;
+}
+
+.event-card {
+  overflow: hidden;
+  border: 1px solid rgba(234, 216, 184, 0.18);
+  border-radius: 8px;
+  background: rgba(20, 16, 15, 0.38);
+}
+
+.event-card.is-current {
+  border-color: rgba(215, 168, 73, 0.42);
+}
+
+.event-card img {
   display: block;
   width: 100%;
-  max-height: 260px;
-  aspect-ratio: 21 / 8;
+  max-height: 210px;
+  aspect-ratio: 21 / 7;
   object-fit: cover;
   background: #0e1510;
 }
 
-.scene-copy {
-  padding: 24px 24px 10px;
+.event-copy {
+  padding: 18px 18px 16px;
 }
 
-.scene-copy h2 {
+.event-copy p {
+  margin: 0 0 7px;
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.event-copy h2 {
   max-width: 760px;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: 32px;
+  font-size: 28px;
   line-height: 1.12;
 }
 
-.scene-copy p:last-child {
+.event-copy span {
+  display: block;
   max-width: 760px;
-  margin: 14px 0 0;
+  margin: 12px 0 0;
   color: #d8c7a7;
-  font-size: 17px;
-  line-height: 1.58;
+  font-size: 16px;
+  line-height: 1.5;
 }
 
 .choice-list {
@@ -561,6 +611,79 @@ input:focus-visible {
   background: rgba(20, 16, 15, 0.7);
 }
 
+.option-existing {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 12px;
+}
+
+.option-existing span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.option-existing strong {
+  border: 1px solid rgba(215, 168, 73, 0.36);
+  border-radius: 999px;
+  padding: 5px 9px;
+  color: var(--gold);
+  font-size: 12px;
+  background: rgba(20, 16, 15, 0.52);
+}
+
+.option-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 10px;
+}
+
+.option-picker-card {
+  display: grid;
+  min-height: 112px;
+  align-content: start;
+  gap: 6px;
+  padding: 12px;
+  color: var(--parchment);
+  text-align: left;
+  background: rgba(64, 88, 72, 0.24);
+  border-color: rgba(234, 216, 184, 0.2);
+}
+
+.option-picker-card:hover {
+  background: rgba(95, 125, 78, 0.32);
+}
+
+.option-picker-card.is-selected {
+  background: rgba(179, 77, 47, 0.32);
+  border-color: rgba(215, 168, 73, 0.6);
+}
+
+.option-picker-card.is-owned {
+  color: rgba(234, 216, 184, 0.62);
+  background: rgba(20, 16, 15, 0.36);
+  border-style: dashed;
+}
+
+.option-picker-card strong {
+  color: var(--gold);
+  font-size: 15px;
+  line-height: 1.18;
+}
+
+.option-picker-card em {
+  color: #d8c7a7;
+  font-size: 12px;
+  font-style: normal;
+}
+
+.option-picker-card span {
+  color: #d8c7a7;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
 .progress-list {
   display: grid;
   gap: 8px;
@@ -741,20 +864,24 @@ input:focus-visible {
     font-size: 32px;
   }
 
-  .scene-image {
+  .event-card img {
     max-height: 150px;
     aspect-ratio: 21 / 6;
   }
 
-  .scene-copy {
-    padding: 16px 20px 8px;
+  .event-log {
+    padding: 14px 20px 6px;
   }
 
-  .scene-copy h2 {
+  .event-copy {
+    padding: 14px 16px 13px;
+  }
+
+  .event-copy h2 {
     font-size: 26px;
   }
 
-  .scene-copy p:last-child {
+  .event-copy span {
     margin-top: 10px;
     font-size: 15px;
     line-height: 1.42;
@@ -877,11 +1004,11 @@ input:focus-visible {
     font-size: 31px;
   }
 
-  .scene-copy {
-    padding: 18px 16px 8px;
+  .event-log {
+    padding: 12px 16px 6px;
   }
 
-  .scene-copy h2 {
+  .event-copy h2 {
     font-size: 26px;
   }
 

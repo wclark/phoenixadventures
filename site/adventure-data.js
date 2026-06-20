@@ -1,263 +1,83 @@
 /**
- * Editable character-builder path for Phoenix Adventures.
+ * Data loader and scene assembler for Phoenix Adventures.
  *
- * Story scenes still provide the route through campus, but the main purpose of
- * this file is now game data: race bonuses, background hooks, class guidance,
- * and the choices that write those details to the character sheet.
+ * Character-building content lives in data/game-data.json so races,
+ * backgrounds, classes, alignments, proficiencies, and shop inventories can be
+ * edited without changing the game engine.
  */
 
-const PHOENIX_ABILITIES = {
-  strength: {
-    label: "Strength",
-    shortLabel: "STR",
-    description: "Power, lifting, melee pressure, and athletics.",
-  },
-  intelligence: {
-    label: "Intelligence",
-    shortLabel: "INT",
-    description: "Study, memory, investigation, and wizard magic.",
-  },
-  wisdom: {
-    label: "Wisdom",
-    shortLabel: "WIS",
-    description: "Awareness, intuition, survival, and divine magic.",
-  },
-  dexterity: {
-    label: "Dexterity",
-    shortLabel: "DEX",
-    description: "Reflexes, stealth, aim, and unarmored defense.",
-  },
-  constitution: {
-    label: "Constitution",
-    shortLabel: "CON",
-    description: "Endurance, grit, and hit points.",
-  },
-  charisma: {
-    label: "Charisma",
-    shortLabel: "CHA",
-    description: "Presence, persuasion, performance, and oath magic.",
-  },
-};
+const PHOENIX_DATA_URL = "data/game-data.json?v=20260619-8";
 
-const PHOENIX_RACES = {
-  elf: {
-    key: "elf",
-    name: "Elf",
-    origin: "Woodland Elves",
-    quote: "I am {name} of the Woodland Elves.",
-    abilityBonuses: { dexterity: 2, intelligence: 1 },
-    traits: ["Keen senses", "Quiet movement", "Long memory"],
-    bestFor: ["Wizard", "Ranger", "Rogue"],
-    summary: "Graceful, alert, and well suited to characters who prize precision.",
-    advice: "Put a strong rolled score into Dexterity if you want stealth or archery, or into Intelligence if you are leaning Wizard.",
-  },
-  dwarf: {
-    key: "dwarf",
-    name: "Dwarf",
-    origin: "Hill Dwarves",
-    quote: "I am {name} of the Hill Dwarves.",
-    abilityBonuses: { constitution: 2, wisdom: 1 },
-    traits: ["Stone sense", "Stubborn endurance", "Craft memory"],
-    bestFor: ["Cleric", "Paladin", "Fighter"],
-    summary: "Durable and steady, with bonuses that make front-line and divine classes forgiving.",
-    advice: "Constitution raises hit points. Wisdom supports Cleric, Ranger, and perception-heavy builds.",
-  },
-  halfling: {
-    key: "halfling",
-    name: "Halfling",
-    origin: "River Halflings",
-    quote: "I am {name} of the River Halflings.",
-    abilityBonuses: { dexterity: 2, charisma: 1 },
-    traits: ["Lucky timing", "Small target", "Warm welcome"],
-    bestFor: ["Rogue", "Bard", "Ranger"],
-    summary: "Quick and charming, with a natural fit for agile or social characters.",
-    advice: "Dexterity helps AC, ranged attacks, and stealth. Charisma makes social and Bard choices shine.",
-  },
-  human: {
-    key: "human",
-    name: "Human",
-    origin: "Free Folk of Santa Rosa",
-    quote: "I am {name} of the Free Folk of Santa Rosa.",
-    abilityBonuses: {
-      strength: 1,
-      intelligence: 1,
-      wisdom: 1,
-      dexterity: 1,
-      constitution: 1,
-      charisma: 1,
+window.PhoenixDataReady = loadPhoenixAdventure();
+
+async function loadPhoenixAdventure() {
+  const response = await fetch(PHOENIX_DATA_URL, { cache: "no-store" });
+
+  if (!response.ok) {
+    throw new Error(`Could not load ${PHOENIX_DATA_URL}: ${response.status}`);
+  }
+
+  const source = await response.json();
+  const adventure = buildPhoenixAdventure(source);
+  window.PHOENIX_ADVENTURE = adventure;
+  return adventure;
+}
+
+function buildPhoenixAdventure(source) {
+  const data = {
+    ...source,
+    races: keyBy(source.races),
+    backgrounds: keyBy(source.backgrounds),
+    classes: keyBy(source.classes),
+  };
+
+  return {
+    title: data.title,
+    startSceneId: data.startSceneId,
+    openingHistory: data.openingHistory || [],
+    trackingPixel: data.trackingPixel,
+    abilities: data.abilities,
+    races: data.races,
+    backgrounds: data.backgrounds,
+    classes: data.classes,
+    alignments: data.alignments || [],
+    languages: data.languages || [],
+    skills: data.skills || [],
+    proficiencies: data.proficiencies || [],
+    stores: data.stores || {},
+    player: {
+      name: "",
+      level: 1,
+      raceKey: "",
+      backgroundKey: "",
+      classKey: "",
+      abilityPool: [],
+      baseScores: {},
+      stats: {
+        gold: 12,
+        ...(data.player?.stats || {}),
+      },
+      inventory: [...(data.player?.inventory || [])],
     },
-    traits: ["Flexible training", "Fast learner", "Local connections"],
-    bestFor: ["Any class"],
-    summary: "Broad and adaptable, adding a small bonus to every ability.",
-    advice: "Humans are forgiving when you are still deciding what kind of character you want.",
-  },
-  dragonborn: {
-    key: "dragonborn",
-    name: "Dragonborn",
-    origin: "Emberborn",
-    quote: "I am {name} of the Emberborn.",
-    abilityBonuses: { strength: 2, charisma: 1 },
-    traits: ["Ember breath", "Commanding presence", "Scaled resolve"],
-    bestFor: ["Paladin", "Fighter", "Bard"],
-    summary: "Bold and forceful, strongest when built around presence and melee power.",
-    advice: "Strength supports weapons and athletics. Charisma supports Paladin oaths and Bard performance.",
-  },
-};
-
-const PHOENIX_BACKGROUNDS = {
-  sage: {
-    key: "sage",
-    name: "Sage",
-    skillFocus: "Arcana, History",
-    item: "Ink-stained Notebook",
-    summary: "A bookish start for curious characters who want lore and investigation.",
-    advice: "Pairs naturally with Intelligence-heavy classes, but any class can benefit from knowing old secrets.",
-  },
-  folkHero: {
-    key: "folkHero",
-    name: "Folk Hero",
-    skillFocus: "Athletics, Animal Handling",
-    item: "Lucky Token",
-    summary: "A public-hearted background for characters who are known for helping people.",
-    advice: "Good for Paladins, Fighters, Rangers, or anyone who wants a grounded heroic reputation.",
-  },
-  urchin: {
-    key: "urchin",
-    name: "Urchin",
-    skillFocus: "Stealth, Sleight of Hand",
-    item: "Bent Lockpick",
-    summary: "A streetwise start for careful, quick, or sneaky characters.",
-    advice: "Especially useful when Dexterity is one of your best scores.",
-  },
-  artisan: {
-    key: "artisan",
-    name: "Guild Artisan",
-    skillFocus: "Insight, Persuasion",
-    item: "Maker's Chisel",
-    summary: "A practical craft background for builders, negotiators, and tinkerers.",
-    advice: "Pairs nicely with Intelligence or Charisma, depending on whether you build or bargain first.",
-  },
-  outlander: {
-    key: "outlander",
-    name: "Outlander",
-    skillFocus: "Survival, Athletics",
-    item: "Weathered Compass",
-    summary: "A trail-tested background for characters who know how to survive away from town.",
-    advice: "A strong fit for Rangers, Fighters, and hardy characters with Wisdom or Strength.",
-  },
-};
-
-const PHOENIX_CLASSES = {
-  wizard: {
-    key: "wizard",
-    name: "Wizard",
-    primaryAbilities: ["intelligence"],
-    hitDie: 6,
-    summary: "Solves problems with study, rituals, and spell choices.",
-    details: ["Primary ability: Intelligence", "Hit die: d6", "Armor: light protection at best", "Good scores: Intelligence first, then Dexterity or Constitution"],
-    startingItem: "Blank Spellbook",
-  },
-  paladin: {
-    key: "paladin",
-    name: "Paladin",
-    primaryAbilities: ["strength", "charisma"],
-    hitDie: 10,
-    summary: "A durable oathbound champion who mixes weapons, protection, and presence.",
-    details: ["Primary abilities: Strength and Charisma", "Hit die: d10", "Armor: excellent", "Good scores: Strength, Charisma, Constitution"],
-    startingItem: "Oath Primer",
-  },
-  ranger: {
-    key: "ranger",
-    name: "Ranger",
-    primaryAbilities: ["dexterity", "wisdom"],
-    hitDie: 10,
-    summary: "A scout and hunter who notices trouble early and fights well at range.",
-    details: ["Primary abilities: Dexterity and Wisdom", "Hit die: d10", "Armor: light or medium", "Good scores: Dexterity, Wisdom, Constitution"],
-    startingItem: "Trail Map",
-  },
-  rogue: {
-    key: "rogue",
-    name: "Rogue",
-    primaryAbilities: ["dexterity"],
-    hitDie: 8,
-    summary: "A precise specialist built around stealth, timing, and useful tricks.",
-    details: ["Primary ability: Dexterity", "Hit die: d8", "Armor: light", "Good scores: Dexterity first, then Intelligence or Charisma"],
-    startingItem: "Practice Picks",
-  },
-  fighter: {
-    key: "fighter",
-    name: "Fighter",
-    primaryAbilities: ["strength", "dexterity"],
-    hitDie: 10,
-    summary: "A flexible weapon expert who can be built for melee, archery, or defense.",
-    details: ["Primary abilities: Strength or Dexterity", "Hit die: d10", "Armor: excellent", "Good scores: Strength or Dexterity, then Constitution"],
-    startingItem: "Training Medal",
-  },
-  cleric: {
-    key: "cleric",
-    name: "Cleric",
-    primaryAbilities: ["wisdom"],
-    hitDie: 8,
-    summary: "A spellcaster and protector whose power comes from conviction and insight.",
-    details: ["Primary ability: Wisdom", "Hit die: d8", "Armor: usually solid", "Good scores: Wisdom, Constitution, Strength if armored"],
-    startingItem: "Prayer Beads",
-  },
-  bard: {
-    key: "bard",
-    name: "Bard",
-    primaryAbilities: ["charisma"],
-    hitDie: 8,
-    summary: "A social spellcaster who turns performance, lore, and nerve into power.",
-    details: ["Primary ability: Charisma", "Hit die: d8", "Armor: light", "Good scores: Charisma, Dexterity, Constitution"],
-    startingItem: "Song Ledger",
-  },
-  tinkerer: {
-    key: "tinkerer",
-    name: "Tinkerer",
-    primaryAbilities: ["intelligence", "dexterity"],
-    hitDie: 8,
-    summary: "A workshop-minded adventurer who fights with tools, devices, and cleverness.",
-    details: ["Primary abilities: Intelligence and Dexterity", "Hit die: d8", "Armor: light or medium", "Good scores: Intelligence, Dexterity, Constitution"],
-    startingItem: "Gear Sketchbook",
-  },
-};
-
-window.PHOENIX_ADVENTURE = {
-  title: "Phoenix Adventures",
-  startSceneId: "sracs-gate",
-  openingHistory: ["Opened the SRAC'S character ledger."],
-  trackingPixel: "assets/character-pixel.svg",
-  abilities: PHOENIX_ABILITIES,
-  races: PHOENIX_RACES,
-  backgrounds: PHOENIX_BACKGROUNDS,
-  classes: PHOENIX_CLASSES,
-  player: {
-    name: "",
-    level: 1,
-    raceKey: "",
-    backgroundKey: "",
-    classKey: "",
-    abilityPool: [],
-    baseScores: {},
-    stats: {
-      gold: 12,
+    map: {
+      image: "assets/campus-ruins-map.svg",
+      nodes: [
+        { id: "sracs-gate", label: "SRAC'S", sceneId: "sracs-gate", x: 0.74, y: 0.31 },
+        { id: "outdoor-bar", label: "Outdoor Bar", sceneId: "outdoor-bar", x: 0.78, y: 0.46 },
+        { id: "gymnasium", label: "Gymnasium", sceneId: "gymnasium", x: 0.38, y: 0.76 },
+        { id: "main-office", label: "Main Office", sceneId: "main-office", x: 0.42, y: 0.32 },
+        { id: "cafeteria", label: "Cafeteria", sceneId: "cafeteria", x: 0.41, y: 0.44 },
+        { id: "library", label: "Library", sceneId: "library", x: 0.33, y: 0.28 },
+        { id: "music-room", label: "Music Room", sceneId: "music-room", x: 0.31, y: 0.52 },
+        { id: "stem-workshops", label: "STEM Workshops", sceneId: "stem-workshops", x: 0.74, y: 0.61 },
+      ],
     },
-    inventory: [],
-  },
-  map: {
-    image: "assets/campus-ruins-map.svg",
-    nodes: [
-      { id: "sracs-gate", label: "SRAC'S", sceneId: "sracs-gate", x: 0.74, y: 0.31 },
-      { id: "outdoor-bar", label: "Outdoor Bar", sceneId: "outdoor-bar", x: 0.78, y: 0.46 },
-      { id: "gymnasium", label: "Gymnasium", sceneId: "gymnasium", x: 0.38, y: 0.76 },
-      { id: "main-office", label: "Main Office", sceneId: "main-office", x: 0.42, y: 0.32 },
-      { id: "cafeteria", label: "Cafeteria", sceneId: "cafeteria", x: 0.41, y: 0.44 },
-      { id: "library", label: "Library", sceneId: "library", x: 0.33, y: 0.28 },
-      { id: "music-room", label: "Music Room", sceneId: "music-room", x: 0.31, y: 0.52 },
-      { id: "stem-workshops", label: "STEM Workshops", sceneId: "stem-workshops", x: 0.74, y: 0.61 },
-    ],
-  },
-  scenes: [
+    scenes: buildScenes(data),
+  };
+}
+
+function buildScenes(data) {
+  return [
     {
       id: "sracs-gate",
       mapNodeId: "sracs-gate",
@@ -266,7 +86,7 @@ window.PHOENIX_ADVENTURE = {
       image: "assets/scene-sracs-tavern.png",
       imageAlt: "SRAC'S tavern, a long fantasy tavern with lantern-lit windows, purple doors, trees, a white fence, and storm clouds overhead.",
       text:
-        "This builder walks you through name, race, background, rolled abilities, class, provisions, and starting gear. Your choices are mirrored in the character sheet and sent through the log pixel for later retrieval.",
+        "This builder walks you through name, race, background, alignment, language, skills, proficiencies, rolled abilities, class, provisions, and starting gear. Each completed choice fills in the character sheet.",
       choices: [
         {
           id: "enter-sracs",
@@ -288,14 +108,8 @@ window.PHOENIX_ADVENTURE = {
       imageAlt: "The lantern-lit exterior of SRAC'S, where the barkeep begins the character ledger.",
       builder: "identity-entry",
       text:
-        "The barkeep opens a ledger and asks who has come to SRAC'S. Type your character name below, then choose a race. Each race adds ability-score bonuses after you assign your rolled scores, so a 14 Dexterity with a +2 racial bonus becomes 16.",
-      choices: [
-        raceChoice("elf", "race-woodland-elf", "Woodland Elf"),
-        raceChoice("dwarf", "race-hill-dwarf", "Hill Dwarf"),
-        raceChoice("halfling", "race-river-halfling", "River Halfling"),
-        raceChoice("human", "race-santa-rosa-human", "Free Folk Human"),
-        raceChoice("dragonborn", "race-emberborn", "Emberborn Dragonborn"),
-      ],
+        "The barkeep opens a ledger and asks who has come to SRAC'S. Type your character name below, then choose a race. Race data, bonuses, traits, starting languages, and proficiencies are loaded from the editable JSON file.",
+      choices: Object.values(data.races).map((race) => raceChoice(race, data.abilities)),
     },
     {
       id: "outdoor-bar",
@@ -305,15 +119,80 @@ window.PHOENIX_ADVENTURE = {
       image: "assets/scene-courtyard.svg",
       imageAlt: "A ruined central courtyard remade as an outdoor tavern patio.",
       text:
-        "Backgrounds do not change ability scores here. They add identity, a small starting item, and a hint about skills your character is likely to know.",
-      choices: [
-        backgroundChoice("sage", "background-sage"),
-        backgroundChoice("folkHero", "background-folk-hero"),
-        backgroundChoice("urchin", "background-urchin"),
-        backgroundChoice("artisan", "background-artisan"),
-        backgroundChoice("outlander", "background-outlander"),
-      ],
+        "At the outdoor tables, strangers ask what you did before the road brought you here. Backgrounds can add skills, languages, proficiencies, and small story items.",
+      choices: Object.values(data.backgrounds).map((background) => backgroundChoice(background)),
     },
+    optionPickerScene({
+      id: "alignment-choice",
+      mapNodeId: "outdoor-bar",
+      kicker: "Alignment",
+      title: "Choose the compass your character follows.",
+      image: "assets/scene-courtyard.svg",
+      imageAlt: "The SRAC'S outdoor tables under evening light.",
+      text:
+        "Alignment is a quick signal for how your character tends to make hard choices. It is not a cage, but it gives the sheet a moral heading.",
+      source: "alignments",
+      field: "alignment",
+      mode: "single",
+      min: 1,
+      max: 1,
+      nextSceneId: "language-choice",
+      history: "Chose an alignment.",
+    }),
+    optionPickerScene({
+      id: "language-choice",
+      mapNodeId: "outdoor-bar",
+      kicker: "Languages",
+      title: "Choose additional languages.",
+      image: "assets/scene-courtyard.svg",
+      imageAlt: "A courtyard table scattered with phrasebooks and travel marks.",
+      text:
+        "Your race and background may already add languages. Choose up to two more that fit the character you are building.",
+      source: "languages",
+      field: "languages",
+      mode: "multi",
+      min: 0,
+      max: 2,
+      append: true,
+      nextSceneId: "skill-choice",
+      history: "Chose additional languages.",
+    }),
+    optionPickerScene({
+      id: "skill-choice",
+      mapNodeId: "outdoor-bar",
+      kicker: "Skills",
+      title: "Choose two additional skills.",
+      image: "assets/scene-courtyard.svg",
+      imageAlt: "A courtyard table where adventurers compare talents and stories.",
+      text:
+        "Skills are the things your character is practiced at doing. Race and background can add some automatically; choose two more areas where your character has training.",
+      source: "skills",
+      field: "skills",
+      mode: "multi",
+      min: 2,
+      max: 2,
+      append: true,
+      nextSceneId: "proficiency-choice",
+      history: "Chose additional skills.",
+    }),
+    optionPickerScene({
+      id: "proficiency-choice",
+      mapNodeId: "outdoor-bar",
+      kicker: "Proficiencies",
+      title: "Choose practical proficiencies.",
+      image: "assets/scene-courtyard.svg",
+      imageAlt: "A courtyard table laid with tools, straps, buckles, and practice weapons.",
+      text:
+        "Proficiencies cover trained gear, tools, armor, and weapon categories. Choose up to two that match how your character handles trouble.",
+      source: "proficiencies",
+      field: "proficiencies",
+      mode: "multi",
+      min: 1,
+      max: 2,
+      append: true,
+      nextSceneId: "gymnasium",
+      history: "Chose practical proficiencies.",
+    }),
     {
       id: "gymnasium",
       mapNodeId: "gymnasium",
@@ -323,13 +202,13 @@ window.PHOENIX_ADVENTURE = {
       imageAlt: "An athletic ground transformed into a fantasy training arena.",
       builder: "ability-assignment",
       text:
-        "The gym rolls six numbers using 4d6, keeping the highest three dice each time. You choose which rolled number goes to each ability. Racial bonuses are shown beside each ability before you confirm.",
+        "The gym rolls six numbers using 4d6, keeping the highest three dice each time. You choose which rolled number goes to each ability. Race modifiers are shown before you confirm.",
       choices: [
         {
           id: "roll-score-pool",
           label: "Roll or reroll six ability scores",
           summary: "Creates a fresh pool of six rolled scores. Assignments are cleared when you reroll.",
-          details: ["Method: roll 4d6, drop the lowest die", "You can assign the scores in any order", "Racial bonuses apply after assignment"],
+          details: ["Method: roll 4d6, drop the lowest die", "You can assign the scores in any order", "Race bonuses apply after assignment"],
           effects: {
             rollAbilityPool: true,
             history: "Rolled a fresh set of ability scores.",
@@ -352,17 +231,8 @@ window.PHOENIX_ADVENTURE = {
       image: "assets/scene-courtyard.svg",
       imageAlt: "A ruined hall office with warm light, registers, and class banners.",
       text:
-        "Classes do not add ability-score bonuses, but they tell you which abilities matter most, change your hit point baseline, and guide later spell, music, and equipment choices.",
-      choices: [
-        classChoice("wizard", "class-wizard"),
-        classChoice("paladin", "class-paladin"),
-        classChoice("ranger", "class-ranger"),
-        classChoice("rogue", "class-rogue"),
-        classChoice("fighter", "class-fighter"),
-        classChoice("cleric", "class-cleric"),
-        classChoice("bard", "class-bard"),
-        classChoice("tinkerer", "class-tinkerer"),
-      ],
+        "Classes do not add ability-score bonuses, but they set hit die, suggest important abilities, and can add starting proficiencies, skills, and gear from JSON.",
+      choices: Object.values(data.classes).map((characterClass) => classChoice(characterClass, data.abilities)),
     },
     {
       id: "cafeteria",
@@ -372,45 +242,8 @@ window.PHOENIX_ADVENTURE = {
       image: "assets/scene-courtyard.svg",
       imageAlt: "A warm ruined hall serving counter stocked with fantasy provisions.",
       text:
-        "These choices are mostly inventory flavor for now. Later we can make them matter in travel, recovery, and social scenes.",
-      choices: [
-        {
-          id: "provisions-trail-rations",
-          label: "Trail rations and canteen",
-          summary: "Plain, practical, and useful for long travel.",
-          meta: { Contents: "Trail Rations, Canteen" },
-          nextSceneId: "study-choice",
-          effects: {
-            setCharacter: { provisions: ["Trail Rations", "Canteen"] },
-            addItems: ["Trail Rations", "Canteen"],
-            history: "Packed trail rations and a canteen.",
-          },
-        },
-        {
-          id: "provisions-herbal-kit",
-          label: "Herbal tea and healer's bundle",
-          summary: "A gentler kit for characters who expect to patch people up.",
-          meta: { Contents: "Herbal Tea, Healer's Bundle" },
-          nextSceneId: "study-choice",
-          effects: {
-            setCharacter: { provisions: ["Herbal Tea", "Healer's Bundle"] },
-            addItems: ["Herbal Tea", "Healer's Bundle"],
-            history: "Packed herbal tea and a healer's bundle.",
-          },
-        },
-        {
-          id: "provisions-feast-box",
-          label: "Feast box and sweet rolls",
-          summary: "Social supplies for making friends before trouble starts.",
-          meta: { Contents: "Feast Box, Sweet Rolls" },
-          nextSceneId: "study-choice",
-          effects: {
-            setCharacter: { provisions: ["Feast Box", "Sweet Rolls"] },
-            addItems: ["Feast Box", "Sweet Rolls"],
-            history: "Packed a feast box and sweet rolls.",
-          },
-        },
-      ],
+        "The cafeteria stocks travel kits and practical bundles. This inventory is loaded from the editable store data.",
+      choices: storeChoices(data.stores.cafeteria, "study-choice"),
     },
     {
       id: "study-choice",
@@ -425,9 +258,9 @@ window.PHOENIX_ADVENTURE = {
         {
           id: "go-library-caster",
           label: "Visit the Library for spells",
-          summary: "Available to Wizard, Paladin, Ranger, and Cleric characters.",
+          summary: "Available to Wizard, Paladin, Ranger, and Bard characters.",
           nextSceneId: "library",
-          requires: { character: { className: ["Wizard", "Paladin", "Ranger", "Cleric"] } },
+          requires: { character: { className: ["Wizard", "Paladin", "Ranger", "Bard"] } },
           hideUnavailable: true,
         },
         {
@@ -455,11 +288,7 @@ window.PHOENIX_ADVENTURE = {
       imageAlt: "A ruined school library transformed into a candlelit spell archive.",
       text:
         "For now, spells are bundled to keep character creation quick. Later we can break this into individual spell picks with class-specific limits.",
-      choices: [
-        spellChoice("spells-ember-and-ward", "Ember, Light, and Shield", ["Ember", "Light", "Shield"], "Balanced offense, utility, and defense."),
-        spellChoice("spells-vine-and-mending", "Vine Snare, Mending, and Speak with Beasts", ["Vine Snare", "Mending", "Speak with Beasts"], "Nature, repair, and exploration tools."),
-        spellChoice("spells-oath-and-courage", "Blessing, Courage, and Sacred Flame", ["Blessing", "Courage", "Sacred Flame"], "Supportive magic with a divine edge."),
-      ],
+      choices: storeChoices(data.stores.library, "stem-workshops"),
     },
     {
       id: "music-room",
@@ -470,11 +299,7 @@ window.PHOENIX_ADVENTURE = {
       imageAlt: "A ruined school music room with instruments, banners, and candlelight.",
       text:
         "Bards use Charisma first, but their instrument can signal whether they charm, move, or rally people.",
-      choices: [
-        instrumentChoice("instrument-lute", "Lute and charm songs", "Lute", ["Charm", "Inspire", "Echo"], "Social magic and graceful performance."),
-        instrumentChoice("instrument-flute", "Flute and wind songs", "Flute", ["Gust", "Lullaby", "Quickstep"], "Movement, air, and soft control."),
-        instrumentChoice("instrument-drum", "Drum and courage songs", "Drum", ["Courage", "Thunderbeat", "Rally"], "Morale, rhythm, and battlefield nerve."),
-      ],
+      choices: storeChoices(data.stores.musicRoom, "stem-workshops"),
     },
     {
       id: "stem-workshops",
@@ -485,45 +310,7 @@ window.PHOENIX_ADVENTURE = {
       imageAlt: "Training courts transformed into tinkerer workshops full of tools, racks, and gear.",
       text:
         "Gear choices spend gold and set armor and weapon fields on the sheet. Armor Class starts from 10 plus Dexterity modifier, then gear can improve it.",
-      choices: [
-        gearChoice({
-          id: "gear-staff-robes",
-          label: "Staff, robes, and component pouch",
-          cost: 4,
-          weapon: "Quarterstaff",
-          armor: "Traveling Robes",
-          items: ["Quarterstaff", "Traveling Robes", "Component Pouch"],
-          summary: "Low cost and natural for Wizards, Clerics, Bards, or anyone staying light.",
-        }),
-        gearChoice({
-          id: "gear-bow-leather",
-          label: "Shortbow, leather armor, and knife",
-          cost: 7,
-          weapon: "Shortbow",
-          armor: "Leather Armor",
-          items: ["Shortbow", "Leather Armor", "Utility Knife"],
-          summary: "A Dexterity kit for Rangers, Rogues, and mobile Fighters.",
-        }),
-        gearChoice({
-          id: "gear-sword-shield",
-          label: "Sword, shield, and chain shirt",
-          cost: 10,
-          weapon: "Longsword",
-          armor: "Chain Shirt and Shield",
-          armorClassDelta: 3,
-          items: ["Longsword", "Shield", "Chain Shirt"],
-          summary: "A defensive melee kit for Paladins and Fighters.",
-        }),
-        gearChoice({
-          id: "gear-tools-crossbow",
-          label: "Toolkit, light crossbow, and padded coat",
-          cost: 6,
-          weapon: "Light Crossbow",
-          armor: "Padded Coat",
-          items: ["Tinkerer's Toolkit", "Light Crossbow", "Padded Coat"],
-          summary: "A practical workshop kit for Tinkerers or clever ranged builds.",
-        }),
-      ],
+      choices: storeChoices(data.stores.stemWorkshops, "character-complete"),
     },
     {
       id: "character-complete",
@@ -534,7 +321,7 @@ window.PHOENIX_ADVENTURE = {
       imageAlt: "SRAC'S tavern glowing under storm clouds as a new adventurer prepares to depart.",
       builder: "character-review",
       text:
-        "The sheet now has name, race, background, assigned ability scores, class, provisions, and starting gear. The final pixel request includes those values in the query string.",
+        "The sheet now has name, race, background, alignment, languages, skills, proficiencies, ability scores, class, provisions, and starting gear. The final pixel request includes those values in the query string.",
       choices: [
         {
           id: "review-map",
@@ -562,7 +349,7 @@ window.PHOENIX_ADVENTURE = {
       image: "assets/campus-ruins-map.svg",
       imageAlt: "A simplified fantasy map showing SRAC'S, the courtyard, halls, gym, fields, and workshops.",
       text:
-        "SRAC'S sets name and race. The outdoor bar sets background. The gym rolls and assigns abilities. The main office registers class. The cafeteria, library, music room, and STEM workshops fill in equipment and options.",
+        "SRAC'S sets name and race. The outdoor bar sets background, alignment, languages, skills, and proficiencies. The gym rolls and assigns abilities. The main office registers class. The cafeteria, library, music room, and STEM workshops fill in equipment and options.",
       choices: [
         {
           id: "return-complete",
@@ -571,123 +358,163 @@ window.PHOENIX_ADVENTURE = {
         },
       ],
     },
-  ],
-};
+  ];
+}
 
-function raceChoice(key, id, label) {
-  const race = PHOENIX_RACES[key];
+function optionPickerScene({ id, mapNodeId, kicker, title, image, imageAlt, text, source, field, mode, min, max, append, nextSceneId, history }) {
   return {
     id,
-    label,
+    mapNodeId,
+    kicker,
+    title,
+    image,
+    imageAlt,
+    text,
+    builder: "option-picker",
+    builderConfig: {
+      source,
+      field,
+      mode,
+      min,
+      max,
+      append,
+      nextSceneId,
+      history,
+    },
+    choices: [],
+  };
+}
+
+function raceChoice(race, abilities) {
+  return {
+    id: `race-${race.key}`,
+    label: race.name,
     summary: race.summary,
     meta: {
-      "Ability bonuses": formatBonuses(race.abilityBonuses),
-      "Good fits": race.bestFor.join(", "),
+      "Ability bonuses": formatBonuses(race.abilityBonuses, abilities),
+      "Good fits": race.bestFor,
     },
-    details: [race.advice, `Traits: ${race.traits.join(", ")}`],
+    details: [race.advice, `Traits: ${(race.traits || []).join(", ")}`].filter(Boolean),
     nextSceneId: "outdoor-bar",
     effects: {
-      setCharacter: { raceKey: key, race: race.name, origin: race.origin },
-      history: `Chose ${race.name} from the ${race.origin}.`,
+      setCharacter: { raceKey: race.key },
+      addLanguages: race.languages,
+      addSkills: race.skills,
+      addProficiencies: race.proficiencies,
+      addItems: race.items,
+      history: `Chose ${race.name} from ${race.origin}.`,
     },
   };
 }
 
-function backgroundChoice(key, id) {
-  const background = PHOENIX_BACKGROUNDS[key];
+function backgroundChoice(background) {
   return {
-    id,
+    id: `background-${background.key}`,
     label: background.name,
     summary: background.summary,
     meta: {
       "Skill focus": background.skillFocus,
-      "Starting item": background.item,
+      Items: (background.items || []).join(", "),
     },
-    details: [background.advice],
-    nextSceneId: "gymnasium",
+    details: [background.choiceText, ...(background.details || [])].filter(Boolean),
+    nextSceneId: "alignment-choice",
     effects: {
-      setCharacter: { backgroundKey: key, background: background.name },
-      addItems: [background.item],
+      setCharacter: { backgroundKey: background.key },
+      addLanguages: background.languages,
+      addSkills: background.skills,
+      addProficiencies: background.proficiencies,
+      addItems: background.items,
       history: `Chose the ${background.name} background.`,
     },
   };
 }
 
-function classChoice(key, id) {
-  const characterClass = PHOENIX_CLASSES[key];
+function classChoice(characterClass, abilities) {
   return {
-    id,
+    id: `class-${characterClass.key}`,
     label: characterClass.name,
     summary: characterClass.summary,
     meta: {
-      "Primary abilities": characterClass.primaryAbilities.map((ability) => PHOENIX_ABILITIES[ability].shortLabel).join(", "),
+      "Primary abilities": formatPrimaryAbilities(characterClass.primaryAbilities, abilities),
       "Hit die": `d${characterClass.hitDie}`,
     },
-    details: characterClass.details,
+    details: characterClass.details || [],
     nextSceneId: "cafeteria",
     effects: {
-      setCharacter: { classKey: key, className: characterClass.name },
-      addItems: [characterClass.startingItem],
+      setCharacter: { classKey: characterClass.key },
+      addSkills: characterClass.skills,
+      addProficiencies: characterClass.proficiencies,
+      addItems: [characterClass.startingItem].filter(Boolean),
       history: `Registered as a ${characterClass.name}.`,
     },
   };
 }
 
-function spellChoice(id, label, spells, summary) {
-  return {
-    id,
-    label,
-    summary,
-    meta: { Spells: spells.join(", ") },
-    nextSceneId: "stem-workshops",
-    effects: {
-      setCharacter: { spells },
-      addItems: [`Spell Bundle: ${spells.join(", ")}`],
-      history: `Selected ${label}.`,
-    },
-  };
+function storeChoices(store, nextSceneId) {
+  return (store?.bundles || []).map((bundle) => {
+    const cost = Number(bundle.cost) || 0;
+    const meta = {
+      ...(cost > 0 ? { Cost: `${cost} gold` } : {}),
+      ...(bundle.weapon ? { Weapon: bundle.weapon } : {}),
+      ...(bundle.armor ? { Armor: bundle.armor } : {}),
+      ...(bundle.instrument ? { Instrument: bundle.instrument } : {}),
+      ...(bundle.spells ? { Spells: bundle.spells.join(", ") } : {}),
+      ...(bundle.provisions ? { Contents: bundle.provisions.join(", ") } : {}),
+    };
+
+    return {
+      id: `${store.name.toLowerCase().replaceAll(/[^a-z0-9]+/g, "-")}-${bundle.key}`,
+      label: cost > 0 ? `${bundle.name} (${cost} gold)` : bundle.name,
+      summary: bundle.summary,
+      meta,
+      details: [
+        ...(bundle.proficiencies?.length ? [`Adds proficiencies: ${bundle.proficiencies.join(", ")}`] : []),
+        ...(bundle.armorClassDelta ? [`Armor Class bonus: +${bundle.armorClassDelta}`] : []),
+      ],
+      nextSceneId,
+      requires: cost > 0 ? { stats: { gold: cost } } : undefined,
+      effects: {
+        setCharacter: {
+          ...(bundle.provisions ? { provisions: bundle.provisions } : {}),
+          ...(bundle.spells ? { spells: bundle.spells } : {}),
+          ...(bundle.instrument ? { instrument: bundle.instrument } : {}),
+          ...(bundle.armor ? { armor: bundle.armor } : {}),
+          ...(bundle.weapon ? { weapon: bundle.weapon } : {}),
+        },
+        addItems: bundle.items,
+        addProficiencies: bundle.proficiencies,
+        statDeltas: cost > 0 ? { gold: -cost } : undefined,
+        armorClassDelta: bundle.armorClassDelta || 0,
+        history: `Chose ${bundle.name}.`,
+      },
+    };
+  });
 }
 
-function instrumentChoice(id, label, instrument, spells, summary) {
-  return {
-    id,
-    label,
-    summary,
-    meta: { Instrument: instrument, Songs: spells.join(", ") },
-    nextSceneId: "stem-workshops",
-    effects: {
-      setCharacter: { instrument, spells },
-      addItems: [instrument],
-      history: `Selected ${instrument} and ${spells.join(", ")}.`,
-    },
-  };
+function keyBy(items = []) {
+  return items.reduce((map, item) => {
+    map[item.key] = item;
+    return map;
+  }, {});
 }
 
-function gearChoice(definition) {
-  return {
-    id: definition.id,
-    label: `${definition.label} (${definition.cost} gold)`,
-    summary: definition.summary,
-    meta: {
-      Cost: `${definition.cost} gold`,
-      Weapon: definition.weapon,
-      Armor: definition.armor,
-    },
-    details: definition.armorClassDelta ? [`Armor Class bonus: +${definition.armorClassDelta}`] : ["Armor Class uses your Dexterity modifier."],
-    nextSceneId: "character-complete",
-    requires: { stats: { gold: definition.cost } },
-    effects: {
-      setCharacter: { weapon: definition.weapon, armor: definition.armor },
-      addItems: definition.items,
-      statDeltas: { gold: -definition.cost },
-      armorClassDelta: definition.armorClassDelta || 0,
-      history: `Chose ${definition.label}.`,
-    },
-  };
+function formatBonuses(bonuses = {}, abilities = {}) {
+  const entries = Object.entries(bonuses);
+
+  if (entries.length === 0) {
+    return "None";
+  }
+
+  return entries
+    .map(([ability, bonus]) => `${Number(bonus) >= 0 ? "+" : ""}${bonus} ${(abilities[ability]?.shortLabel || ability).toUpperCase()}`)
+    .join(", ");
 }
 
-function formatBonuses(bonuses) {
-  return Object.entries(bonuses)
-    .map(([ability, bonus]) => `${bonus >= 0 ? "+" : ""}${bonus} ${PHOENIX_ABILITIES[ability].shortLabel}`)
+function formatPrimaryAbilities(primaryAbilities = [], abilities = {}) {
+  return primaryAbilities
+    .map((ability) => {
+      const key = String(ability).toLowerCase();
+      return abilities[key]?.shortLabel || ability;
+    })
     .join(", ");
 }

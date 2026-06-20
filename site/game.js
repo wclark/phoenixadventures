@@ -1,6 +1,6 @@
 const STORAGE_KEY = "phoenix-adventures-save";
-const TRACKING_VERSION = "20260619-7";
-const STATE_VERSION = "builder-20260619-7";
+const TRACKING_VERSION = "20260619-8";
+const STATE_VERSION = "builder-20260619-8";
 const ATTRIBUTE_KEYS = ["strength", "intelligence", "wisdom", "dexterity", "constitution", "charisma"];
 const LEGACY_STAT_MAP = {
   might: "strength",
@@ -16,8 +16,9 @@ class Scene {
     this.title = definition.title;
     this.image = definition.image;
     this.imageAlt = definition.imageAlt || "";
-    this.text = definition.text;
+    this.text = definition.text || "";
     this.builder = definition.builder || "";
+    this.builderConfig = definition.builderConfig || {};
     this.choices = definition.choices || [];
   }
 }
@@ -35,6 +36,10 @@ class Adventurer {
     this.origin = profile.origin || "";
     this.background = profile.background || "";
     this.className = profile.className || "";
+    this.alignment = profile.alignment || "";
+    this.languages = normalizeStringArray(profile.languages);
+    this.skills = normalizeStringArray(profile.skills);
+    this.proficiencies = normalizeStringArray(profile.proficiencies);
     this.abilityPool = normalizeAbilityPool(profile.abilityPool);
     this.baseScores = ATTRIBUTE_KEYS.reduce((scores, attribute) => {
       scores[attribute] = readNullableNumber(profile.baseScores?.[attribute]);
@@ -184,6 +189,9 @@ class Adventurer {
     this.applyHitPointDelta(effects.hitPointDelta);
     this.applyArmorClassDelta(effects.armorClassDelta);
     this.addItems(effects.addItems);
+    this.addUniqueValues("languages", effects.addLanguages);
+    this.addUniqueValues("skills", effects.addSkills);
+    this.addUniqueValues("proficiencies", effects.addProficiencies);
     this.syncDefinitionLabels();
     this.refreshFinalScores();
   }
@@ -244,9 +252,21 @@ class Adventurer {
   }
 
   addItems(items = []) {
-    items.forEach((item) => {
+    normalizeStringArray(items).forEach((item) => {
       if (!this.inventory.includes(item)) {
         this.inventory.push(item);
+      }
+    });
+  }
+
+  addUniqueValues(field, values = []) {
+    if (!Array.isArray(this[field])) {
+      this[field] = [];
+    }
+
+    normalizeStringArray(values).forEach((value) => {
+      if (!this[field].includes(value)) {
+        this[field].push(value);
       }
     });
   }
@@ -297,6 +317,10 @@ class Adventurer {
       background: this.background,
       classKey: this.classKey,
       className: this.className,
+      alignment: this.alignment,
+      languages: [...this.languages],
+      skills: [...this.skills],
+      proficiencies: [...this.proficiencies],
       abilityPool: [...this.abilityPool],
       baseScores: { ...this.baseScores },
       stats: { ...this.stats },
@@ -333,6 +357,7 @@ class Adventure {
       sceneId: this.startSceneId,
       player: new Adventurer(this.playerTemplate).toJSON(),
       history: [...this.openingHistory],
+      events: [],
     };
   }
 
@@ -360,6 +385,7 @@ class Adventure {
         },
       }).toJSON(),
       history: Array.isArray(saved.history) ? saved.history : defaultState.history,
+      events: Array.isArray(saved.events) ? saved.events : defaultState.events,
     };
   }
 
@@ -378,6 +404,7 @@ class Adventure {
         inventory: Array.isArray(saved.inventory) ? saved.inventory : this.playerTemplate.inventory,
       }).toJSON(),
       history: Array.isArray(saved.log) ? saved.log : [...this.openingHistory],
+      events: [],
     };
   }
 
@@ -417,11 +444,7 @@ class AdventureGame {
     const scene = this.adventure.getScene(this.state.sceneId);
     const hero = new Adventurer(this.state.player);
 
-    this.elements.sceneImage.src = scene.image;
-    this.elements.sceneImage.alt = scene.imageAlt;
-    this.elements.sceneKicker.textContent = scene.kicker;
-    this.elements.sceneTitle.textContent = scene.title;
-    this.elements.sceneText.textContent = this.interpolate(scene.text, hero);
+    this.renderEventLog(scene, hero);
 
     this.renderCharacterSheet(hero);
     this.renderAbilityScores(hero);
@@ -431,6 +454,68 @@ class AdventureGame {
       renderList(this.elements.inventoryList, hero.inventory);
     }
     this.updateTrackingPixel("render");
+  }
+
+  renderEventLog(scene, hero) {
+    if (!this.elements.eventLog) {
+      return;
+    }
+
+    const changed = this.ensureSceneEvent(scene, hero);
+    const events = this.state.events || [];
+
+    const cards = events.map((event, index) => {
+      const card = document.createElement("article");
+      card.className = `event-card${index === events.length - 1 ? " is-current" : ""}`;
+
+      if (event.image) {
+        const image = document.createElement("img");
+        image.src = event.image;
+        image.alt = event.imageAlt || "";
+        card.append(image);
+      }
+
+      const copy = document.createElement("div");
+      copy.className = "event-copy";
+      copy.append(createElement("p", event.kicker || ""), createElement("h2", event.title || ""), createElement("span", event.text || ""));
+      card.append(copy);
+      return card;
+    });
+
+    this.elements.eventLog.replaceChildren(...cards);
+
+    if (changed) {
+      this.saveState();
+      window.requestAnimationFrame(() => {
+        const scrollTarget = this.elements.eventLog.closest(".scene-panel") || this.elements.eventLog;
+        scrollTarget.scrollTop = scrollTarget.scrollHeight;
+      });
+    }
+  }
+
+  ensureSceneEvent(scene, hero) {
+    const renderedEvent = {
+      sceneId: scene.id,
+      kicker: scene.kicker,
+      title: scene.title,
+      image: scene.image,
+      imageAlt: scene.imageAlt,
+      text: this.interpolate(scene.text, hero),
+    };
+    const events = Array.isArray(this.state.events) ? this.state.events : [];
+    const last = events[events.length - 1];
+
+    if (last?.sceneId === scene.id) {
+      const updated = { ...last, ...renderedEvent };
+      const changed = JSON.stringify(updated) !== JSON.stringify(last);
+      if (changed) {
+        this.state.events = [...events.slice(0, -1), updated];
+      }
+      return changed;
+    }
+
+    this.state.events = [...events, renderedEvent].slice(-18);
+    return true;
   }
 
   updateHeroName(value) {
@@ -480,6 +565,22 @@ class AdventureGame {
 
     if (hero.background) {
       rows.push(sheetDatum("Background", hero.background));
+    }
+
+    if (hero.alignment) {
+      rows.push(sheetDatum("Alignment", hero.alignment));
+    }
+
+    if (hero.languages.length > 0) {
+      rows.push(sheetDatum("Languages", hero.languages.join(", ")));
+    }
+
+    if (hero.skills.length > 0) {
+      rows.push(sheetDatum("Skills", hero.skills.join(", ")));
+    }
+
+    if (hero.proficiencies.length > 0) {
+      rows.push(sheetDatum("Proficiencies", hero.proficiencies.join(", ")));
     }
 
     if (hero.hasAssignedBaseScores()) {
@@ -583,6 +684,11 @@ class AdventureGame {
       return;
     }
 
+    if (scene.builder === "option-picker") {
+      this.renderOptionPickerBuilder(scene, hero);
+      return;
+    }
+
     if (scene.builder === "character-review") {
       this.renderCharacterReviewBuilder(hero);
       return;
@@ -620,6 +726,121 @@ class AdventureGame {
 
     label.append(labelText, input);
     panel.replaceChildren(heading, label);
+  }
+
+  renderOptionPickerBuilder(scene, hero) {
+    const panel = this.elements.builderPanel;
+    const config = scene.builderConfig || {};
+    const options = getOptionDefinitions(config.source);
+    const field = config.field;
+    const mode = config.mode || "single";
+    const minimum = readNumber(config.min, mode === "single" ? 1 : 0);
+    const maximum = readNumber(config.max, mode === "single" ? 1 : options.length);
+    const existingValues = normalizeStringArray(hero[field]);
+    const selected = new Set(config.append ? [] : mode === "multi" ? existingValues : normalizeStringArray([hero[field]]));
+
+    panel.hidden = false;
+    panel.className = "builder-panel option-builder";
+
+    const heading = document.createElement("div");
+    heading.className = "builder-heading";
+    heading.append(
+      createElement("h3", optionPickerHeading(field, mode, minimum, maximum)),
+      createElement("p", optionPickerHelp(mode, minimum, maximum)),
+    );
+
+    const grid = document.createElement("div");
+    grid.className = "option-picker-grid";
+
+    const existing = document.createElement("div");
+    existing.className = "option-existing";
+    if (config.append && existingValues.length > 0) {
+      existing.append(createElement("span", "Already on the sheet"));
+      existingValues.forEach((value) => existing.append(createElement("strong", value)));
+    }
+
+    const applyButton = document.createElement("button");
+    applyButton.type = "button";
+    applyButton.className = "apply-scores-button";
+    applyButton.textContent = optionPickerButtonLabel(field);
+
+    const updateSelection = () => {
+      grid.querySelectorAll(".option-picker-card").forEach((card) => {
+        const isSelected = selected.has(card.dataset.value);
+        card.classList.toggle("is-selected", isSelected);
+        card.setAttribute("aria-pressed", String(isSelected));
+      });
+
+      const count = selected.size;
+      applyButton.disabled = count < minimum || count > maximum;
+    };
+
+    options.forEach((option) => {
+      const value = option.name || option.key;
+      const card = document.createElement("button");
+      card.type = "button";
+      card.className = "option-picker-card";
+      card.dataset.value = value;
+      card.setAttribute("aria-pressed", "false");
+      card.append(createElement("strong", option.name || option.key));
+
+      if (config.append && existingValues.includes(value)) {
+        card.disabled = true;
+        card.classList.add("is-owned");
+      }
+
+      const meta = option.ability || option.type;
+      if (meta) {
+        card.append(createElement("em", formatStatLabel(meta)));
+      }
+
+      if (option.summary) {
+        card.append(createElement("span", option.summary));
+      }
+
+      card.addEventListener("click", () => {
+        if (mode === "single") {
+          selected.clear();
+          selected.add(value);
+        } else if (selected.has(value)) {
+          selected.delete(value);
+        } else if (selected.size < maximum) {
+          selected.add(value);
+        }
+
+        updateSelection();
+      });
+
+      grid.append(card);
+    });
+
+    applyButton.addEventListener("click", () => {
+      const count = selected.size;
+      if (count < minimum || count > maximum) {
+        return;
+      }
+
+      const nextHero = new Adventurer(this.state.player);
+      const selectedValues = [...selected];
+
+      if (mode === "single") {
+        nextHero[field] = selectedValues[0] || "";
+      } else if (config.append) {
+        nextHero.addUniqueValues(field, selectedValues);
+      } else {
+        nextHero[field] = selectedValues;
+      }
+
+      this.state.player = nextHero.toJSON();
+      this.state.sceneId = this.adventure.resolveSceneId(config.nextSceneId || this.state.sceneId);
+      this.recordHistory(config.history);
+      this.saveState();
+      this.render();
+      this.updateTrackingPixel(field || "option");
+    });
+
+    updateSelection();
+    panel.replaceChildren(...(existing.childNodes.length ? [heading, existing, grid, applyButton] : [heading, grid, applyButton]));
   }
 
   renderAbilityAssignmentBuilder(hero) {
@@ -801,6 +1022,7 @@ class AdventureGame {
       reviewDatum("Race", hero.race || "Unchosen"),
       reviewDatum("Origin", hero.origin || "Undeclared"),
       reviewDatum("Background", hero.background || "Unchosen"),
+      reviewDatum("Alignment", hero.alignment || "Unchosen"),
       reviewDatum("Class", hero.className || "Unregistered"),
     );
 
@@ -841,7 +1063,15 @@ class AdventureGame {
     renderList(inventoryList, hero.inventory);
     inventory.append(inventoryList);
 
-    panel.replaceChildren(heading, identity, stats, vitals, inventory);
+    const training = document.createElement("div");
+    training.className = "review-inventory";
+    training.append(createElement("h3", "Training"));
+    const trainingList = document.createElement("ul");
+    trainingList.className = "token-list";
+    renderList(trainingList, [...hero.languages, ...hero.skills, ...hero.proficiencies]);
+    training.append(trainingList);
+
+    panel.replaceChildren(heading, identity, stats, vitals, training, inventory);
   }
 
   renderChoices(choices, hero) {
@@ -957,6 +1187,10 @@ class AdventureGame {
       origin: hero.origin,
       backgroundKey: hero.backgroundKey,
       background: hero.background,
+      alignment: hero.alignment,
+      languages: hero.languages.join("|"),
+      skills: hero.skills.join("|"),
+      proficiencies: hero.proficiencies.join("|"),
       classKey: hero.classKey,
       class: hero.className,
       abilityPool: hero.abilityPool.join("|"),
@@ -985,8 +1219,12 @@ class AdventureGame {
 
 function shouldShowCharacterSheet(hero) {
   return Boolean(
-    hero.raceKey ||
+      hero.raceKey ||
       hero.backgroundKey ||
+      hero.alignment ||
+      hero.languages.length ||
+      hero.skills.length ||
+      hero.proficiencies.length ||
       hero.hasAssignedBaseScores() ||
       hero.classKey ||
       hero.provisions.length ||
@@ -1097,6 +1335,15 @@ function getDefinition(collection, key) {
   return window.PHOENIX_ADVENTURE?.[collection]?.[key] || null;
 }
 
+function getOptionDefinitions(source) {
+  const definitions = window.PHOENIX_ADVENTURE?.[source];
+  if (Array.isArray(definitions)) {
+    return definitions;
+  }
+
+  return Object.values(definitions || {});
+}
+
 function getAbilityDefinition(attribute) {
   return getDefinition("abilities", attribute) || {
     label: formatStatLabel(attribute),
@@ -1114,6 +1361,39 @@ function inferDefinitionKey(collection, ...values) {
       [definition.name, definition.origin].filter(Boolean).some((candidate) => normalizedValues.includes(String(candidate).toLowerCase())),
     )?.[0] || ""
   );
+}
+
+function optionPickerHeading(field, mode, minimum, maximum) {
+  const label = formatStatLabel(field || "options");
+  if (mode === "single") {
+    return `Choose ${label}`;
+  }
+
+  if (minimum === maximum) {
+    return `Choose ${minimum} ${label}`;
+  }
+
+  return `Choose ${minimum}-${maximum} ${label}`;
+}
+
+function optionPickerHelp(mode, minimum, maximum) {
+  if (mode === "single") {
+    return "Pick one card, then confirm it for the character sheet.";
+  }
+
+  if (minimum === 0) {
+    return `Pick up to ${maximum}, then confirm them for the character sheet.`;
+  }
+
+  return `Pick ${minimum === maximum ? minimum : `${minimum} to ${maximum}`}, then confirm them for the character sheet.`;
+}
+
+function optionPickerButtonLabel(field) {
+  if (field === "alignment") {
+    return "Set alignment";
+  }
+
+  return `Add ${formatStatLabel(field || "choices")}`;
 }
 
 function assignedIndexMap(hero) {
@@ -1145,6 +1425,14 @@ function normalizeAbilityPool(values) {
   return Array.isArray(values)
     ? values.map((value) => Number(value)).filter((value) => Number.isFinite(value)).slice(0, ATTRIBUTE_KEYS.length)
     : [];
+}
+
+function normalizeStringArray(values) {
+  if (!Array.isArray(values)) {
+    return [];
+  }
+
+  return values.map((value) => String(value || "").trim()).filter(Boolean);
 }
 
 function rollAbilityPool() {
@@ -1269,10 +1557,7 @@ function isNumericValue(value) {
 
 const elements = {
   gameLayout: document.querySelector("#gameLayout"),
-  sceneImage: document.querySelector("#sceneImage"),
-  sceneKicker: document.querySelector("#sceneKicker"),
-  sceneTitle: document.querySelector("#sceneTitle"),
-  sceneText: document.querySelector("#sceneText"),
+  eventLog: document.querySelector("#eventLog"),
   builderPanel: document.querySelector("#builderPanel"),
   choiceList: document.querySelector("#choiceList"),
   characterSheet: document.querySelector("#characterSheet"),
@@ -1311,5 +1596,35 @@ window.PhoenixAdventure = {
   Scene,
 };
 
-const game = new AdventureGame(new Adventure(window.PHOENIX_ADVENTURE), elements);
-game.start();
+bootPhoenixAdventure();
+
+async function bootPhoenixAdventure() {
+  try {
+    const definition = await (window.PhoenixDataReady || Promise.resolve(window.PHOENIX_ADVENTURE));
+    const game = new AdventureGame(new Adventure(definition), elements);
+    window.PhoenixGame = game;
+    game.start();
+  } catch (error) {
+    renderStartupError(error);
+  }
+}
+
+function renderStartupError(error) {
+  if (elements.eventLog) {
+    const card = document.createElement("article");
+    card.className = "event-card is-current";
+    const copy = document.createElement("div");
+    copy.className = "event-copy";
+    copy.append(
+      createElement("p", "Startup"),
+      createElement("h2", "The adventure data could not load."),
+      createElement("span", error instanceof Error ? error.message : String(error)),
+    );
+    card.append(copy);
+    elements.eventLog.replaceChildren(card);
+  }
+
+  if (elements.choiceList) {
+    elements.choiceList.replaceChildren();
+  }
+}
