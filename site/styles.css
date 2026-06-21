@@ -1004,8 +1004,7 @@ input:focus-visible {
   justify-content: space-between;
   gap: 12px;
   margin-bottom: 14px;
-  padding-bottom: 9px;
-  border-bottom: 1px solid var(--sheet-rule);
+  padding-bottom: 4px;
 }
 
 .progress-block h2 {
@@ -1136,7 +1135,7 @@ input:focus-visible {
 
 .progress-list {
   display: grid;
-  gap: 2px;
+  gap: 5px;
   max-height: calc(100dvh - 112px);
   margin: 10px 0 0;
   padding-right: 3px;
@@ -1151,9 +1150,8 @@ input:focus-visible {
   gap: 5px;
   align-items: baseline;
   border: 0;
-  border-bottom: 1px solid var(--sheet-rule);
   border-radius: 0;
-  padding: 6px 0;
+  padding: 2px 0;
   background: transparent;
 }
 
@@ -1177,12 +1175,12 @@ input:focus-visible {
   color: var(--sheet-ink);
   font-size: 14px;
   line-height: 1.28;
+  text-align: left;
 }
 
 .progress-list .sheet-ability-block {
   display: block;
   border: 0;
-  border-top: 1px solid var(--sheet-rule);
   margin-top: 8px;
   padding: 10px 0 0;
   background: transparent;
@@ -1200,8 +1198,7 @@ input:focus-visible {
   display: none;
 }
 
-.sheet-portrait-block > dd,
-.sheet-detail-block > dd {
+.sheet-portrait-block > dd {
   margin: 0;
 }
 
@@ -1228,61 +1225,6 @@ input:focus-visible {
   height: 400%;
   max-width: none;
   transform-origin: top left;
-}
-
-.sheet-detail-block {
-  grid-column: 1 / -1;
-  display: block !important;
-  border: 0 !important;
-  border-top: 1px solid var(--sheet-rule) !important;
-  margin-top: 8px;
-  padding: 10px 0 0 !important;
-}
-
-.sheet-detail-block > dt {
-  color: var(--sheet-ink);
-  font-size: 14px;
-  letter-spacing: 0;
-  text-transform: none;
-  font-weight: 800;
-}
-
-.sheet-detail-block > dt::after {
-  content: "";
-}
-
-.sheet-detail-list {
-  display: grid;
-  gap: 5px;
-  margin: 6px 0 0;
-}
-
-.sheet-detail-list div {
-  display: grid;
-  grid-template-columns: max-content minmax(0, 1fr);
-  gap: 5px;
-  border: 0;
-  border-radius: 0;
-  padding: 0;
-  background: transparent;
-}
-
-.sheet-detail-list dt {
-  color: var(--sheet-ink);
-  font-size: 14px;
-  font-weight: 800;
-  text-transform: none;
-}
-
-.sheet-detail-list dt::after {
-  content: ":";
-}
-
-.sheet-detail-list dd {
-  margin: 0;
-  color: var(--sheet-ink);
-  font-size: 14px;
-  line-height: 1.34;
 }
 
 .sheet-ability-column {

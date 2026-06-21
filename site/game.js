@@ -1,7 +1,7 @@
 const STORAGE_KEY = "phoenix-adventures-save";
 const AUTH_STORAGE_KEY = "phoenix-adventures-user";
 const USER_CONFIG_BASE_URL = "data/users";
-const TRACKING_VERSION = "20260620-13";
+const TRACKING_VERSION = "20260620-14";
 const STATE_VERSION = "builder-20260619-8";
 const ATTRIBUTE_KEYS = ["strength", "intelligence", "wisdom", "dexterity", "constitution", "charisma"];
 const DEFAULT_CHARACTER_ATLAS = {
@@ -864,6 +864,7 @@ class AdventureGame {
 
     if (hero.race) {
       rows.push(sheetDatum("Race", hero.race));
+      rows.push(sheetDatum("Ability bonuses", formatRaceBonuses(hero)));
     }
 
     if (hero.background) {
@@ -884,11 +885,6 @@ class AdventureGame {
 
     if (hero.proficiencies.length > 0) {
       rows.push(sheetDatum("Proficiencies", hero.proficiencies.join(", ")));
-    }
-
-    const raceProfile = sheetRaceProfile(hero);
-    if (raceProfile) {
-      rows.push(raceProfile);
     }
 
     if (hero.hasAssignedBaseScores()) {
@@ -1678,41 +1674,6 @@ function sheetCharacterPortrait(hero) {
   const details = document.createElement("dd");
   details.append(figure);
   wrapper.append(createElement("dt", "Character Reference"), details);
-  return wrapper;
-}
-
-function sheetRaceProfile(hero) {
-  const race = hero.raceDefinition;
-
-  if (!race) {
-    return null;
-  }
-
-  const entries = [
-    ["Field Notes", race.summary],
-    ["Ability Pattern", formatRaceBonuses(hero)],
-    ["Traits", normalizeStringArray(race.traits).join(", ")],
-    ["Common Paths", race.advice],
-  ].filter(([, value]) => value);
-
-  return entries.length > 0 ? sheetDetailList("Race Profile", entries) : null;
-}
-
-function sheetDetailList(label, entries) {
-  const wrapper = document.createElement("div");
-  wrapper.className = "sheet-detail-block";
-
-  const list = document.createElement("dl");
-  list.className = "sheet-detail-list";
-  entries.forEach(([term, value]) => {
-    const item = document.createElement("div");
-    item.append(createElement("dt", term), createElement("dd", value));
-    list.append(item);
-  });
-
-  const details = document.createElement("dd");
-  details.append(list);
-  wrapper.append(createElement("dt", label), details);
   return wrapper;
 }
 
