@@ -1,7 +1,7 @@
 const STORAGE_KEY = "phoenix-adventures-save";
 const AUTH_STORAGE_KEY = "phoenix-adventures-user";
 const USER_CONFIG_BASE_URL = "data/users";
-const TRACKING_VERSION = "20260620-11";
+const TRACKING_VERSION = "20260620-12";
 const STATE_VERSION = "builder-20260619-8";
 const ATTRIBUTE_KEYS = ["strength", "intelligence", "wisdom", "dexterity", "constitution", "charisma"];
 const DEFAULT_CHARACTER_ATLAS = {
@@ -859,7 +859,7 @@ class AdventureGame {
     rows.push(sheetCharacterPortrait(hero));
 
     if (hero.name) {
-      rows.push(sheetDatum("Name", hero.name));
+      rows.push(sheetDatum("Name", characterSheetName(hero)));
     }
 
     if (hero.race) {
@@ -867,7 +867,7 @@ class AdventureGame {
     }
 
     if (hero.origin) {
-      rows.push(sheetDatum("Origin", hero.origin));
+      rows.push(sheetDatum("Origin", sheetOriginName(hero.origin)));
     }
 
     if (hero.background) {
@@ -1659,6 +1659,18 @@ function sheetDatum(label, value) {
   return wrapper;
 }
 
+function characterSheetName(hero) {
+  if (!hero.name || !hero.origin) {
+    return hero.name;
+  }
+
+  return `${hero.name} of ${hero.origin}`;
+}
+
+function sheetOriginName(origin) {
+  return String(origin || "").replace(/^the\s+/i, "");
+}
+
 function sheetCharacterPortrait(hero) {
   const wrapper = document.createElement("div");
   wrapper.className = "sheet-portrait-block";
@@ -1686,7 +1698,6 @@ function sheetRaceProfile(hero) {
   }
 
   const entries = [
-    ["Origin", hero.origin],
     ["Field Notes", race.summary],
     ["Ability Pattern", formatRaceBonuses(hero)],
     ["Traits", normalizeStringArray(race.traits).join(", ")],

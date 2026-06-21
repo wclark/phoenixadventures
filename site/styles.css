@@ -6,6 +6,11 @@
   --gold: #d7a849;
   --moss: #5f7d4e;
   --parchment: #ead8b8;
+  --sheet-parchment: #d6bf87;
+  --sheet-parchment-light: #ead8b8;
+  --sheet-ink: #2b2116;
+  --sheet-faded-ink: #6e5637;
+  --sheet-rule: rgba(86, 59, 31, 0.28);
   --muted: #b8a88e;
   --line: rgba(234, 216, 184, 0.22);
   --panel: rgba(33, 27, 27, 0.88);
@@ -962,8 +967,12 @@ input:focus-visible {
   gap: 14px;
   padding-top: var(--screen-pad-top);
   padding-bottom: var(--screen-pad-bottom);
-  border-left: 1px solid var(--line);
-  background: rgba(20, 16, 15, 0.97);
+  border-left: 1px solid rgba(86, 59, 31, 0.42);
+  color: var(--sheet-ink);
+  background:
+    linear-gradient(90deg, rgba(86, 59, 31, 0.2), transparent 18px),
+    radial-gradient(circle at 20% 5%, rgba(255, 244, 203, 0.34), transparent 34%),
+    linear-gradient(180deg, var(--sheet-parchment-light), var(--sheet-parchment) 32%, #c7ab70);
   box-shadow: -22px 0 60px rgba(0, 0, 0, 0.44);
   opacity: 0;
   transform: translateX(calc(100% + 16px));
@@ -981,7 +990,7 @@ input:focus-visible {
 
 .progress-block {
   min-height: 0;
-  padding: 14px;
+  padding: 18px 20px;
   overflow: hidden;
   border: 0;
   border-radius: 0;
@@ -994,15 +1003,25 @@ input:focus-visible {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
+  padding-bottom: 9px;
+  border-bottom: 1px solid var(--sheet-rule);
 }
 
 .progress-block h2 {
+  margin: 0;
+  color: var(--sheet-ink);
   font-size: 15px;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
-.progress-heading span,
+.progress-heading span {
+  color: var(--sheet-faded-ink);
+  font-size: 12px;
+  font-weight: 800;
+}
+
 .name-field span,
 .progress-list dt,
 .attribute-list span,
@@ -1117,20 +1136,25 @@ input:focus-visible {
 
 .progress-list {
   display: grid;
-  gap: 7px;
+  gap: 2px;
   max-height: calc(100dvh - 112px);
   margin: 10px 0 0;
   padding-right: 3px;
   overflow-x: hidden;
   overflow-y: auto;
-  scrollbar-color: rgba(215, 168, 73, 0.62) rgba(20, 16, 15, 0.28);
+  scrollbar-color: rgba(86, 59, 31, 0.46) rgba(255, 244, 203, 0.28);
 }
 
 .progress-list > div {
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  padding: 8px 10px;
-  background: rgba(20, 16, 15, 0.42);
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 5px;
+  align-items: baseline;
+  border: 0;
+  border-bottom: 1px solid var(--sheet-rule);
+  border-radius: 0;
+  padding: 6px 0;
+  background: transparent;
 }
 
 .progress-list dt,
@@ -1138,27 +1162,53 @@ input:focus-visible {
   margin: 0;
 }
 
+.progress-list dt {
+  color: var(--sheet-faded-ink);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: lowercase;
+}
+
+.progress-list dt::after {
+  content: ":";
+}
+
 .progress-list dd {
-  margin-top: 3px;
-  color: var(--parchment);
-  font-size: 13px;
-  line-height: 1.24;
+  color: var(--sheet-ink);
+  font-size: 14px;
+  line-height: 1.28;
 }
 
 .progress-list .sheet-ability-block {
+  display: block;
   border: 0;
-  padding: 0;
+  border-top: 1px solid var(--sheet-rule);
+  margin-top: 8px;
+  padding: 10px 0 0;
   background: transparent;
 }
 
 .sheet-portrait-block {
   grid-column: 1 / -1;
+  display: block !important;
+  border: 0 !important;
+  margin-bottom: 8px;
+  padding: 0 0 10px !important;
+}
+
+.sheet-portrait-block > dt {
+  display: none;
+}
+
+.sheet-portrait-block > dd,
+.sheet-detail-block > dd {
+  margin: 0;
 }
 
 .character-portrait {
   display: grid;
-  gap: 8px;
-  margin: 7px 0 0;
+  gap: 6px;
+  margin: 0;
 }
 
 .character-portrait-image {
@@ -1166,10 +1216,10 @@ input:focus-visible {
   width: 100%;
   aspect-ratio: 1 / 1;
   overflow: hidden;
-  border: 1px solid rgba(215, 168, 73, 0.5);
-  border-radius: 6px;
-  background: rgba(20, 16, 15, 0.62);
-  box-shadow: inset 0 -40px 80px rgba(20, 16, 15, 0.18);
+  border: 1px solid rgba(86, 59, 31, 0.36);
+  border-radius: 3px;
+  background: var(--sheet-parchment);
+  box-shadow: inset 0 0 0 4px rgba(255, 244, 203, 0.16);
 }
 
 .character-portrait-atlas {
@@ -1181,37 +1231,61 @@ input:focus-visible {
 }
 
 .character-portrait figcaption {
-  color: #d8c7a7;
+  color: var(--sheet-faded-ink);
   font-size: 12px;
   line-height: 1.3;
 }
 
 .sheet-detail-block {
   grid-column: 1 / -1;
+  display: block !important;
+  border: 0 !important;
+  border-top: 1px solid var(--sheet-rule) !important;
+  margin-top: 8px;
+  padding: 10px 0 0 !important;
+}
+
+.sheet-detail-block > dt {
+  color: var(--sheet-ink);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sheet-detail-block > dt::after {
+  content: "";
 }
 
 .sheet-detail-list {
   display: grid;
-  gap: 7px;
-  margin: 7px 0 0;
+  gap: 5px;
+  margin: 6px 0 0;
 }
 
 .sheet-detail-list div {
-  border: 1px solid rgba(234, 216, 184, 0.14);
-  border-radius: 6px;
-  padding: 7px 8px;
-  background: rgba(20, 16, 15, 0.3);
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 5px;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
 }
 
 .sheet-detail-list dt {
-  color: var(--gold);
-  font-size: 11px;
+  color: var(--sheet-faded-ink);
+  font-size: 12px;
   font-weight: 800;
-  text-transform: uppercase;
+  text-transform: lowercase;
+}
+
+.sheet-detail-list dt::after {
+  content: ":";
 }
 
 .sheet-detail-list dd {
-  margin-top: 4px;
+  margin: 0;
+  color: var(--sheet-ink);
   font-size: 12px;
   line-height: 1.34;
 }
