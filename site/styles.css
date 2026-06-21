@@ -377,7 +377,7 @@ input:focus-visible {
 .choice-card.has-portrait {
   grid-template-columns: minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr) auto auto auto;
-  flex-basis: clamp(260px, 23vw, 330px);
+  flex-basis: clamp(320px, 27vw, 380px);
   min-height: calc(var(--rail-height) - 50px);
   gap: 8px;
 }
@@ -426,7 +426,8 @@ input:focus-visible {
 }
 
 .choice-card.has-portrait > strong {
-  font-size: 18px;
+  font-size: 16px;
+  line-height: 1.16;
 }
 
 .choice-card > span,

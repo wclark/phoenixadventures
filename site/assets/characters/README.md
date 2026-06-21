@@ -17,13 +17,13 @@ Cell order is left to right, top to bottom:
 6. Dark Elf
 7. Lightfoot Halfling
 8. Stout Halfling
-9. Brush Creek Human
-10. Brookwood Human
-11. Tanglewood Human
+9. Annadel Heights Human
+10. North West Santa Rosa Human
+11. Olive Park Human
 12. Forest Gnome
 13. Rock Gnome
 14. Half-Elf
 15. Half-Orc
 16. Tiefling
 
-Style baseline: fine-detail dark brown monochrome sketch art on parchment, full-body centered neutral pose, adult proportions, modest simple unarmored clothes, no weapons, no class-specific props, no in-image text, and no sexualized styling. Humanlike ancestries should show varied apparent ethnic features, face shapes, hair textures, and sepia skin-value shading across the full atlas. Dragonborn color subtypes intentionally collapse to the single Dragonborn cell.
+Style baseline: fine-detail dark brown monochrome sketch art on parchment, full-body centered neutral pose, adult proportions, modest simple unarmored clothes, no weapons, no class-specific props, no in-image text, and no sexualized styling. Humanlike ancestries should show varied apparent ethnic features, face shapes, hair textures, and sepia skin-value shading across the full atlas. The playable race catalog can point at the same atlas cell with different reference variants to create separate Santa Rosa-inspired origin groups. Dragonborn color subtypes intentionally collapse to the single Dragonborn cell.

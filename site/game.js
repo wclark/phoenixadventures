@@ -1,7 +1,7 @@
 const STORAGE_KEY = "phoenix-adventures-save";
 const AUTH_STORAGE_KEY = "phoenix-adventures-user";
 const USER_CONFIG_BASE_URL = "data/users";
-const TRACKING_VERSION = "20260620-8";
+const TRACKING_VERSION = "20260620-9";
 const STATE_VERSION = "builder-20260619-8";
 const ATTRIBUTE_KEYS = ["strength", "intelligence", "wisdom", "dexterity", "constitution", "charisma"];
 const DEFAULT_CHARACTER_ATLAS = {
@@ -21,9 +21,9 @@ const DEFAULT_CHARACTER_ATLAS = {
     { key: "dark-elf", label: "Dark Elf" },
     { key: "lightfoot-halfling", label: "Lightfoot Halfling" },
     { key: "stout-halfling", label: "Stout Halfling" },
-    { key: "brush-creek-human", label: "Brush Creek Human" },
-    { key: "brookwood-human", label: "Brookwood Human" },
-    { key: "tanglewood-human", label: "Tanglewood Human" },
+    { key: "human-annadel-heights", label: "Annadel Heights Human" },
+    { key: "human-northwest-santa-rosa", label: "North West Santa Rosa Human" },
+    { key: "human-olive-park", label: "Olive Park Human" },
     { key: "forest-gnome", label: "Forest Gnome" },
     { key: "rock-gnome", label: "Rock Gnome" },
     { key: "half-elf", label: "Half-Elf" },
@@ -32,11 +32,27 @@ const DEFAULT_CHARACTER_ATLAS = {
   ],
 };
 const RACE_KEY_MIGRATION = {
-  "woodland-elf": "wood-elf",
-  "forge-dwarf": "mountain-dwarf",
-  "sunlit-halfling": "lightfoot-halfling",
-  human: "brush-creek-human",
-  emberborn: "tiefling",
+  dragonborn: "dragonborn-fountaingrove",
+  "hill-dwarf": "hill-dwarf-bennett-valley",
+  "mountain-dwarf": "mountain-dwarf-rincon-valley",
+  "high-elf": "high-elf-mcdonald",
+  "wood-elf": "wood-elf-hidden-valley",
+  "dark-elf": "dark-elf-west-end",
+  "lightfoot-halfling": "lightfoot-halfling-railroad-square",
+  "stout-halfling": "stout-halfling-coffey-park",
+  "forest-gnome": "forest-gnome-holland-heights",
+  "rock-gnome": "rock-gnome-stonegate",
+  "half-elf": "half-elf-junior-college",
+  "half-orc": "half-orc-roseland",
+  tiefling: "tiefling-montecito-heights",
+  "woodland-elf": "wood-elf-hidden-valley",
+  "forge-dwarf": "mountain-dwarf-rincon-valley",
+  "sunlit-halfling": "lightfoot-halfling-railroad-square",
+  "brush-creek-human": "human-annadel-heights",
+  "brookwood-human": "human-northwest-santa-rosa",
+  "tanglewood-human": "human-olive-park",
+  human: "human-annadel-heights",
+  emberborn: "tiefling-montecito-heights",
 };
 const PORTRAIT_VARIANT_MIGRATION = {
   male: "masculine",
@@ -53,9 +69,11 @@ const RACE_PORTRAIT_KEY_MAP = {
   "red-dragonborn": "dragonborn",
   "silver-dragonborn": "dragonborn",
   "white-dragonborn": "dragonborn",
-  human: "brush-creek-human",
+  human: "human-annadel-heights",
+  "brush-creek-human": "human-annadel-heights",
+  "brookwood-human": "human-northwest-santa-rosa",
+  "tanglewood-human": "human-olive-park",
   emberborn: "tiefling",
-  ...RACE_KEY_MIGRATION,
 };
 const LEGACY_STAT_MAP = {
   might: "strength",
@@ -1640,9 +1658,10 @@ function sheetCharacterPortrait(hero) {
   wrapper.className = "sheet-portrait-block";
 
   const cell = resolveCharacterPortraitCell(hero);
-  const image = createAtlasPortraitImage(cell, resolvePortraitVariant(hero.raceDefinition, hero.portraitVariant), "character-portrait-image");
+  const referenceLabel = hero.raceDefinition?.name || cell.label;
+  const image = createAtlasPortraitImage(cell, resolvePortraitVariant(hero.raceDefinition, hero.portraitVariant), "character-portrait-image", referenceLabel);
 
-  const caption = createElement("figcaption", `${cell.label} reference`);
+  const caption = createElement("figcaption", `${referenceLabel} reference`);
   const figure = document.createElement("figure");
   figure.className = "character-portrait";
   figure.append(image, caption);
@@ -1701,14 +1720,14 @@ function resolvePortraitCell(key) {
 
 function createChoicePortrait(choice, hero) {
   const cell = resolvePortraitCell(choice.portraitKey);
-  return createAtlasPortraitImage(cell, resolvePortraitVariant(choice, hero.portraitVariant), "choice-portrait");
+  return createAtlasPortraitImage(cell, resolvePortraitVariant(choice, hero.portraitVariant), "choice-portrait", choice.label);
 }
 
-function createAtlasPortraitImage(cell, variant, className) {
+function createAtlasPortraitImage(cell, variant, className, label = cell.label) {
   const image = document.createElement("div");
   image.className = className;
   image.setAttribute("role", "img");
-  image.setAttribute("aria-label", `${cell.label} character reference`);
+  image.setAttribute("aria-label", `${label} character reference`);
 
   const atlas = document.createElement("img");
   const atlasConfig = getCharacterAtlas();
