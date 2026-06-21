@@ -6,7 +6,7 @@
  * edited without changing the game engine.
  */
 
-const PHOENIX_DATA_URL = "data/game-data.json?v=20260620-9";
+const PHOENIX_DATA_URL = "data/game-data.json?v=20260620-10";
 
 window.PhoenixDataReady = loadPhoenixAdventure();
 
@@ -387,9 +387,14 @@ function optionPickerScene({ id, mapNodeId, kicker, title, image, imageAlt, text
 }
 
 function raceChoice(race, abilities) {
+  const originName = race.originName || race.origin || race.name;
+  const ancestry = race.ancestry || race.name;
+
   return {
     id: `race-${race.key}`,
-    label: race.name,
+    label: originName,
+    subtitle: ancestry,
+    accessibleLabel: `${originName}, ${ancestry}`,
     portraitKey: race.portraitKey || race.key,
     portraitVariant: race.portraitVariant,
     summary: race.summary,
@@ -405,7 +410,7 @@ function raceChoice(race, abilities) {
       addSkills: race.skills,
       addProficiencies: race.proficiencies,
       addItems: race.items,
-      history: `Chose ${race.name} from ${race.origin}.`,
+      history: `Chose ${race.name}.`,
     },
   };
 }

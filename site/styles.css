@@ -376,8 +376,8 @@ input:focus-visible {
 
 .choice-card.has-portrait {
   grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: minmax(0, 1fr) auto auto auto;
-  flex-basis: clamp(320px, 27vw, 380px);
+  grid-template-rows: auto auto auto auto;
+  flex-basis: clamp(260px, 22vw, 300px);
   min-height: calc(var(--rail-height) - 50px);
   gap: 8px;
 }
@@ -390,17 +390,18 @@ input:focus-visible {
   position: relative;
   grid-row: auto;
   width: 100%;
-  height: 100%;
+  height: auto;
   min-height: 0;
-  aspect-ratio: auto;
+  aspect-ratio: 1 / 1;
   overflow: hidden;
-  align-self: stretch;
+  align-self: start;
   border: 1px solid rgba(215, 168, 73, 0.45);
   border-radius: 5px;
   background: rgba(20, 16, 15, 0.58);
 }
 
 .choice-card.has-portrait > strong,
+.choice-card.has-portrait > .choice-subtitle,
 .choice-card.has-portrait > span,
 .choice-card.has-portrait > .choice-meta,
 .choice-card.has-portrait > .choice-details,
@@ -409,10 +410,7 @@ input:focus-visible {
 }
 
 .choice-card.has-portrait > span {
-  display: -webkit-box;
-  overflow: hidden;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  display: none;
 }
 
 .choice-card.has-portrait > .choice-details {
@@ -426,8 +424,20 @@ input:focus-visible {
 }
 
 .choice-card.has-portrait > strong {
-  font-size: 16px;
-  line-height: 1.16;
+  font-size: 17px;
+  line-height: 1.1;
+}
+
+.choice-subtitle {
+  display: block;
+  margin-top: -3px;
+  color: #d8c7a7;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1;
+  text-transform: uppercase;
 }
 
 .choice-card > span,

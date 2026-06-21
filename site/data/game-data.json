@@ -88,15 +88,15 @@
       },
       {
         "key": "human-annadel-heights",
-        "label": "Annadel Heights Human"
+        "label": "Annadel Human"
       },
       {
         "key": "human-northwest-santa-rosa",
-        "label": "North West Santa Rosa Human"
+        "label": "Northrose Human"
       },
       {
         "key": "human-olive-park",
-        "label": "Olive Park Human"
+        "label": "Olivewood Human"
       },
       {
         "key": "forest-gnome",
@@ -127,7 +127,7 @@
       "origin": "the Fountaingrove Clan",
       "portraitKey": "dragonborn",
       "quote": "I am {name} of the Fountaingrove Clan.",
-      "summary": "Proud, direct, and marked by old draconic traditions without belonging to any one color lineage. This origin comes from the Fountaingrove Clan.",
+      "summary": "Proud, direct, and marked by old draconic traditions without belonging to any one color lineage. Their people are known as the Fountaingrove Clan.",
       "advice": "A strong fit for fighters, paladins, sorcerers, and bold leaders.",
       "bestFor": "Fighter, Paladin, Sorcerer",
       "abilityBonuses": {
@@ -147,12 +147,14 @@
       "traits": [
         "Draconic bearing",
         "Elemental memory",
-        "Fountaingrove origin"
+        "Fountaingrove Clan origin"
       ],
       "items": [
-        "Fountaingrove keepsake"
+        "Fountaingrove Clan keepsake"
       ],
-      "portraitVariant": "masculine"
+      "portraitVariant": "masculine",
+      "ancestry": "Dragonborn",
+      "originName": "Fountaingrove Clan"
     },
     {
       "key": "dragonborn-skyhawk",
@@ -160,7 +162,7 @@
       "origin": "the Skyhawk Clan",
       "portraitKey": "dragonborn",
       "quote": "I am {name} of the Skyhawk Clan.",
-      "summary": "Proud, direct, and marked by old draconic traditions without belonging to any one color lineage. This origin comes from the Skyhawk Clan.",
+      "summary": "Proud, direct, and marked by old draconic traditions without belonging to any one color lineage. Their people are known as the Skyhawk Clan.",
       "advice": "A strong fit for fighters, paladins, sorcerers, and bold leaders.",
       "bestFor": "Fighter, Paladin, Sorcerer",
       "abilityBonuses": {
@@ -180,20 +182,22 @@
       "traits": [
         "Draconic bearing",
         "Elemental memory",
-        "Skyhawk origin"
+        "Skyhawk Clan origin"
       ],
       "items": [
-        "Skyhawk keepsake"
+        "Skyhawk Clan keepsake"
       ],
-      "portraitVariant": "feminine"
+      "portraitVariant": "feminine",
+      "ancestry": "Dragonborn",
+      "originName": "Skyhawk Clan"
     },
     {
       "key": "hill-dwarf-bennett-valley",
-      "name": "Hill Dwarf of the Bennett Valley Holds",
-      "origin": "the Bennett Valley Holds",
+      "name": "Hill Dwarf of the Benet Vale Holds",
+      "origin": "the Benet Vale Holds",
       "portraitKey": "hill-dwarf",
-      "quote": "I am {name} of the Bennett Valley Holds.",
-      "summary": "Steady, patient, and hard to wear down on long roads or in deep ruins. This origin comes from the Bennett Valley Holds.",
+      "quote": "I am {name} of the Benet Vale Holds.",
+      "summary": "Steady, patient, and hard to wear down on long roads or in deep ruins. Their people are known as the Benet Vale Holds.",
       "advice": "A strong fit for clerics, fighters, paladins, and resilient guides.",
       "bestFor": "Cleric, Fighter, Paladin",
       "abilityBonuses": {
@@ -213,20 +217,22 @@
       "traits": [
         "Dwarven resilience",
         "Stonecunning",
-        "Bennett Valley origin"
+        "Benet Vale Holds origin"
       ],
       "items": [
-        "Bennett Valley keepsake"
+        "Benet Vale Holds keepsake"
       ],
-      "portraitVariant": "masculine"
+      "portraitVariant": "masculine",
+      "ancestry": "Hill Dwarf",
+      "originName": "Benet Vale Holds"
     },
     {
       "key": "hill-dwarf-grace-tract",
-      "name": "Hill Dwarf of the Grace Tract Hearths",
-      "origin": "the Grace Tract Hearths",
+      "name": "Hill Dwarf of the Gracefield Hearths",
+      "origin": "the Gracefield Hearths",
       "portraitKey": "hill-dwarf",
-      "quote": "I am {name} of the Grace Tract Hearths.",
-      "summary": "Steady, patient, and hard to wear down on long roads or in deep ruins. This origin comes from the Grace Tract Hearths.",
+      "quote": "I am {name} of the Gracefield Hearths.",
+      "summary": "Steady, patient, and hard to wear down on long roads or in deep ruins. Their people are known as the Gracefield Hearths.",
       "advice": "A strong fit for clerics, fighters, paladins, and resilient guides.",
       "bestFor": "Cleric, Fighter, Paladin",
       "abilityBonuses": {
@@ -246,20 +252,22 @@
       "traits": [
         "Dwarven resilience",
         "Stonecunning",
-        "Grace Tract origin"
+        "Gracefield Hearths origin"
       ],
       "items": [
-        "Grace Tract keepsake"
+        "Gracefield Hearths keepsake"
       ],
-      "portraitVariant": "feminine"
+      "portraitVariant": "feminine",
+      "ancestry": "Hill Dwarf",
+      "originName": "Gracefield Hearths"
     },
     {
       "key": "mountain-dwarf-rincon-valley",
-      "name": "Mountain Dwarf of the Rincon Valley Holds",
-      "origin": "the Rincon Valley Holds",
+      "name": "Mountain Dwarf of the Rincon Vale Holds",
+      "origin": "the Rincon Vale Holds",
       "portraitKey": "mountain-dwarf",
-      "quote": "I am {name} of the Rincon Valley Holds.",
-      "summary": "Strong, practical, and comfortable with stone, metal, and stubborn problems. This origin comes from the Rincon Valley Holds.",
+      "quote": "I am {name} of the Rincon Vale Holds.",
+      "summary": "Strong, practical, and comfortable with stone, metal, and stubborn problems. Their people are known as the Rincon Vale Holds.",
       "advice": "A strong fit for fighters, paladins, clerics, and inventors.",
       "bestFor": "Fighter, Paladin, Cleric",
       "abilityBonuses": {
@@ -280,20 +288,22 @@
       "traits": [
         "Dwarven resilience",
         "Stonecunning",
-        "Rincon Valley origin"
+        "Rincon Vale Holds origin"
       ],
       "items": [
-        "Rincon Valley keepsake"
+        "Rincon Vale Holds keepsake"
       ],
-      "portraitVariant": "masculine"
+      "portraitVariant": "masculine",
+      "ancestry": "Mountain Dwarf",
+      "originName": "Rincon Vale Holds"
     },
     {
       "key": "mountain-dwarf-lomita-heights",
-      "name": "Mountain Dwarf of the Lomita Heights Forge",
-      "origin": "the Lomita Heights Forge",
+      "name": "Mountain Dwarf of the Lomita High Forge",
+      "origin": "the Lomita High Forge",
       "portraitKey": "mountain-dwarf",
-      "quote": "I am {name} of the Lomita Heights Forge.",
-      "summary": "Strong, practical, and comfortable with stone, metal, and stubborn problems. This origin comes from the Lomita Heights Forge.",
+      "quote": "I am {name} of the Lomita High Forge.",
+      "summary": "Strong, practical, and comfortable with stone, metal, and stubborn problems. Their people are known as the Lomita High Forge.",
       "advice": "A strong fit for fighters, paladins, clerics, and inventors.",
       "bestFor": "Fighter, Paladin, Cleric",
       "abilityBonuses": {
@@ -314,20 +324,22 @@
       "traits": [
         "Dwarven resilience",
         "Stonecunning",
-        "Lomita Heights origin"
+        "Lomita High Forge origin"
       ],
       "items": [
-        "Lomita Heights keepsake"
+        "Lomita High Forge keepsake"
       ],
-      "portraitVariant": "feminine"
+      "portraitVariant": "feminine",
+      "ancestry": "Mountain Dwarf",
+      "originName": "Lomita High Forge"
     },
     {
       "key": "high-elf-mcdonald",
-      "name": "High Elf of the McDonald Court",
-      "origin": "the McDonald Court",
+      "name": "High Elf of the Madrone Court",
+      "origin": "the Madrone Court",
       "portraitKey": "high-elf",
-      "quote": "I am {name} of the McDonald Court.",
-      "summary": "Studious, precise, and drawn to old names, maps, songs, and hidden rules. This origin comes from the McDonald Court.",
+      "quote": "I am {name} of the Madrone Court.",
+      "summary": "Studious, precise, and drawn to old names, maps, songs, and hidden rules. Their people are known as the Madrone Court.",
       "advice": "A strong fit for wizards, bards, rogues, and careful strategists.",
       "bestFor": "Wizard, Bard, Rogue",
       "abilityBonuses": {
@@ -348,20 +360,22 @@
       "traits": [
         "Keen senses",
         "Trance",
-        "McDonald origin"
+        "Madrone Court origin"
       ],
       "items": [
-        "McDonald keepsake"
+        "Madrone Court keepsake"
       ],
-      "portraitVariant": "masculine"
+      "portraitVariant": "masculine",
+      "ancestry": "High Elf",
+      "originName": "Madrone Court"
     },
     {
       "key": "high-elf-cherry-street",
-      "name": "High Elf of the Cherry Street Court",
-      "origin": "the Cherry Street Court",
+      "name": "High Elf of the Cherrybough Court",
+      "origin": "the Cherrybough Court",
       "portraitKey": "high-elf",
-      "quote": "I am {name} of the Cherry Street Court.",
-      "summary": "Studious, precise, and drawn to old names, maps, songs, and hidden rules. This origin comes from the Cherry Street Court.",
+      "quote": "I am {name} of the Cherrybough Court.",
+      "summary": "Studious, precise, and drawn to old names, maps, songs, and hidden rules. Their people are known as the Cherrybough Court.",
       "advice": "A strong fit for wizards, bards, rogues, and careful strategists.",
       "bestFor": "Wizard, Bard, Rogue",
       "abilityBonuses": {
@@ -382,20 +396,22 @@
       "traits": [
         "Keen senses",
         "Trance",
-        "Cherry Street origin"
+        "Cherrybough Court origin"
       ],
       "items": [
-        "Cherry Street keepsake"
+        "Cherrybough Court keepsake"
       ],
-      "portraitVariant": "feminine"
+      "portraitVariant": "feminine",
+      "ancestry": "High Elf",
+      "originName": "Cherrybough Court"
     },
     {
       "key": "wood-elf-hidden-valley",
-      "name": "Wood Elf of the Hidden Valley Groves",
-      "origin": "the Hidden Valley Groves",
+      "name": "Wood Elf of the Hidden Vale Groves",
+      "origin": "the Hidden Vale Groves",
       "portraitKey": "wood-elf",
-      "quote": "I am {name} of the Hidden Valley Groves.",
-      "summary": "Quick, watchful, and comfortable moving through overgrown halls and shaded courtyards. This origin comes from the Hidden Valley Groves.",
+      "quote": "I am {name} of the Hidden Vale Groves.",
+      "summary": "Quick, watchful, and comfortable moving through overgrown halls and shaded courtyards. Their people are known as the Hidden Vale Groves.",
       "advice": "A strong fit for rangers, rogues, bards, and wise scouts.",
       "bestFor": "Ranger, Rogue, Bard",
       "abilityBonuses": {
@@ -416,12 +432,14 @@
       "traits": [
         "Keen Senses",
         "Fleet of Foot",
-        "Hidden Valley origin"
+        "Hidden Vale Groves origin"
       ],
       "items": [
-        "Hidden Valley keepsake"
+        "Hidden Vale Groves keepsake"
       ],
-      "portraitVariant": "masculine"
+      "portraitVariant": "masculine",
+      "ancestry": "Wood Elf",
+      "originName": "Hidden Vale Groves"
     },
     {
       "key": "wood-elf-oakmont",
@@ -429,7 +447,7 @@
       "origin": "the Oakmont Groves",
       "portraitKey": "wood-elf",
       "quote": "I am {name} of the Oakmont Groves.",
-      "summary": "Quick, watchful, and comfortable moving through overgrown halls and shaded courtyards. This origin comes from the Oakmont Groves.",
+      "summary": "Quick, watchful, and comfortable moving through overgrown halls and shaded courtyards. Their people are known as the Oakmont Groves.",
       "advice": "A strong fit for rangers, rogues, bards, and wise scouts.",
       "bestFor": "Ranger, Rogue, Bard",
       "abilityBonuses": {
@@ -450,20 +468,22 @@
       "traits": [
         "Keen Senses",
         "Fleet of Foot",
-        "Oakmont origin"
+        "Oakmont Groves origin"
       ],
       "items": [
-        "Oakmont keepsake"
+        "Oakmont Groves keepsake"
       ],
-      "portraitVariant": "feminine"
+      "portraitVariant": "feminine",
+      "ancestry": "Wood Elf",
+      "originName": "Oakmont Groves"
     },
     {
       "key": "dark-elf-west-end",
-      "name": "Dark Elf of the West End Enclave",
-      "origin": "the West End Enclave",
+      "name": "Dark Elf of the Westmark Enclave",
+      "origin": "the Westmark Enclave",
       "portraitKey": "dark-elf",
-      "quote": "I am {name} of the West End Enclave.",
-      "summary": "Sharp-eyed, self-possessed, and practiced at reading danger before it moves. This origin comes from the West End Enclave.",
+      "quote": "I am {name} of the Westmark Enclave.",
+      "summary": "Sharp-eyed, self-possessed, and practiced at reading danger before it moves. Their people are known as the Westmark Enclave.",
       "advice": "A strong fit for rogues, warlocks, wizards, and tactical scouts.",
       "bestFor": "Rogue, Warlock, Wizard",
       "abilityBonuses": {
@@ -484,20 +504,22 @@
       "traits": [
         "Keen senses",
         "Trance",
-        "West End origin"
+        "Westmark Enclave origin"
       ],
       "items": [
-        "West End keepsake"
+        "Westmark Enclave keepsake"
       ],
-      "portraitVariant": "masculine"
+      "portraitVariant": "masculine",
+      "ancestry": "Dark Elf",
+      "originName": "Westmark Enclave"
     },
     {
       "key": "dark-elf-st-rose",
-      "name": "Dark Elf of the St. Rose Enclave",
-      "origin": "the St. Rose Enclave",
+      "name": "Dark Elf of the Rosecrypt Enclave",
+      "origin": "the Rosecrypt Enclave",
       "portraitKey": "dark-elf",
-      "quote": "I am {name} of the St. Rose Enclave.",
-      "summary": "Sharp-eyed, self-possessed, and practiced at reading danger before it moves. This origin comes from the St. Rose Enclave.",
+      "quote": "I am {name} of the Rosecrypt Enclave.",
+      "summary": "Sharp-eyed, self-possessed, and practiced at reading danger before it moves. Their people are known as the Rosecrypt Enclave.",
       "advice": "A strong fit for rogues, warlocks, wizards, and tactical scouts.",
       "bestFor": "Rogue, Warlock, Wizard",
       "abilityBonuses": {
@@ -518,20 +540,22 @@
       "traits": [
         "Keen senses",
         "Trance",
-        "St. Rose origin"
+        "Rosecrypt Enclave origin"
       ],
       "items": [
-        "St. Rose keepsake"
+        "Rosecrypt Enclave keepsake"
       ],
-      "portraitVariant": "feminine"
+      "portraitVariant": "feminine",
+      "ancestry": "Dark Elf",
+      "originName": "Rosecrypt Enclave"
     },
     {
       "key": "lightfoot-halfling-railroad-square",
-      "name": "Lightfoot Halfling of the Railroad Square Caravan",
-      "origin": "the Railroad Square Caravan",
+      "name": "Lightfoot Halfling of the Ironroad Caravan",
+      "origin": "the Ironroad Caravan",
       "portraitKey": "lightfoot-halfling",
-      "quote": "I am {name} of the Railroad Square Caravan.",
-      "summary": "Lucky, bright-hearted, and hard to corner in a crowded room. This origin comes from the Railroad Square Caravan.",
+      "quote": "I am {name} of the Ironroad Caravan.",
+      "summary": "Lucky, bright-hearted, and hard to corner in a crowded room. Their people are known as the Ironroad Caravan.",
       "advice": "A strong fit for rogues, bards, rangers, and nimble paladins.",
       "bestFor": "Rogue, Bard, Ranger",
       "abilityBonuses": {
@@ -551,20 +575,22 @@
       "traits": [
         "Lucky",
         "Brave",
-        "Railroad Square origin"
+        "Ironroad Caravan origin"
       ],
       "items": [
-        "Railroad Square keepsake"
+        "Ironroad Caravan keepsake"
       ],
-      "portraitVariant": "masculine"
+      "portraitVariant": "masculine",
+      "ancestry": "Lightfoot Halfling",
+      "originName": "Ironroad Caravan"
     },
     {
       "key": "lightfoot-halfling-montgomery-village",
-      "name": "Lightfoot Halfling of the Montgomery Village Roads",
-      "origin": "the Montgomery Village Roads",
+      "name": "Lightfoot Halfling of the Mont Vale Roads",
+      "origin": "the Mont Vale Roads",
       "portraitKey": "lightfoot-halfling",
-      "quote": "I am {name} of the Montgomery Village Roads.",
-      "summary": "Lucky, bright-hearted, and hard to corner in a crowded room. This origin comes from the Montgomery Village Roads.",
+      "quote": "I am {name} of the Mont Vale Roads.",
+      "summary": "Lucky, bright-hearted, and hard to corner in a crowded room. Their people are known as the Mont Vale Roads.",
       "advice": "A strong fit for rogues, bards, rangers, and nimble paladins.",
       "bestFor": "Rogue, Bard, Ranger",
       "abilityBonuses": {
@@ -584,20 +610,22 @@
       "traits": [
         "Lucky",
         "Brave",
-        "Montgomery Village origin"
+        "Mont Vale Roads origin"
       ],
       "items": [
-        "Montgomery Village keepsake"
+        "Mont Vale Roads keepsake"
       ],
-      "portraitVariant": "feminine"
+      "portraitVariant": "feminine",
+      "ancestry": "Lightfoot Halfling",
+      "originName": "Mont Vale Roads"
     },
     {
       "key": "stout-halfling-coffey-park",
-      "name": "Stout Halfling of the Coffey Park Hearths",
-      "origin": "the Coffey Park Hearths",
+      "name": "Stout Halfling of the Cofield Hearths",
+      "origin": "the Cofield Hearths",
       "portraitKey": "stout-halfling",
-      "quote": "I am {name} of the Coffey Park Hearths.",
-      "summary": "Grounded, brave, and surprisingly tough when trouble gets close. This origin comes from the Coffey Park Hearths.",
+      "quote": "I am {name} of the Cofield Hearths.",
+      "summary": "Grounded, brave, and surprisingly tough when trouble gets close. Their people are known as the Cofield Hearths.",
       "advice": "A strong fit for rogues, clerics, fighters, and steady companions.",
       "bestFor": "Rogue, Cleric, Fighter",
       "abilityBonuses": {
@@ -617,20 +645,22 @@
       "traits": [
         "Lucky",
         "Brave",
-        "Coffey Park origin"
+        "Cofield Hearths origin"
       ],
       "items": [
-        "Coffey Park keepsake"
+        "Cofield Hearths keepsake"
       ],
-      "portraitVariant": "masculine"
+      "portraitVariant": "masculine",
+      "ancestry": "Stout Halfling",
+      "originName": "Cofield Hearths"
     },
     {
       "key": "stout-halfling-burbank-gardens",
-      "name": "Stout Halfling of the Burbank Gardens Hearths",
-      "origin": "the Burbank Gardens Hearths",
+      "name": "Stout Halfling of the Burrbank Hearths",
+      "origin": "the Burrbank Hearths",
       "portraitKey": "stout-halfling",
-      "quote": "I am {name} of the Burbank Gardens Hearths.",
-      "summary": "Grounded, brave, and surprisingly tough when trouble gets close. This origin comes from the Burbank Gardens Hearths.",
+      "quote": "I am {name} of the Burrbank Hearths.",
+      "summary": "Grounded, brave, and surprisingly tough when trouble gets close. Their people are known as the Burrbank Hearths.",
       "advice": "A strong fit for rogues, clerics, fighters, and steady companions.",
       "bestFor": "Rogue, Cleric, Fighter",
       "abilityBonuses": {
@@ -650,20 +680,22 @@
       "traits": [
         "Lucky",
         "Brave",
-        "Burbank Gardens origin"
+        "Burrbank Hearths origin"
       ],
       "items": [
-        "Burbank Gardens keepsake"
+        "Burrbank Hearths keepsake"
       ],
-      "portraitVariant": "feminine"
+      "portraitVariant": "feminine",
+      "ancestry": "Stout Halfling",
+      "originName": "Burrbank Hearths"
     },
     {
       "key": "forest-gnome-holland-heights",
-      "name": "Forest Gnome of the Holland Heights Hollows",
-      "origin": "the Holland Heights Hollows",
+      "name": "Forest Gnome of the Hollen Hollows",
+      "origin": "the Hollen Hollows",
       "portraitKey": "forest-gnome",
-      "quote": "I am {name} of the Holland Heights Hollows.",
-      "summary": "Clever, quiet, and good at noticing small signs that others miss. This origin comes from the Holland Heights Hollows.",
+      "quote": "I am {name} of the Hollen Hollows.",
+      "summary": "Clever, quiet, and good at noticing small signs that others miss. Their people are known as the Hollen Hollows.",
       "advice": "A strong fit for wizards, druids, rangers, and careful scouts.",
       "bestFor": "Wizard, Druid, Ranger",
       "abilityBonuses": {
@@ -683,20 +715,22 @@
       "traits": [
         "Gnome cunning",
         "Natural illusion",
-        "Holland Heights origin"
+        "Hollen Hollows origin"
       ],
       "items": [
-        "Holland Heights keepsake"
+        "Hollen Hollows keepsake"
       ],
-      "portraitVariant": "masculine"
+      "portraitVariant": "masculine",
+      "ancestry": "Forest Gnome",
+      "originName": "Hollen Hollows"
     },
     {
       "key": "forest-gnome-south-park",
-      "name": "Forest Gnome of the South Park Hollows",
-      "origin": "the South Park Hollows",
+      "name": "Forest Gnome of the Southgrove Hollows",
+      "origin": "the Southgrove Hollows",
       "portraitKey": "forest-gnome",
-      "quote": "I am {name} of the South Park Hollows.",
-      "summary": "Clever, quiet, and good at noticing small signs that others miss. This origin comes from the South Park Hollows.",
+      "quote": "I am {name} of the Southgrove Hollows.",
+      "summary": "Clever, quiet, and good at noticing small signs that others miss. Their people are known as the Southgrove Hollows.",
       "advice": "A strong fit for wizards, druids, rangers, and careful scouts.",
       "bestFor": "Wizard, Druid, Ranger",
       "abilityBonuses": {
@@ -716,12 +750,14 @@
       "traits": [
         "Gnome cunning",
         "Natural illusion",
-        "South Park origin"
+        "Southgrove Hollows origin"
       ],
       "items": [
-        "South Park keepsake"
+        "Southgrove Hollows keepsake"
       ],
-      "portraitVariant": "feminine"
+      "portraitVariant": "feminine",
+      "ancestry": "Forest Gnome",
+      "originName": "Southgrove Hollows"
     },
     {
       "key": "rock-gnome-stonegate",
@@ -729,7 +765,7 @@
       "origin": "the Stonegate Workshops",
       "portraitKey": "rock-gnome",
       "quote": "I am {name} of the Stonegate Workshops.",
-      "summary": "Inventive, precise, and delighted by locks, gears, maps, and practical puzzles. This origin comes from the Stonegate Workshops.",
+      "summary": "Inventive, precise, and delighted by locks, gears, maps, and practical puzzles. Their people are known as the Stonegate Workshops.",
       "advice": "A strong fit for wizards, artificers, rogues, and problem-solvers.",
       "bestFor": "Wizard, Rogue, Inventor",
       "abilityBonuses": {
@@ -749,12 +785,14 @@
       "traits": [
         "Gnome cunning",
         "Artificer's lore",
-        "Stonegate origin"
+        "Stonegate Workshops origin"
       ],
       "items": [
-        "Stonegate keepsake"
+        "Stonegate Workshops keepsake"
       ],
-      "portraitVariant": "masculine"
+      "portraitVariant": "masculine",
+      "ancestry": "Rock Gnome",
+      "originName": "Stonegate Workshops"
     },
     {
       "key": "rock-gnome-valley-oak",
@@ -762,7 +800,7 @@
       "origin": "the Valley Oak Workshops",
       "portraitKey": "rock-gnome",
       "quote": "I am {name} of the Valley Oak Workshops.",
-      "summary": "Inventive, precise, and delighted by locks, gears, maps, and practical puzzles. This origin comes from the Valley Oak Workshops.",
+      "summary": "Inventive, precise, and delighted by locks, gears, maps, and practical puzzles. Their people are known as the Valley Oak Workshops.",
       "advice": "A strong fit for wizards, artificers, rogues, and problem-solvers.",
       "bestFor": "Wizard, Rogue, Inventor",
       "abilityBonuses": {
@@ -782,20 +820,22 @@
       "traits": [
         "Gnome cunning",
         "Artificer's lore",
-        "Valley Oak origin"
+        "Valley Oak Workshops origin"
       ],
       "items": [
-        "Valley Oak keepsake"
+        "Valley Oak Workshops keepsake"
       ],
-      "portraitVariant": "feminine"
+      "portraitVariant": "feminine",
+      "ancestry": "Rock Gnome",
+      "originName": "Valley Oak Workshops"
     },
     {
       "key": "half-elf-junior-college",
-      "name": "Half-Elf of the Junior College Crossroads",
-      "origin": "the Junior College Crossroads",
+      "name": "Half-Elf of the Juniper Crossroads",
+      "origin": "the Juniper Crossroads",
       "portraitKey": "half-elf",
-      "quote": "I am {name} of the Junior College Crossroads.",
-      "summary": "Adaptable, observant, and used to seeing a problem from more than one side. This origin comes from the Junior College Crossroads.",
+      "quote": "I am {name} of the Juniper Crossroads.",
+      "summary": "Adaptable, observant, and used to seeing a problem from more than one side. Their people are known as the Juniper Crossroads.",
       "advice": "A strong fit for bards, paladins, warlocks, rogues, and diplomats.",
       "bestFor": "Bard, Paladin, Rogue",
       "abilityBonuses": {
@@ -817,20 +857,22 @@
       "traits": [
         "Keen senses",
         "Flexible training",
-        "Junior College origin"
+        "Juniper Crossroads origin"
       ],
       "items": [
-        "Junior College keepsake"
+        "Juniper Crossroads keepsake"
       ],
-      "portraitVariant": "masculine"
+      "portraitVariant": "masculine",
+      "ancestry": "Half-Elf",
+      "originName": "Juniper Crossroads"
     },
     {
       "key": "half-elf-west-junior-college",
-      "name": "Half-Elf of the West Junior College Crossroads",
-      "origin": "the West Junior College Crossroads",
+      "name": "Half-Elf of the West Juniper Crossroads",
+      "origin": "the West Juniper Crossroads",
       "portraitKey": "half-elf",
-      "quote": "I am {name} of the West Junior College Crossroads.",
-      "summary": "Adaptable, observant, and used to seeing a problem from more than one side. This origin comes from the West Junior College Crossroads.",
+      "quote": "I am {name} of the West Juniper Crossroads.",
+      "summary": "Adaptable, observant, and used to seeing a problem from more than one side. Their people are known as the West Juniper Crossroads.",
       "advice": "A strong fit for bards, paladins, warlocks, rogues, and diplomats.",
       "bestFor": "Bard, Paladin, Rogue",
       "abilityBonuses": {
@@ -852,12 +894,14 @@
       "traits": [
         "Keen senses",
         "Flexible training",
-        "West Junior College origin"
+        "West Juniper Crossroads origin"
       ],
       "items": [
-        "West Junior College keepsake"
+        "West Juniper Crossroads keepsake"
       ],
-      "portraitVariant": "feminine"
+      "portraitVariant": "feminine",
+      "ancestry": "Half-Elf",
+      "originName": "West Juniper Crossroads"
     },
     {
       "key": "half-orc-roseland",
@@ -865,7 +909,7 @@
       "origin": "the Roseland Camps",
       "portraitKey": "half-orc",
       "quote": "I am {name} of the Roseland Camps.",
-      "summary": "Powerful, determined, and hard to stop when friends need help. This origin comes from the Roseland Camps.",
+      "summary": "Powerful, determined, and hard to stop when friends need help. Their people are known as the Roseland Camps.",
       "advice": "A strong fit for fighters, barbarians, paladins, and guardians.",
       "bestFor": "Fighter, Paladin, Barbarian",
       "abilityBonuses": {
@@ -885,12 +929,14 @@
       "traits": [
         "Relentless endurance",
         "Powerful build",
-        "Roseland origin"
+        "Roseland Camps origin"
       ],
       "items": [
-        "Roseland keepsake"
+        "Roseland Camps keepsake"
       ],
-      "portraitVariant": "masculine"
+      "portraitVariant": "masculine",
+      "ancestry": "Half-Orc",
+      "originName": "Roseland Camps"
     },
     {
       "key": "half-orc-spring-lake",
@@ -898,7 +944,7 @@
       "origin": "the Spring Lake Camps",
       "portraitKey": "half-orc",
       "quote": "I am {name} of the Spring Lake Camps.",
-      "summary": "Powerful, determined, and hard to stop when friends need help. This origin comes from the Spring Lake Camps.",
+      "summary": "Powerful, determined, and hard to stop when friends need help. Their people are known as the Spring Lake Camps.",
       "advice": "A strong fit for fighters, barbarians, paladins, and guardians.",
       "bestFor": "Fighter, Paladin, Barbarian",
       "abilityBonuses": {
@@ -918,20 +964,22 @@
       "traits": [
         "Relentless endurance",
         "Powerful build",
-        "Spring Lake origin"
+        "Spring Lake Camps origin"
       ],
       "items": [
-        "Spring Lake keepsake"
+        "Spring Lake Camps keepsake"
       ],
-      "portraitVariant": "feminine"
+      "portraitVariant": "feminine",
+      "ancestry": "Half-Orc",
+      "originName": "Spring Lake Camps"
     },
     {
       "key": "tiefling-montecito-heights",
-      "name": "Tiefling of the Montecito Heights Houses",
-      "origin": "the Montecito Heights Houses",
+      "name": "Tiefling of the Montecinder Houses",
+      "origin": "the Montecinder Houses",
       "portraitKey": "tiefling",
-      "quote": "I am {name} of the Montecito Heights Houses.",
-      "summary": "Intense, clever, and used to being noticed before being understood. This origin comes from the Montecito Heights Houses.",
+      "quote": "I am {name} of the Montecinder Houses.",
+      "summary": "Intense, clever, and used to being noticed before being understood. Their people are known as the Montecinder Houses.",
       "advice": "A strong fit for warlocks, bards, sorcerers, paladins, and bold leaders.",
       "bestFor": "Warlock, Bard, Sorcerer",
       "abilityBonuses": {
@@ -951,20 +999,22 @@
       "traits": [
         "Fire resistance",
         "Infernal legacy",
-        "Montecito Heights origin"
+        "Montecinder Houses origin"
       ],
       "items": [
-        "Montecito Heights keepsake"
+        "Montecinder Houses keepsake"
       ],
-      "portraitVariant": "masculine"
+      "portraitVariant": "masculine",
+      "ancestry": "Tiefling",
+      "originName": "Montecinder Houses"
     },
     {
       "key": "tiefling-town-country",
-      "name": "Tiefling of the Town & Country Houses",
-      "origin": "the Town & Country Houses",
+      "name": "Tiefling of the Thorn & Coin Houses",
+      "origin": "the Thorn & Coin Houses",
       "portraitKey": "tiefling",
-      "quote": "I am {name} of the Town & Country Houses.",
-      "summary": "Intense, clever, and used to being noticed before being understood. This origin comes from the Town & Country Houses.",
+      "quote": "I am {name} of the Thorn & Coin Houses.",
+      "summary": "Intense, clever, and used to being noticed before being understood. Their people are known as the Thorn & Coin Houses.",
       "advice": "A strong fit for warlocks, bards, sorcerers, paladins, and bold leaders.",
       "bestFor": "Warlock, Bard, Sorcerer",
       "abilityBonuses": {
@@ -984,20 +1034,22 @@
       "traits": [
         "Fire resistance",
         "Infernal legacy",
-        "Town & Country origin"
+        "Thorn & Coin Houses origin"
       ],
       "items": [
-        "Town & Country keepsake"
+        "Thorn & Coin Houses keepsake"
       ],
-      "portraitVariant": "feminine"
+      "portraitVariant": "feminine",
+      "ancestry": "Tiefling",
+      "originName": "Thorn & Coin Houses"
     },
     {
       "key": "human-annadel-heights",
-      "name": "Human of the Annadel Heights Families",
-      "origin": "the Annadel Heights Families",
+      "name": "Human of the Annadel Families",
+      "origin": "the Annadel Families",
       "portraitKey": "human-annadel-heights",
-      "quote": "I am {name} of the Annadel Heights Families.",
-      "summary": "Adaptable, ambitious, and shaped by the Annadel Heights Families.",
+      "quote": "I am {name} of the Annadel Families.",
+      "summary": "Adaptable, ambitious, and shaped by the Annadel Families.",
       "advice": "A flexible human origin for any class or strange path.",
       "bestFor": "Any class",
       "abilityBonuses": {
@@ -1020,20 +1072,22 @@
       "traits": [
         "Extra training",
         "Broad curiosity",
-        "Annadel Heights roots"
+        "Annadel Families roots"
       ],
       "items": [
-        "Annadel Heights keepsake"
+        "Annadel Families keepsake"
       ],
-      "portraitVariant": "masculine"
+      "portraitVariant": "masculine",
+      "ancestry": "Human",
+      "originName": "Annadel Families"
     },
     {
       "key": "human-dutton-avenue",
-      "name": "Human of the Dutton Avenue Families",
-      "origin": "the Dutton Avenue Families",
+      "name": "Human of the Dutton Way Families",
+      "origin": "the Dutton Way Families",
       "portraitKey": "human-annadel-heights",
-      "quote": "I am {name} of the Dutton Avenue Families.",
-      "summary": "Adaptable, ambitious, and shaped by the Dutton Avenue Families.",
+      "quote": "I am {name} of the Dutton Way Families.",
+      "summary": "Adaptable, ambitious, and shaped by the Dutton Way Families.",
       "advice": "A flexible human origin for any class or strange path.",
       "bestFor": "Any class",
       "abilityBonuses": {
@@ -1056,20 +1110,22 @@
       "traits": [
         "Extra training",
         "Broad curiosity",
-        "Dutton Avenue roots"
+        "Dutton Way Families roots"
       ],
       "items": [
-        "Dutton Avenue keepsake"
+        "Dutton Way Families keepsake"
       ],
-      "portraitVariant": "feminine"
+      "portraitVariant": "feminine",
+      "ancestry": "Human",
+      "originName": "Dutton Way Families"
     },
     {
       "key": "human-northwest-santa-rosa",
-      "name": "Human of the North West Santa Rosa Neighbors",
-      "origin": "the North West Santa Rosa Neighbors",
+      "name": "Human of the Northrose Neighbors",
+      "origin": "the Northrose Neighbors",
       "portraitKey": "human-northwest-santa-rosa",
-      "quote": "I am {name} of the North West Santa Rosa Neighbors.",
-      "summary": "Adaptable, ambitious, and shaped by the North West Santa Rosa Neighbors.",
+      "quote": "I am {name} of the Northrose Neighbors.",
+      "summary": "Adaptable, ambitious, and shaped by the Northrose Neighbors.",
       "advice": "A flexible human origin for any class or strange path.",
       "bestFor": "Any class",
       "abilityBonuses": {
@@ -1092,20 +1148,22 @@
       "traits": [
         "Extra training",
         "Broad curiosity",
-        "North West Santa Rosa roots"
+        "Northrose Neighbors roots"
       ],
       "items": [
-        "North West Santa Rosa keepsake"
+        "Northrose Neighbors keepsake"
       ],
-      "portraitVariant": "masculine"
+      "portraitVariant": "masculine",
+      "ancestry": "Human",
+      "originName": "Northrose Neighbors"
     },
     {
       "key": "human-juilliard-park",
-      "name": "Human of the Juilliard Park Neighbors",
-      "origin": "the Juilliard Park Neighbors",
+      "name": "Human of the Jewelward Neighbors",
+      "origin": "the Jewelward Neighbors",
       "portraitKey": "human-northwest-santa-rosa",
-      "quote": "I am {name} of the Juilliard Park Neighbors.",
-      "summary": "Adaptable, ambitious, and shaped by the Juilliard Park Neighbors.",
+      "quote": "I am {name} of the Jewelward Neighbors.",
+      "summary": "Adaptable, ambitious, and shaped by the Jewelward Neighbors.",
       "advice": "A flexible human origin for any class or strange path.",
       "bestFor": "Any class",
       "abilityBonuses": {
@@ -1128,20 +1186,22 @@
       "traits": [
         "Extra training",
         "Broad curiosity",
-        "Juilliard Park roots"
+        "Jewelward Neighbors roots"
       ],
       "items": [
-        "Juilliard Park keepsake"
+        "Jewelward Neighbors keepsake"
       ],
-      "portraitVariant": "feminine"
+      "portraitVariant": "feminine",
+      "ancestry": "Human",
+      "originName": "Jewelward Neighbors"
     },
     {
       "key": "human-olive-park",
-      "name": "Human of the Olive Park Wayfarers",
-      "origin": "the Olive Park Wayfarers",
+      "name": "Human of the Olivewood Wayfarers",
+      "origin": "the Olivewood Wayfarers",
       "portraitKey": "human-olive-park",
-      "quote": "I am {name} of the Olive Park Wayfarers.",
-      "summary": "Adaptable, ambitious, and shaped by the Olive Park Wayfarers.",
+      "quote": "I am {name} of the Olivewood Wayfarers.",
+      "summary": "Adaptable, ambitious, and shaped by the Olivewood Wayfarers.",
       "advice": "A flexible human origin for any class or strange path.",
       "bestFor": "Any class",
       "abilityBonuses": {
@@ -1164,20 +1224,22 @@
       "traits": [
         "Extra training",
         "Broad curiosity",
-        "Olive Park roots"
+        "Olivewood Wayfarers roots"
       ],
       "items": [
-        "Olive Park keepsake"
+        "Olivewood Wayfarers keepsake"
       ],
-      "portraitVariant": "masculine"
+      "portraitVariant": "masculine",
+      "ancestry": "Human",
+      "originName": "Olivewood Wayfarers"
     },
     {
       "key": "human-ridgway",
-      "name": "Human of the Ridgway Wayfarers",
-      "origin": "the Ridgway Wayfarers",
+      "name": "Human of the Ridgeway Wayfarers",
+      "origin": "the Ridgeway Wayfarers",
       "portraitKey": "human-olive-park",
-      "quote": "I am {name} of the Ridgway Wayfarers.",
-      "summary": "Adaptable, ambitious, and shaped by the Ridgway Wayfarers.",
+      "quote": "I am {name} of the Ridgeway Wayfarers.",
+      "summary": "Adaptable, ambitious, and shaped by the Ridgeway Wayfarers.",
       "advice": "A flexible human origin for any class or strange path.",
       "bestFor": "Any class",
       "abilityBonuses": {
@@ -1200,12 +1262,14 @@
       "traits": [
         "Extra training",
         "Broad curiosity",
-        "Ridgway roots"
+        "Ridgeway Wayfarers roots"
       ],
       "items": [
-        "Ridgway keepsake"
+        "Ridgeway Wayfarers keepsake"
       ],
-      "portraitVariant": "feminine"
+      "portraitVariant": "feminine",
+      "ancestry": "Human",
+      "originName": "Ridgeway Wayfarers"
     }
   ],
   "alignments": [

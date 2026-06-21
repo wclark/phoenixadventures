@@ -17,9 +17,9 @@ Cell order is left to right, top to bottom:
 6. Dark Elf
 7. Lightfoot Halfling
 8. Stout Halfling
-9. Annadel Heights Human
-10. North West Santa Rosa Human
-11. Olive Park Human
+9. Annadel Human
+10. Northrose Human
+11. Olivewood Human
 12. Forest Gnome
 13. Rock Gnome
 14. Half-Elf

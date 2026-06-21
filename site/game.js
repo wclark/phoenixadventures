@@ -1,7 +1,7 @@
 const STORAGE_KEY = "phoenix-adventures-save";
 const AUTH_STORAGE_KEY = "phoenix-adventures-user";
 const USER_CONFIG_BASE_URL = "data/users";
-const TRACKING_VERSION = "20260620-9";
+const TRACKING_VERSION = "20260620-10";
 const STATE_VERSION = "builder-20260619-8";
 const ATTRIBUTE_KEYS = ["strength", "intelligence", "wisdom", "dexterity", "constitution", "charisma"];
 const DEFAULT_CHARACTER_ATLAS = {
@@ -21,9 +21,9 @@ const DEFAULT_CHARACTER_ATLAS = {
     { key: "dark-elf", label: "Dark Elf" },
     { key: "lightfoot-halfling", label: "Lightfoot Halfling" },
     { key: "stout-halfling", label: "Stout Halfling" },
-    { key: "human-annadel-heights", label: "Annadel Heights Human" },
-    { key: "human-northwest-santa-rosa", label: "North West Santa Rosa Human" },
-    { key: "human-olive-park", label: "Olive Park Human" },
+    { key: "human-annadel-heights", label: "Annadel Human" },
+    { key: "human-northwest-santa-rosa", label: "Northrose Human" },
+    { key: "human-olive-park", label: "Olivewood Human" },
     { key: "forest-gnome", label: "Forest Gnome" },
     { key: "rock-gnome", label: "Rock Gnome" },
     { key: "half-elf", label: "Half-Elf" },
@@ -154,7 +154,7 @@ class Adventurer {
 
   syncDefinitionLabels() {
     if (this.raceDefinition) {
-      this.race = this.raceDefinition.name;
+      this.race = this.raceDefinition.ancestry || this.raceDefinition.name;
       this.origin = this.raceDefinition.origin;
     }
 
@@ -1463,6 +1463,12 @@ class AdventureGame {
 
         button.append(createElement("strong", this.interpolate(choice.label, hero)));
 
+        if (choice.subtitle) {
+          const subtitle = createElement("em", this.interpolate(choice.subtitle, hero));
+          subtitle.className = "choice-subtitle";
+          button.append(subtitle);
+        }
+
         if (choice.summary) {
           button.append(createElement("span", this.interpolate(choice.summary, hero)));
         }
@@ -1720,7 +1726,7 @@ function resolvePortraitCell(key) {
 
 function createChoicePortrait(choice, hero) {
   const cell = resolvePortraitCell(choice.portraitKey);
-  return createAtlasPortraitImage(cell, resolvePortraitVariant(choice, hero.portraitVariant), "choice-portrait", choice.label);
+  return createAtlasPortraitImage(cell, resolvePortraitVariant(choice, hero.portraitVariant), "choice-portrait", choice.accessibleLabel || choice.label);
 }
 
 function createAtlasPortraitImage(cell, variant, className, label = cell.label) {
@@ -1918,7 +1924,9 @@ function inferDefinitionKey(collection, ...values) {
 
   return (
     Object.entries(definitions).find(([, definition]) =>
-      [definition.name, definition.origin].filter(Boolean).some((candidate) => normalizedValues.includes(String(candidate).toLowerCase())),
+      [definition.name, definition.origin, definition.originName, definition.ancestry]
+        .filter(Boolean)
+        .some((candidate) => normalizedValues.includes(String(candidate).toLowerCase())),
     )?.[0] || ""
   );
 }
