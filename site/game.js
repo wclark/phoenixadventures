@@ -1,7 +1,7 @@
 const STORAGE_KEY = "phoenix-adventures-save";
 const AUTH_STORAGE_KEY = "phoenix-adventures-user";
 const USER_CONFIG_BASE_URL = "data/users";
-const TRACKING_VERSION = "20260620-12";
+const TRACKING_VERSION = "20260620-13";
 const STATE_VERSION = "builder-20260619-8";
 const ATTRIBUTE_KEYS = ["strength", "intelligence", "wisdom", "dexterity", "constitution", "charisma"];
 const DEFAULT_CHARACTER_ATLAS = {
@@ -866,10 +866,6 @@ class AdventureGame {
       rows.push(sheetDatum("Race", hero.race));
     }
 
-    if (hero.origin) {
-      rows.push(sheetDatum("Origin", sheetOriginName(hero.origin)));
-    }
-
     if (hero.background) {
       rows.push(sheetDatum("Background", hero.background));
     }
@@ -1667,10 +1663,6 @@ function characterSheetName(hero) {
   return `${hero.name} of ${hero.origin}`;
 }
 
-function sheetOriginName(origin) {
-  return String(origin || "").replace(/^the\s+/i, "");
-}
-
 function sheetCharacterPortrait(hero) {
   const wrapper = document.createElement("div");
   wrapper.className = "sheet-portrait-block";
@@ -1679,10 +1671,9 @@ function sheetCharacterPortrait(hero) {
   const referenceLabel = hero.raceDefinition?.name || cell.label;
   const image = createAtlasPortraitImage(cell, resolvePortraitVariant(hero.raceDefinition, hero.portraitVariant), "character-portrait-image", referenceLabel);
 
-  const caption = createElement("figcaption", `${referenceLabel} reference`);
   const figure = document.createElement("figure");
   figure.className = "character-portrait";
-  figure.append(image, caption);
+  figure.append(image);
 
   const details = document.createElement("dd");
   details.append(figure);

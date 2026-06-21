@@ -1163,10 +1163,10 @@ input:focus-visible {
 }
 
 .progress-list dt {
-  color: var(--sheet-faded-ink);
-  font-size: 12px;
+  color: var(--sheet-ink);
+  font-size: 14px;
   font-weight: 800;
-  text-transform: lowercase;
+  text-transform: none;
 }
 
 .progress-list dt::after {
@@ -1230,12 +1230,6 @@ input:focus-visible {
   transform-origin: top left;
 }
 
-.character-portrait figcaption {
-  color: var(--sheet-faded-ink);
-  font-size: 12px;
-  line-height: 1.3;
-}
-
 .sheet-detail-block {
   grid-column: 1 / -1;
   display: block !important;
@@ -1247,9 +1241,10 @@ input:focus-visible {
 
 .sheet-detail-block > dt {
   color: var(--sheet-ink);
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: 14px;
+  letter-spacing: 0;
+  text-transform: none;
+  font-weight: 800;
 }
 
 .sheet-detail-block > dt::after {
@@ -1273,10 +1268,10 @@ input:focus-visible {
 }
 
 .sheet-detail-list dt {
-  color: var(--sheet-faded-ink);
-  font-size: 12px;
+  color: var(--sheet-ink);
+  font-size: 14px;
   font-weight: 800;
-  text-transform: lowercase;
+  text-transform: none;
 }
 
 .sheet-detail-list dt::after {
@@ -1286,7 +1281,7 @@ input:focus-visible {
 .sheet-detail-list dd {
   margin: 0;
   color: var(--sheet-ink);
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1.34;
 }
 
@@ -1337,9 +1332,14 @@ input:focus-visible {
 
 .sheet-drawer-toggle:hover {
   background: rgba(95, 125, 78, 0.46);
+  transform: translate3d(0, -50%, 0);
 }
 
 .sheet-drawer-toggle.is-open {
+  transform: translate3d(calc(-1 * var(--drawer-width)), -50%, 0);
+}
+
+.sheet-drawer-toggle.is-open:hover {
   transform: translate3d(calc(-1 * var(--drawer-width)), -50%, 0);
 }
 
